@@ -8,6 +8,7 @@ from datetime import timedelta
 from typing import Any
 
 import pytest
+from django.core.management import CommandError, call_command
 from django.test import Client
 from pytest_django.fixtures import Settings
 from qstash.message import MessageApi
@@ -110,6 +111,22 @@ def test_a_call_is_asked_for_after_the_delay(monkeypatch: pytest.MonkeyPatch) ->
     assert sent["url"] == URL
     assert sent["delay"] == "120s"
     assert sent["body"]["id"] == str(wakeup_id)
+
+
+@pytest.mark.parametrize(
+    ("name", "value", "missing"),
+    [
+        ("QSTASH_TOKEN", "", "QSTASH_TOKEN"),
+        ("PUBLIC_URL", "http://localhost:8000", "PUBLIC_URL"),
+    ],
+)
+def test_the_command_says_what_is_missing(
+    settings: Settings, name: str, value: str, missing: str
+) -> None:
+    settings.QSTASH_TOKEN = "token"
+    setattr(settings, name, value)
+    with pytest.raises(CommandError, match=missing):
+        call_command("prove_wakeup")
 
 
 def test_the_pages_answer(client: Client) -> None:

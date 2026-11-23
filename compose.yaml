@@ -1,0 +1,8 @@
+services:
+  postgres:
+    image: postgres:17.6-alpine
+    environment:
+      POSTGRES_USER: tallypay
+      POSTGRES_PASSWORD: tallypay
+      POSTGRES_DB: tallypay
+    ports: ["127.0.0.1:5434:5432"]

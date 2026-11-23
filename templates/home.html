@@ -1,0 +1,22 @@
+{% load static %}<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TallyPay</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="{% static 'app.css' %}">
+    <script src="{% static 'vendor/htmx-2.0.11.min.js' %}" defer></script>
+  </head>
+  <body>
+    <main>
+      <h1>TallyPay</h1>
+      <p>A payment ledger and webhook gateway, in progress. All money is simulated.</p>
+      <section>
+        <h2>Last delayed call</h2>
+        <div id="last" aria-live="polite">{% include "last_wakeup.html" %}</div>
+        <button type="button" hx-get="{% url 'last-wakeup' %}" hx-target="#last">Refresh</button>
+      </section>
+    </main>
+  </body>
+</html>

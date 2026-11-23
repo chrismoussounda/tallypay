@@ -1,0 +1,10 @@
+from django.urls import path
+
+from wakeups import views
+
+urlpatterns = [
+    path("", views.home, name="home"),
+    path("healthz", views.health, name="health"),
+    path("last-wakeup", views.last_wakeup, name="last-wakeup"),
+    path("internal/wake", views.wake, name="wake"),
+]

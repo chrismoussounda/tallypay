@@ -30,3 +30,7 @@ seconds. The home page then shows when it arrived:
 ```sh
 uv run python manage.py prove_wakeup --delay 60
 ```
+
+## Licence
+
+[MIT](LICENSE). htmx, in `static/vendor`, has [its own](static/vendor/htmx.LICENSE.txt).

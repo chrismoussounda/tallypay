@@ -1,2 +1,2 @@
 * text=auto eol=lf
-static/htmx.min.js -diff linguist-vendored
+static/vendor/*.js -diff linguist-vendored

@@ -1,0 +1,5 @@
+{% if wakeup %}<dl>
+  <div><dt>Due</dt><dd>{{ wakeup.due_at|date:"j M Y, H:i:s" }} UTC</dd></div>
+  <div><dt>Received</dt><dd>{{ wakeup.received_at|date:"j M Y, H:i:s" }} UTC</dd></div>
+  <div><dt>Late by</dt><dd>{{ wakeup.late_by|floatformat:1 }} s</dd></div>
+</dl>{% else %}<p>None yet.</p>{% endif %}

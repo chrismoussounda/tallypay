@@ -4,7 +4,8 @@ A payment ledger and webhook gateway: money is never lost, duplicated or created
 provider times out, answers twice or disagrees. All money and providers are simulated.
 
 In progress. So far: the project, its CI, a delayed call to prove the hosting, the ledger,
-the payments API, the simulated provider and webhooks.
+the payments API, the simulated provider, webhooks,
+refunds and reconciliation.
 
 ## The ledger
 
@@ -46,6 +47,13 @@ The provider is another company's system, so it can fail in any way. Each paymen
 | `answer_lost` | Charges, but its answer is lost |
 | `duplicate_callback` | Calls back three times |
 | `no_callback` | Never calls back |
+| `silent` | Moves the money, but never says so |
+| `late_success` | Declines, but moves the money anyway |
+| `wrong_amount` | Moves 500 francs too much |
+| `moved_twice` | Moves the money twice |
+| `not_in_statement` | Leaves it out of its statement |
+
+The last five only come out in reconciliation.
 
 - **Charged once.** The provider is asked with the payment's own id, so asking again charges nothing.
 - **Never forgotten.** The next look is written down before the provider is asked, so a crash cannot
@@ -72,7 +80,32 @@ every payment that succeeds or fails.
 - **Public addresses only.** Each send checks the address the name leads to, connects to that very
   address, and follows no redirect.
 
-A daily call from Vercel, with `CRON_SECRET`, runs any task QStash missed.
+A daily call from Vercel, with `CRON_SECRET`, runs any task QStash missed, then reconciles.
+
+## Refunds
+
+`POST /v1/payments/{id}/refunds` gives money back, in full or in parts, never above what was paid.
+The money leaves the merchant's balance at once, and comes back if the refund fails. A refund above
+the balance is refused. The 2% fee is not returned.
+
+## Reconciliation
+
+Every day, the provider's statement is stored, then matched with the books.
+
+- **The statement settles** what the provider never answered.
+- **Money nobody expected** goes to a suspense account, so the books always say what the provider
+  holds. Money taken for a payment that had failed is given back at once.
+- **What is in the books but not in the statement** is called missing after an hour, as statements
+  can be late.
+- **Two people** resolve the rest: one proposes, another approves. Each resolution that moves money is
+  an ordinary entry. Nothing is edited. For now the commands trust the names they are given.
+
+```sh
+uv run python manage.py reconcile
+uv run python manage.py discrepancies
+uv run python manage.py discrepancies propose ID return --by Ange --note "Charged twice"
+uv run python manage.py discrepancies approve ID --by Merveille
+```
 
 ## Run it
 

@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "merchants",
     "payments",
     "provider",
+    "reconciliation",
     "refunds",
     "tasks",
     "wakeups",

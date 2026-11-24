@@ -172,8 +172,8 @@ def test_the_daily_call_runs_what_was_missed(
     for wrong in ("", "Bearer ", "Bearer other", "Bearer s\u00e9cret", "secret"):
         assert call(wrong).status_code == 401
     assert ran == []
-    assert call("Bearer secret").json() == {"done": 1}
-    assert call("Bearer secret").json() == {"done": 0}
+    assert call("Bearer secret").json()["done"] == 1
+    assert call("Bearer secret").json() == {"done": 0, "discrepancies": 0}
 
 
 @pytest.mark.django_db

@@ -14,6 +14,8 @@ TABLES = [
     "provider_request",
     "provider_charge",
     "idempotency_idempotencyrecord",
+    "reconciliation_discrepancy",
+    "reconciliation_statementline",
     "refunds_refund",
     "payments_paymentevent",
     "payments_payment",

@@ -552,6 +552,7 @@ dependencies = [
     { name = "django-ninja" },
     { name = "psycopg", extra = ["binary"] },
     { name = "qstash" },
+    { name = "tzdata" },
 ]
 
 [package.dev-dependencies]
@@ -571,6 +572,7 @@ requires-dist = [
     { name = "django-ninja", specifier = ">=1.8.0" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.3.9" },
     { name = "qstash", specifier = ">=3.4.0" },
+    { name = "tzdata", specifier = ">=2026.6" },
 ]
 
 [package.metadata.requires-dev]

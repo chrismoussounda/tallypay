@@ -7,6 +7,7 @@ from functools import partial
 from django.db import transaction
 from django.utils import timezone
 
+from accounts.models import User
 from ledger import books
 from ledger.models import Account, Entry
 from payments import service as payments
@@ -38,34 +39,36 @@ def allowed(found: Discrepancy) -> set[str]:
 
 
 @transaction.atomic
-def propose(found_id: uuid.UUID, action: str, by: str, note: str) -> Discrepancy:
+def propose(found_id: uuid.UUID, action: str, by: User, note: str) -> Discrepancy:
+    _check(by)
     found = _lock(found_id, Status.OPEN)
-    if not by or by == POLICY or not note:
-        raise NotPossible("Say who proposes it, and why.")
+    if not note:
+        raise NotPossible("Say why.")
     if action not in allowed(found):
         raise NotPossible(f"Choose among: {', '.join(sorted(allowed(found)))}.")
-    found.action, found.proposed_by, found.note = action, by, note
+    found.action, found.proposed_by, found.note = action, by.email, note
+    found.proposal += 1
     found.status = Status.PROPOSED
     found.save()
     return found
 
 
 @transaction.atomic
-def reject(found_id: uuid.UUID, by: str) -> Discrepancy:
-    found = _lock(found_id, Status.PROPOSED)
-    if not by:
-        raise NotPossible("Say who rejects it.")
+def reject(found_id: uuid.UUID, by: User, proposal: int) -> Discrepancy:
+    _check(by)
+    found = _proposed(found_id, proposal)
     found.status, found.action = Status.OPEN, ""
     found.save()
     return found
 
 
 @transaction.atomic
-def approve(found_id: uuid.UUID, by: str) -> Discrepancy:
-    found = _lock(found_id, Status.PROPOSED)
-    if not by or by in (found.proposed_by, POLICY):
+def approve(found_id: uuid.UUID, by: User, proposal: int) -> Discrepancy:
+    _check(by)
+    found = _proposed(found_id, proposal)
+    if by.email == found.proposed_by:
         raise NotPossible("Someone else must approve it.")
-    found.approved_by = by
+    found.approved_by = by.email
     if found.action == Action.RETURN:
         _start_return(found)
         return found
@@ -140,6 +143,18 @@ def settle_return(found_id: uuid.UUID, paid: bool) -> None:
         return
     provider = books.system("provider", Account.Kind.ASSET)
     close(found, Action.RETURN, _post(found, provider, -found.amount))
+
+
+def _check(by: User) -> None:
+    if not (by.is_operator and by.is_active):
+        raise NotPossible("Only an operator can do this.")
+
+
+def _proposed(found_id: uuid.UUID, proposal: int) -> Discrepancy:
+    found = _lock(found_id, Status.PROPOSED)
+    if found.proposal != proposal:
+        raise NotPossible("Another proposal was made since. Read it first.")
+    return found
 
 
 def _lock(found_id: uuid.UUID, status: Status) -> Discrepancy:

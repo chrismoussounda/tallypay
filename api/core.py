@@ -2,6 +2,8 @@ import re
 from typing import Any
 
 from django.http import HttpRequest, HttpResponse
+from django.utils.csp import CSP
+from django.views.decorators.csp import csp_override
 from ninja import NinjaAPI, Schema
 from ninja.errors import AuthenticationError, HttpError, ValidationError
 from ninja.security import HttpBearer
@@ -16,7 +18,19 @@ class ApiKeyAuth(HttpBearer):
         return keys.owner(token)
 
 
-api = NinjaAPI(title="TallyPay", version="1", auth=ApiKeyAuth(), urls_namespace="v1")
+# Swagger UI styles itself inline.
+docs_csp: dict[str, list[str]] = {
+    "default-src": [CSP.SELF],
+    "style-src": [CSP.SELF, CSP.UNSAFE_INLINE],
+    "img-src": [CSP.SELF, "data:"],
+}
+api = NinjaAPI(
+    title="TallyPay",
+    version="1",
+    auth=ApiKeyAuth(),
+    urls_namespace="v1",
+    docs_decorator=csp_override(docs_csp),
+)
 
 CODES = {404: "not_found", 409: "conflict"}
 

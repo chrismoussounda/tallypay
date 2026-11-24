@@ -58,8 +58,11 @@ class Discrepancy(models.Model):
     )
     action = models.CharField(max_length=10, choices=Action, blank=True)
     note = models.CharField(max_length=300, blank=True)
-    proposed_by = models.CharField(max_length=60, blank=True)
-    approved_by = models.CharField(max_length=60, blank=True)
+    # Which proposal this is, so that nobody approves another than they read.
+    proposal = models.PositiveIntegerField(default=0)
+    # Emails of operators, or "policy".
+    proposed_by = models.CharField(max_length=254, blank=True)
+    approved_by = models.CharField(max_length=254, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     resolved_at = models.DateTimeField(null=True, blank=True)
 

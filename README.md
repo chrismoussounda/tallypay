@@ -98,13 +98,11 @@ Every day, the provider's statement is stored, then matched with the books.
 - **What is in the books but not in the statement** is called missing after an hour, as statements
   can be late.
 - **Two people** resolve the rest: one proposes, another approves. Each resolution that moves money is
-  an ordinary entry. Nothing is edited. For now the commands trust the names they are given.
+  an ordinary entry. Nothing is edited.
 
 ```sh
 uv run python manage.py reconcile
 uv run python manage.py discrepancies
-uv run python manage.py discrepancies propose ID return --by Ange --note "Charged twice"
-uv run python manage.py discrepancies approve ID --by Merveille
 ```
 
 ## Run it

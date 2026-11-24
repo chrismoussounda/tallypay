@@ -5,13 +5,14 @@ from io import StringIO
 from typing import Any
 
 import pytest
-from django.core.management import CommandError, call_command
+from django.core.management import call_command
 from django.db import IntegrityError
 from django.utils import timezone
 from hypothesis import given, settings
 from hypothesis import strategies as st
 from hypothesis.extra.django import TestCase
 
+from accounts.models import User
 from ledger import books
 from merchants import keys
 from merchants.models import Merchant
@@ -74,6 +75,21 @@ def check_books() -> None:
     )
     assert totals().get("provider", 0) == in_statement() + missing
     assert sum(totals().values()) == 0
+
+
+def who(name: str) -> User:
+    email = f"{name.lower()}@tallypay.test"
+    made = {"name": name, "role": "operator", "password": "!"}
+    return User.objects.get_or_create(email=email, defaults=made)[0]
+
+
+def keys_user(shop: Merchant) -> User:
+    return User.objects.create_user("o@s.test", None, role="owner", merchant=shop)
+
+
+def approve(found_id: uuid.UUID, name: str) -> Discrepancy:
+    proposal = Discrepancy.objects.get(id=found_id).proposal
+    return resolving.approve(found_id, who(name), proposal)
 
 
 def go(clock: Clock) -> None:
@@ -146,8 +162,8 @@ def test_money_in_suspense_is_given_back(shop: Merchant, clock: Clock) -> None:
     pay(shop, Scenario.MOVED_TWICE)
     go(clock)
     found = Discrepancy.objects.get()
-    resolving.propose(found.id, "return", "Ange", "Charged twice")
-    resolving.approve(found.id, "Merveille")
+    resolving.propose(found.id, "return", who("Ange"), "Charged twice")
+    approve(found.id, "Merveille")
     go(clock)
     found.refresh_from_db()
     assert found.status == "resolved"
@@ -162,8 +178,8 @@ def test_money_in_suspense_goes_to_the_merchant_when_it_is_known(
     pay(shop, Scenario.WRONG_AMOUNT)
     go(clock)
     found = Discrepancy.objects.get()
-    resolving.propose(found.id, "credit", "Ange", "A tip")
-    resolving.approve(found.id, "Merveille")
+    resolving.propose(found.id, "credit", who("Ange"), "A tip")
+    approve(found.id, "Merveille")
     assert totals()["merchant"] == -10_300
     assert totals()["suspense"] == 0
     go(clock)
@@ -179,8 +195,8 @@ def test_a_payment_not_in_the_statement_is_missing_only_after_a_while(
     go(clock)
     found = Discrepancy.objects.get()
     assert (found.kind, found.amount) == ("missing", -10_000)
-    resolving.propose(found.id, "write_off", "Ange", "Lost")
-    resolving.approve(found.id, "Merveille")
+    resolving.propose(found.id, "write_off", who("Ange"), "Lost")
+    approve(found.id, "Merveille")
     assert totals()["provider"] == 0
     assert totals()["differences"] == 10_000
     assert totals()["merchant"] == -9_800
@@ -202,14 +218,14 @@ def test_one_that_appears_once_written_off_is_reported_again(
     pay(shop, Scenario.NOT_IN_STATEMENT)
     go(clock)
     found = Discrepancy.objects.get()
-    resolving.propose(found.id, "write_off", "Ange", "Lost")
-    resolving.approve(found.id, "Merveille")
+    resolving.propose(found.id, "write_off", who("Ange"), "Lost")
+    approve(found.id, "Merveille")
     Charge.objects.update(scenario="normal")
     go(clock)
     late = Discrepancy.objects.get(kind="late")
     assert late.amount == 10_000
-    resolving.propose(late.id, "write_off", "Ange", "Found")
-    resolving.approve(late.id, "Merveille")
+    resolving.propose(late.id, "write_off", who("Ange"), "Found")
+    approve(late.id, "Merveille")
     assert totals()["differences"] == totals()["suspense"] == 0
     go(clock)
 
@@ -226,8 +242,8 @@ def test_a_payment_the_provider_never_got_is_stuck_then_failed(
         go(clock)
     found = Discrepancy.objects.get()
     assert (found.kind, found.status) == ("stuck", "open")
-    resolving.propose(found.id, "fail", "Ange", "Never reached them")
-    resolving.approve(found.id, "Merveille")
+    resolving.propose(found.id, "fail", who("Ange"), "Never reached them")
+    approve(found.id, "Merveille")
     payment.refresh_from_db()
     assert payment.status == "failed"
 
@@ -266,8 +282,8 @@ def test_the_faults_of_refunds_are_found_and_written_off(
     found = Discrepancy.objects.get()
     assert (found.kind, found.amount) == (kind, amount)
     assert resolving.allowed(found) == {"write_off"}
-    resolving.propose(found.id, "write_off", "Ange", "Too small to chase")
-    resolving.approve(found.id, "Merveille")
+    resolving.propose(found.id, "write_off", who("Ange"), "Too small to chase")
+    approve(found.id, "Merveille")
     assert totals().get("suspense", 0) == 0
     assert totals()["differences"] == -amount
     go(clock)
@@ -293,8 +309,8 @@ def test_a_refund_the_provider_never_got_is_stuck_then_failed(
     go(clock)
     found = Discrepancy.objects.get()
     assert (found.kind, found.operation) == ("stuck", "refund")
-    resolving.propose(found.id, "fail", "Ange", "Never reached them")
-    resolving.approve(found.id, "Merveille")
+    resolving.propose(found.id, "fail", who("Ange"), "Never reached them")
+    approve(found.id, "Merveille")
     refund.refresh_from_db()
     assert refund.status == "failed"
     assert totals()["merchant"] == -9_800
@@ -304,34 +320,52 @@ def test_two_people_are_needed(shop: Merchant, clock: Clock) -> None:
     pay(shop, Scenario.WRONG_AMOUNT)
     go(clock)
     found = Discrepancy.objects.get()
+    outsider = keys_user(shop)
     for action, by, note in (
-        ("fail", "Ange", "why"),
-        ("credit", "", "why"),
-        ("credit", "policy", "why"),
-        ("credit", "Ange", ""),
+        ("fail", who("Ange"), "why"),
+        ("credit", outsider, "why"),
+        ("credit", who("Ange"), ""),
     ):
         with pytest.raises(resolving.NotPossible):
             resolving.propose(found.id, action, by, note)
     with pytest.raises(resolving.NotPossible):
-        resolving.approve(found.id, "Merveille")
-    resolving.propose(found.id, "credit", "Ange", "A tip")
-    for by in ("Ange", "", "policy"):
+        approve(found.id, "Merveille")
+    resolving.propose(found.id, "credit", who("Ange"), "A tip")
+    for by in (who("Ange"), outsider):
         with pytest.raises(resolving.NotPossible):
-            resolving.approve(found.id, by)
+            resolving.approve(found.id, by, 1)
+        assert Discrepancy.objects.get().status == "proposed"
+    with pytest.raises(resolving.NotPossible):
+        resolving.reject(found.id, outsider, 1)
     with pytest.raises(IntegrityError):
-        Discrepancy.objects.update(approved_by="Ange")
+        Discrepancy.objects.update(approved_by=who("Ange").email)
+
+
+def test_nobody_approves_another_proposal_than_they_read(
+    shop: Merchant, clock: Clock
+) -> None:
+    pay(shop, Scenario.WRONG_AMOUNT)
+    go(clock)
+    found = Discrepancy.objects.get()
+    resolving.propose(found.id, "credit", who("Ange"), "A tip")
+    resolving.reject(found.id, who("Ange"), 1)
+    resolving.propose(found.id, "write_off", who("Ange"), "Small")
+    for step in (resolving.approve, resolving.reject):
+        with pytest.raises(resolving.NotPossible):
+            step(found.id, who("Merveille"), 1)
+    resolving.approve(found.id, who("Merveille"), 2)
 
 
 def test_a_rejected_proposal_can_be_made_again(shop: Merchant, clock: Clock) -> None:
     pay(shop, Scenario.WRONG_AMOUNT)
     go(clock)
     found = Discrepancy.objects.get()
-    resolving.propose(found.id, "credit", "Ange", "A tip")
-    resolving.reject(found.id, "Merveille")
-    resolving.propose(found.id, "write_off", "Merveille", "Small")
-    resolving.approve(found.id, "Ange")
+    resolving.propose(found.id, "credit", who("Ange"), "A tip")
+    resolving.reject(found.id, who("Merveille"), 1)
+    resolving.propose(found.id, "write_off", who("Merveille"), "Small")
+    approve(found.id, "Ange")
     with pytest.raises(resolving.NotPossible):
-        resolving.approve(found.id, "Ange")
+        approve(found.id, "Ange")
 
 
 def test_approvals_at_the_same_time_move_the_money_once(together: Together) -> None:
@@ -342,8 +376,9 @@ def test_approvals_at_the_same_time_move_the_money_once(together: Together) -> N
     Charge.objects.update(decided_at=timezone.now() - timedelta(minutes=1))
     matching.run()
     found = Discrepancy.objects.get()
-    resolving.propose(found.id, "credit", "Ange", "A tip")
-    outcomes = together(6, lambda: resolving.approve(found.id, "Merveille").status)
+    resolving.propose(found.id, "credit", who("Ange"), "A tip")
+    merveille = who("Merveille")
+    outcomes = together(6, lambda: resolving.approve(found.id, merveille, 1).status)
     assert outcomes.count("resolved") == 1
     assert totals()["merchant"] == -10_300
 
@@ -380,7 +415,7 @@ def test_a_line_that_cannot_be_matched_does_not_stop_the_others(
     assert StatementLine.objects.get(matched_at=None).kind == Kind.RETURN
 
 
-def test_the_commands_list_and_resolve(shop: Merchant, clock: Clock) -> None:
+def test_the_commands_reconcile_and_list(shop: Merchant, clock: Clock) -> None:
     pay(shop, Scenario.WRONG_AMOUNT)
     clock.run_until_quiet()
     out = StringIO()
@@ -391,15 +426,6 @@ def test_the_commands_list_and_resolve(shop: Merchant, clock: Clock) -> None:
     assert (
         f"{found.id} wrong_amount +500 open credit/return/write_off" in out.getvalue()
     )
-    who = ["--by", "Ange"]
-    call_command(
-        "discrepancies", "propose", str(found.id), "credit", *who, "--note", "x"
-    )
-    with pytest.raises(CommandError, match="Someone else"):
-        call_command("discrepancies", "approve", str(found.id), *who)
-    call_command("discrepancies", "approve", str(found.id), "--by", "Merveille")
-    found.refresh_from_db()
-    assert found.status == "resolved"
 
 
 class AnyDay(TestCase):
@@ -436,8 +462,8 @@ class AnyDay(TestCase):
             for found in Discrepancy.objects.filter(status="open"):
                 actions = sorted(resolving.allowed(found))
                 action = actions[next(left) % len(actions)]
-                resolving.propose(found.id, action, "Ange", "x")
-                resolving.approve(found.id, "Merveille")
+                resolving.propose(found.id, action, who("Ange"), "x")
+                approve(found.id, "Merveille")
             go(clock)
             assert queue.run_due() == 0
         assert not Discrepancy.objects.exclude(status="resolved").exists()

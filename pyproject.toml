@@ -8,6 +8,7 @@ dependencies = [
     "django-ninja>=1.8.0",
     "psycopg[binary]>=3.3.9",
     "qstash>=3.4.0",
+    "tzdata>=2026.6",
 ]
 
 [dependency-groups]

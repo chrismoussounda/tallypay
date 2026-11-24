@@ -331,7 +331,9 @@ def test_two_people_are_needed(shop: Merchant, clock: Clock) -> None:
     with pytest.raises(resolving.NotPossible):
         approve(found.id, "Merveille")
     resolving.propose(found.id, "credit", who("Ange"), "A tip")
-    for by in (who("Ange"), outsider):
+    gone = who("Gone")
+    gone.is_active = False
+    for by in (who("Ange"), outsider, gone):
         with pytest.raises(resolving.NotPossible):
             resolving.approve(found.id, by, 1)
         assert Discrepancy.objects.get().status == "proposed"

@@ -32,9 +32,7 @@ def health(request: HttpRequest) -> JsonResponse:
 @csrf_exempt
 @require_POST
 def wake(request: HttpRequest) -> HttpResponse:
-    call = qstash.read_signed(
-        request.headers.get("Upstash-Signature", ""), request.body
-    )
+    call = qstash.read_signed(request)
     if call is None:
         return HttpResponse(status=401)
     wakeup_id, due_at = call

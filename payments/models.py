@@ -6,6 +6,7 @@ from django.db.models import Q
 
 from ledger.models import Entry
 from merchants.models import Merchant
+from provider.models import Scenario
 
 
 class Payment(models.Model):
@@ -20,6 +21,12 @@ class Payment(models.Model):
     )
     amount = models.BigIntegerField()
     reference = models.CharField(max_length=64)
+    scenario = models.CharField(
+        max_length=20,
+        choices=Scenario,
+        default=Scenario.NORMAL,
+        db_default="normal",
+    )
     status = models.CharField(
         max_length=10, choices=Status, default=Status.PENDING, db_default="pending"
     )

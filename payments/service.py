@@ -5,6 +5,7 @@ from django.db import transaction
 from ledger import books
 from ledger.models import Account
 from merchants.models import Merchant
+from provider.models import Scenario
 
 from .models import Payment, PaymentEvent
 
@@ -27,9 +28,14 @@ def _account(code: str, kind: Account.Kind) -> Account:
 
 
 @transaction.atomic
-def create(merchant: Merchant, amount: int, reference: str) -> Payment:
+def create(
+    merchant: Merchant,
+    amount: int,
+    reference: str,
+    scenario: str = Scenario.NORMAL,
+) -> Payment:
     payment = Payment.objects.create(
-        merchant=merchant, amount=amount, reference=reference
+        merchant=merchant, amount=amount, reference=reference, scenario=scenario
     )
     payment.events.create(kind=PaymentEvent.Kind.CREATED)
     return payment

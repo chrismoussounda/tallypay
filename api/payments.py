@@ -13,8 +13,9 @@ from pydantic import ConfigDict, Field, StrictInt
 from idempotency.service import KeyReused, once
 from merchants import keys
 from merchants.models import Merchant
-from payments import service
+from payments import processing, service
 from payments.models import Payment
+from provider.models import Scenario
 
 
 class ApiKeyAuth(HttpBearer):
@@ -33,6 +34,8 @@ class NewPayment(Schema):
     reference: Annotated[
         str, Field(min_length=1, max_length=64, pattern=r"^[^\x00-\x1f\x7f]+$")
     ]
+    # How the simulated provider behaves with this payment.
+    scenario: Scenario = Scenario.NORMAL
 
 
 class EventOut(Schema):
@@ -45,6 +48,7 @@ class PaymentOut(Schema):
     amount: int
     currency: str = "XAF"
     reference: str
+    scenario: str
     status: str
     created_at: datetime
 
@@ -123,7 +127,8 @@ def create_payment(
     merchant = _merchant(request)
 
     def action() -> dict[str, Any]:
-        payment = service.create(merchant, new.amount, new.reference)
+        payment = service.create(merchant, new.amount, new.reference, new.scenario)
+        processing.start(payment)
         return PaymentOut.from_orm(payment).model_dump(mode="json")
 
     body, replayed = once(

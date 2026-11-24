@@ -3,8 +3,8 @@
 A payment ledger and webhook gateway: money is never lost, duplicated or created, even when the
 provider times out, answers twice or disagrees. All money and providers are simulated.
 
-In progress. So far: the project, its CI, a delayed call to prove the hosting, the ledger, and
-the payments API.
+In progress. So far: the project, its CI, a delayed call to prove the hosting, the ledger,
+the payments API and the simulated provider.
 
 ## The ledger
 
@@ -33,7 +33,30 @@ Every route is described at `/v1/docs`.
 - **A payment reaches the books once,** when it succeeds, less a 2% fee. It is then final.
 - **API keys are kept only as hashes,** and a merchant sees only its own payments.
 
-A payment stays pending until the simulated provider exists.
+## The simulated provider
+
+The provider is another company's system, so it can fail in any way. Each payment picks a `scenario`:
+
+| Scenario | What the provider does |
+|---|---|
+| `normal` | Accepts, then calls back |
+| `decline` | Declines, then calls back |
+| `slow` | Takes a minute to decide |
+| `request_lost` | Never gets the first request |
+| `answer_lost` | Charges, but its answer is lost |
+| `duplicate_callback` | Calls back three times |
+| `no_callback` | Never calls back |
+
+- **Charged once.** The provider is asked with the payment's own id, so asking again charges nothing.
+- **Never forgotten.** The next look is written down before the provider is asked, so a crash cannot
+  lose a payment. Looks are further and further apart; after about 7 hours, the payment is
+  left to reconciliation.
+- **Postgres keeps the work to do;** QStash only wakes the app when some is due.
+
+Tests run random mixes of scenarios, crashes and repeated calls. Each time, every payment must have
+been charged once and the books must balance.
+
+Without QStash, as on your own computer, `uv run python manage.py run_tasks --watch` does the work.
 
 ## Run it
 

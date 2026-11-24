@@ -4,13 +4,15 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>TallyPay</title>
-    <link rel="icon" href="data:,">
+    <link rel="icon" href="{% static 'favicon.ico' %}" sizes="32x32">
+    <link rel="icon" href="{% static 'logo.svg' %}" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="{% static 'apple-touch-icon.png' %}">
     <link rel="stylesheet" href="{% static 'app.css' %}">
     <script src="{% static 'vendor/htmx-2.0.11.min.js' %}" defer></script>
   </head>
   <body>
     <main>
-      <h1>TallyPay</h1>
+      <h1><img src="{% static 'logo.svg' %}" alt="" width="40" height="40">TallyPay</h1>
       <p>A payment ledger and webhook gateway, in progress. All money is simulated.</p>
       <section>
         <h2>Last delayed call</h2>

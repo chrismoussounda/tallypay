@@ -141,7 +141,8 @@ def test_every_scenario_ends_with_one_refund_and_the_right_status(
     assert Charge.objects.filter(kind="refund").count() == 1
     lost = scenario == Scenario.REQUEST_LOST
     assert Request.objects.count() == (2 if lost else 1)
-    assert Event.objects.filter(type=f"refund.{status}").count() == 1
+    kinds = Event.objects.order_by("created_at").values_list("type", flat=True)
+    assert list(kinds)[-2:] == ["refund.created", f"refund.{status}"]
     assert totals()["refunds"] == 0
 
 

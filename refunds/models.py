@@ -15,11 +15,17 @@ class Refund(models.Model):
         SUCCEEDED = "succeeded"
         FAILED = "failed"
 
+    class Reason(models.TextChoices):
+        REQUESTED = "requested_by_customer"
+        DUPLICATE = "duplicate"
+        FRAUDULENT = "fraudulent"
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     payment = models.ForeignKey(
         Payment, on_delete=models.PROTECT, related_name="refunds"
     )
     amount = models.BigIntegerField()
+    reason = models.CharField(max_length=24, choices=Reason, default=Reason.REQUESTED)
     scenario = models.CharField(
         max_length=20, choices=Scenario, default=Scenario.NORMAL
     )

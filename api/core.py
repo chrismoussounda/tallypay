@@ -1,3 +1,4 @@
+import re
 from typing import Any
 
 from django.http import HttpRequest, HttpResponse
@@ -5,6 +6,7 @@ from ninja import NinjaAPI, Schema
 from ninja.errors import AuthenticationError, HttpError, ValidationError
 from ninja.security import HttpBearer
 
+from idempotency.service import KeyReused
 from merchants import keys
 from merchants.models import Merchant
 
@@ -29,6 +31,12 @@ def merchant_of(request: HttpRequest) -> Merchant:
     return merchant
 
 
+def idempotency_key_of(value: str) -> str:
+    if not re.fullmatch(r"[!-~]{1,255}", value):
+        raise HttpError(400, "Send an Idempotency-Key of 1 to 255 ASCII characters.")
+    return value
+
+
 def error(request: HttpRequest, status: int, code: str, message: str) -> HttpResponse:
     return api.create_response(
         request, {"code": code, "message": message}, status=status
@@ -44,6 +52,16 @@ def _unauthorized(request: HttpRequest, exc: Any) -> HttpResponse:
 def _invalid(request: HttpRequest, exc: ValidationError) -> HttpResponse:
     problems = [f"{e['loc'][-1]}: {e['msg']}" for e in exc.errors]
     return error(request, 422, "invalid_request", "; ".join(problems))
+
+
+@api.exception_handler(KeyReused)
+def _key_reused(request: HttpRequest, exc: Any) -> HttpResponse:
+    return error(
+        request,
+        409,
+        "idempotency_key_reused",
+        "This Idempotency-Key was used for a different request.",
+    )
 
 
 @api.exception_handler(HttpError)

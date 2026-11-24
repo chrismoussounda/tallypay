@@ -43,7 +43,10 @@ def refunded(payment: Payment) -> int:
 
 @transaction.atomic
 def create(
-    payment_id: uuid.UUID, amount: int, scenario: str = Scenario.NORMAL
+    payment_id: uuid.UUID,
+    amount: int,
+    scenario: str = Scenario.NORMAL,
+    reason: str = Refund.Reason.REQUESTED,
 ) -> Refund:
     """Sets the money aside at once. The fee of the payment is not given back."""
     # Locked, so that refunds at the same time cannot add up to too much.
@@ -59,11 +62,12 @@ def create(
         raise TooMuch
     if amount > -books.balance(merchant.account):
         raise NotEnough
-    refund = Refund(payment=payment, amount=amount, scenario=scenario)
+    refund = Refund(payment=payment, amount=amount, scenario=scenario, reason=reason)
     refund.hold = books.post(
         f"Refund {refund.id}", {merchant.account: amount, _set_aside(): -amount}
     )
     refund.save()
+    _tell(merchant, refund, "created")
     return refund
 
 
@@ -106,15 +110,20 @@ def _settle(refund: Refund, status: Refund.Status, entry: Entry) -> Refund:
     refund.settlement = entry
     refund.settled_at = timezone.now()
     refund.save(update_fields=["status", "settlement", "settled_at"])
+    _tell(refund.payment.merchant, refund, status.value)
+    return refund
+
+
+def _tell(merchant: Merchant, refund: Refund, what: str) -> None:
     webhooks.emit(
-        refund.payment.merchant,
-        f"refund.{status.value}",
+        merchant,
+        f"refund.{what}",
         {
             "id": str(refund.id),
             "payment_id": str(refund.payment_id),
             "amount": refund.amount,
             "currency": "XAF",
-            "status": status.value,
+            "reason": refund.reason,
+            "status": refund.status,
         },
     )
-    return refund

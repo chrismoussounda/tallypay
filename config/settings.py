@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     "ledger",
     "merchants",
     "payments",
+    "provider",
     "tasks",
     "wakeups",
 ]

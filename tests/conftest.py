@@ -7,6 +7,8 @@ from pytest_django import DjangoDbBlocker
 
 TABLES = [
     "tasks_task",
+    "provider_request",
+    "provider_charge",
     "idempotency_idempotencyrecord",
     "payments_paymentevent",
     "payments_payment",

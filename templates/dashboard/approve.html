@@ -1,0 +1,15 @@
+{% load i18n shown %}
+<h2 id="sheet-title">{% translate "Approve this solution?" %}</h2>
+<dl>
+  <div><dt>{% translate "What to do" %}</dt><dd>{{ found.action|word }}</dd></div>
+  <div><dt>{% translate "Difference" %}</dt><dd>{{ found.amount|signed }}</dd></div>
+  {% if merchant %}<div><dt>{% translate "Merchant" %}</dt><dd>{{ merchant.name }}</dd></div>{% endif %}
+  <div><dt>{% translate "Proposed by" %}</dt><dd>{{ proposed_by }}</dd></div>
+  <div><dt>{% translate "Why" %}</dt><dd>{{ found.note }}</dd></div>
+</dl>
+<p>{% translate "This cannot be undone." %}</p>
+<form method="post" action="{{ request.path }}" hx-post="{{ request.path }}" hx-target="#sheet-body" hx-disabled-elt="find button" novalidate>
+  {% csrf_token %}
+  {% include "dashboard/fields.html" %}
+  <button>{% translate "Approve" %}</button>
+</form>

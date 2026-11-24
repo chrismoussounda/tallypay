@@ -1,0 +1,18 @@
+{% for error in form.non_field_errors %}<p class="error" role="alert">{{ error }}</p>{% endfor %}
+{% for field in form.hidden_fields %}{{ field }}{% endfor %}
+{% for field in form.visible_fields %}
+{% if field.name == "scenario" %}<details class="more"{% if field.errors %} open{% endif %}><summary>{{ field.label }}</summary>{% endif %}
+{% if field.widget_type == "radioselect" %}
+<fieldset class="choices"><legend{% if field.name == "scenario" %} class="hidden"{% endif %}>{{ field.label }}</legend>
+  {% for choice in field %}<label>{{ choice.tag }}<span>{{ choice.choice_label }}</span></label>{% endfor %}
+  {% for error in field.errors %}<p class="error">{{ error }}</p>{% endfor %}
+</fieldset>
+{% else %}
+<div class="field">
+  <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+  {{ field }}
+  {% if field.errors %}<p class="error" id="{{ field.id_for_label }}_error">{{ field.errors|join:" " }}</p>{% endif %}
+</div>
+{% endif %}
+{% if field.name == "scenario" %}</details>{% endif %}
+{% endfor %}

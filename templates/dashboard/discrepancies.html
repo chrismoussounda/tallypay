@@ -1,0 +1,15 @@
+{% extends "dashboard/base.html" %}{% load i18n shown %}
+{% block title %}{% translate "Discrepancies" %}{% endblock %}
+{% block main %}
+<div class="heading"><h1>{% translate "Discrepancies" %}</h1></div>
+<p class="dim">{% translate "Where the provider's statement and our books differ. One person proposes a solution, another approves it." %}</p>
+<div class="filters"><div class="segments" role="group" aria-label="{% translate 'Status' %}">
+    <a href="{% querystring status=None after=None %}"{% if not status %} aria-current="true"{% endif %}>{% translate "All" %}</a>
+    {% for s in statuses %}<a href="{% querystring status=s after=None %}"{% if s == status %} aria-current="true"{% endif %}>{{ s|word }}</a>{% endfor %}
+  </div></div>
+<section class="card">
+  {% if discrepancies %}<table class="list"><thead><tr><th scope="col">{% translate "What" %}</th><th scope="col" class="number">{% translate "Difference" %}</th><th scope="col">{% translate "Status" %}</th><th scope="col">{% translate "Found" %}</th></tr></thead><tbody>{% partialdef more inline %}
+  {% for found in discrepancies %}<tr><td class="lead"><a class="row" href="{% url 'discrepancy' found.id %}">{{ found.kind|discrepancy }}</a></td><td class="number">{{ found.amount|signed }}</td><td>{% include "dashboard/badge.html" with status=found.status %}</td><td class="dim">{{ found.created_at|date:"j M Y, H:i" }}</td></tr>{% endfor %}{% if last %}<tr class="next"><td colspan="4"><a class="button second" href="{% querystring after=last.id %}" hx-get="{{ request.path }}{% querystring after=last.id %}" hx-target="closest tr" hx-swap="outerHTML">{% translate "Show more" %}</a></td></tr>{% endif %}{% endpartialdef %}</tbody></table>
+  {% else %}<p class="dim">{% translate "No discrepancy." %}</p>{% endif %}
+</section>
+{% endblock %}

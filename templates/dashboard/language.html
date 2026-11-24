@@ -1,0 +1,5 @@
+{% load i18n %}{% get_current_language as LANGUAGE_CODE %}<form class="language" method="post" action="{% url 'set_language' %}">
+  {% csrf_token %}
+  <input type="hidden" name="next" value="{{ request.get_full_path }}">
+  {% if LANGUAGE_CODE == "fr" %}<button class="plain" name="language" value="en" lang="en">English</button>{% else %}<button class="plain" name="language" value="fr" lang="fr">Français</button>{% endif %}
+</form>

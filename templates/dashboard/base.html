@@ -1,0 +1,39 @@
+{% extends "dashboard/shell.html" %}{% load static i18n shown %}
+{% block body %}
+<a class="skip" href="#main">{% translate "Skip to the page" %}</a>
+<header class="top">
+  <a class="brand" href="{% url 'start' %}"><img src="{% static 'logo.svg' %}" alt="" width="32" height="32">TallyPay</a>
+  <span class="who">{% if user.merchant %}{{ user.merchant.name }}{% else %}{% translate "Operations" %}{% endif %}</span>
+  {% include "dashboard/language.html" %}
+  <details class="menu">
+    <summary><span class="initial" aria-hidden="true">{{ user.name|first }}</span><span class="wide">{{ user.name }}</span><span class="narrow">{% translate "My account" %}</span></summary>
+    <div class="card">
+      <p><strong>{{ user.name }}</strong><br>{{ user.email }}<br><span class="dim">{{ user.role|word }}</span></p>
+      <form method="post" action="{% url 'sign-out' %}">{% csrf_token %}<button class="second">{% translate "Sign out" %}</button></form>
+    </div>
+  </details>
+</header>
+<nav class="tabs" aria-label="{% translate 'Pages' %}">
+  {% if user.is_operator %}
+  {% include "dashboard/tab.html" with name="discrepancies" starts="/app/discrepancies" text=_("Discrepancies") %}
+  {% include "dashboard/tab.html" with name="books" starts="/app/books" text=_("Books") %}
+  {% else %}
+  {% include "dashboard/tab.html" with name="overview" starts="/app/overview" text=_("Overview") %}
+  {% include "dashboard/tab.html" with name="payments" starts="/app/payments" text=_("Payments") %}
+  {% include "dashboard/tab.html" with name="balance" starts="/app/balance" text=_("Balance") %}
+  {% include "dashboard/tab.html" with name="webhooks" starts="/app/webhooks" text=_("Webhooks") %}
+  {% include "dashboard/tab.html" with name="keys" starts="/app/keys" text=_("API keys") %}
+  {% if user.role == "owner" %}{% include "dashboard/tab.html" with name="activity" starts="/app/activity" text=_("Activity") %}{% endif %}
+  {% endif %}
+</nav>
+<p class="simulated">{% translate "All money here is simulated." %}</p>
+<main id="main">
+  {% for message in messages %}<p class="notice" role="status">{{ message }}</p>{% endfor %}
+  {% block main %}{% endblock %}
+</main>
+<dialog id="sheet" aria-labelledby="sheet-title">
+  <form method="dialog"><button class="close" aria-label="{% translate 'Close' %}"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></form>
+  <div id="sheet-body"></div>
+</dialog>
+<p id="toast" role="alert"></p>
+{% endblock %}

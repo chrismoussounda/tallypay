@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.staticfiles",
     "accounts",
+    "dashboard",
     "idempotency",
     "ledger",
     "merchants",

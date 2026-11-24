@@ -1,0 +1,31 @@
+{% extends "dashboard/base.html" %}{% load i18n shown %}
+{% block title %}{% translate "Payments" %}{% endblock %}
+{% block main %}
+<div class="heading"><h1>{% translate "Payments" %}</h1>{% if user.can_develop %}<a class="button" href="{% url 'new-payment' %}" hx-get="{% url 'new-payment' %}" hx-target="#sheet-body">{% translate "New payment" %}</a>{% endif %}</div>
+<div class="filters">
+  <form class="search" role="search" method="get" action="{{ request.path }}">
+    {% if status %}<input type="hidden" name="status" value="{{ status }}">{% endif %}{% if period %}<input type="hidden" name="period" value="{{ period }}">{% endif %}
+    <input type="search" name="q" value="{{ q }}" maxlength="64" placeholder="{% translate 'Reference or payment number' %}" aria-label="{% translate 'Search' %}">
+    <button class="second">{% translate "Search" %}</button>
+  </form>
+  <div class="segments" role="group" aria-label="{% translate 'Status' %}">
+    <a href="{% querystring status=None after=None %}"{% if not status %} aria-current="true"{% endif %}>{% translate "All" %}</a>
+    {% for s in statuses %}<a href="{% querystring status=s after=None %}"{% if s == status %} aria-current="true"{% endif %}>{{ s|word }}</a>{% endfor %}
+  </div>
+  <div class="segments" role="group" aria-label="{% translate 'Period' %}">
+    <a href="{% querystring period=None after=None %}"{% if not period %} aria-current="true"{% endif %}>{% translate "Always" %}</a>
+    <a href="{% querystring period='30' after=None %}"{% if period == "30" %} aria-current="true"{% endif %}>{% translate "30 days" %}</a>
+    <a href="{% querystring period='7' after=None %}"{% if period == "7" %} aria-current="true"{% endif %}>{% translate "7 days" %}</a>
+  </div>
+</div>
+<section class="card">
+  {% if payments %}<table class="list"><thead><tr><th scope="col">{% translate "Reference" %}</th><th scope="col" class="number">{% translate "Amount" %}</th><th scope="col">{% translate "Status" %}</th><th scope="col">{% translate "Created" %}</th></tr></thead><tbody>{% partialdef more inline %}{% for payment in payments %}<tr>
+  <td class="lead"><a class="row" href="{% url 'payment' payment.id %}">{{ payment.reference }}</a></td>
+  <td class="number">{{ payment.amount|francs }}</td>
+  <td>{% include "dashboard/badge.html" with status=payment.status %}</td>
+  <td class="dim"><time datetime="{{ payment.created_at|date:'c' }}">{{ payment.created_at|date:"j M Y, H:i" }}</time></td>
+</tr>{% endfor %}{% if last %}<tr class="next"><td colspan="4"><a class="button second" href="{% querystring after=last.id %}" hx-get="{{ request.path }}{% querystring after=last.id %}" hx-target="closest tr" hx-swap="outerHTML">{% translate "Show more" %}</a></td></tr>{% endif %}{% endpartialdef %}</tbody></table>
+  {% elif filtered %}<p class="dim">{% translate "No payment matches." %} <a href="{{ request.path }}">{% translate "Remove the filters" %}</a></p>
+  {% else %}<p class="dim">{% translate "No payment yet." %}</p>{% endif %}
+</section>
+{% endblock %}

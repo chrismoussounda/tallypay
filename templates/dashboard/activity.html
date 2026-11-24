@@ -1,0 +1,11 @@
+{% extends "dashboard/base.html" %}{% load i18n shown %}
+{% block title %}{% translate "Activity" %}{% endblock %}
+{% block main %}
+<div class="heading"><h1>{% translate "Activity" %}</h1></div>
+<p class="dim">{% translate "The last 100 things your team did here." %}</p>
+<section class="card">
+  {% if actions %}<table class="list"><thead><tr><th scope="col">{% translate "What" %}</th><th scope="col">{% translate "On" %}</th><th scope="col">{% translate "Who" %}</th><th scope="col">{% translate "When" %}</th></tr></thead><tbody>
+  {% for action in actions %}<tr><td class="lead">{{ action.what|word }}</td><td class="break">{{ action.subject }}</td><td>{{ action.user.name }}</td><td class="dim">{{ action.created_at|date:"j N Y, H:i" }}</td></tr>{% endfor %}
+  </tbody></table>{% else %}<p class="dim">{% translate "Nothing yet." %}</p>{% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "dashboard/shell.html" %}{% load static i18n %}
+{% block title %}{% translate "Sign in" %}{% endblock %}
+{% block body %}
+<main class="sign-in">
+  <div class="card">
+    <p class="brand"><img src="{% static 'logo.svg' %}" alt="" width="40" height="40">TallyPay</p>
+    <h1>{% translate "Sign in" %}</h1>
+    <p class="dim">{% translate "A demonstration. All money here is simulated." %}</p>
+    <form method="post" action="{% if next %}?next={{ next|urlencode:'' }}{% endif %}" novalidate>
+      {% csrf_token %}
+      {% include "dashboard/fields.html" %}
+      <button>{% translate "Sign in" %}</button>
+    </form>
+  </div>
+  {% include "dashboard/language.html" %}
+</main>
+{% endblock %}

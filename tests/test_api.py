@@ -50,6 +50,7 @@ def test_a_payment_is_created_and_read_back(shop: Shop) -> None:
     service.succeed(uuid.UUID(body["id"]))
     read = shop.get(f"/{body['id']}").json()
     assert read["status"] == "succeeded"
+    assert read["refunded"] == 0
     assert [e["kind"] for e in read["events"]] == ["created", "succeeded"]
 
 

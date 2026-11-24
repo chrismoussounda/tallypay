@@ -1,0 +1,17 @@
+{% extends "dashboard/base.html" %}{% load i18n shown %}
+{% block title %}{% translate "Books" %}{% endblock %}
+{% block main %}
+<div class="heading"><h1>{% translate "Books" %}</h1></div>
+{% if difference %}<p class="notice bad" role="alert">{% translate "The books do not balance:" %} {{ difference|signed }}</p>
+{% else %}<p class="notice">{% blocktranslate count n=entries %}The books balance: every debit has its credit, over {{ n }} entry.{% plural %}The books balance: every debit has its credit, over {{ n }} entries.{% endblocktranslate %}</p>{% endif %}
+<div class="columns">
+<section class="card">
+  <h2>{% translate "Our accounts" %}</h2>
+  <table class="list"><thead><tr><th scope="col">{% translate "Account" %}</th><th scope="col">{% translate "Kind" %}</th><th scope="col" class="number">{% translate "Balance" %}</th></tr></thead><tbody>{% for account, amount in accounts %}<tr><td class="lead">{{ account.code|word }}</td><td class="dim">{{ account.kind|word }}</td><td class="number">{{ amount|francs }}</td></tr>{% endfor %}</tbody></table>
+</section>
+<section class="card">
+  <h2>{% translate "Owed to merchants" %}</h2>
+  {% if merchants %}<table class="list"><thead><tr><th scope="col">{% translate "Merchant" %}</th><th scope="col" class="number">{% translate "Balance" %}</th></tr></thead><tbody>{% for account, amount in merchants %}<tr><td class="lead">{{ account.name }}</td><td class="number">{{ amount|francs }}</td></tr>{% endfor %}</tbody></table>{% else %}<p class="dim">{% translate "No merchant yet." %}</p>{% endif %}
+</section>
+</div>
+{% endblock %}

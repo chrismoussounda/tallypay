@@ -21,6 +21,7 @@ class ApiKey(models.Model):
         Merchant, on_delete=models.CASCADE, related_name="keys"
     )
     key_hash = models.CharField(max_length=64, unique=True)
+    name = models.CharField(max_length=60, blank=True, db_default="")
     # Enough to recognise a key, too little to use it.
     ending = models.CharField(max_length=4)
     created_at = models.DateTimeField(auto_now_add=True)

@@ -1,0 +1,9 @@
+{% extends "dashboard/shell.html" %}{% load i18n %}
+{% block title %}{% translate "Not found" %}{% endblock %}
+{% block body %}
+<main class="sign-in"><div class="card">
+  <h1>{% translate "Not found" %}</h1>
+  <p>{% translate "There is nothing at this address." %}</p>
+  <p><a class="button" href="{% url 'start' %}">{% translate "To the dashboard" %}</a></p>
+</div></main>
+{% endblock %}

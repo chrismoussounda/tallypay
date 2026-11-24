@@ -1,0 +1,31 @@
+{% extends "dashboard/base.html" %}{% load i18n shown %}
+{% block title %}{{ found.kind|discrepancy }}{% endblock %}
+{% block main %}
+<p><a href="{% url 'discrepancies' %}">← {% translate "Discrepancies" %}</a></p>
+<div class="heading"><div><h1>{{ found.kind|discrepancy }} {% include "dashboard/badge.html" with status=found.status %}</h1></div>
+<div class="actions">{% if found.status == "open" %}<a class="button" href="{% url 'propose' found.id %}" hx-get="{% url 'propose' found.id %}" hx-target="#sheet-body" hx-swap="innerHTML">{% translate "Propose a solution" %}</a>{% elif found.status == "proposed" %}<a class="button second" href="{% url 'reject' found.id %}" hx-get="{% url 'reject' found.id %}" hx-target="#sheet-body" hx-swap="innerHTML">{% translate "Reject" %}</a> {% if not mine %}<a class="button" href="{% url 'approve' found.id %}" hx-get="{% url 'approve' found.id %}" hx-target="#sheet-body" hx-swap="innerHTML">{% translate "Approve" %}</a>{% endif %}{% endif %}</div></div>
+{% if found.status == "proposed" and mine %}<p class="notice">{% translate "You proposed this, so someone else must approve it." %}</p>{% endif %}
+<div class="columns">
+<section class="card">
+  <h2>{% translate "What was found" %}</h2>
+  <dl>
+    <div><dt>{% translate "Difference" %}</dt><dd>{{ found.amount|signed }}</dd></div>
+    {% if original %}<div><dt>{% translate "We expected" %}</dt><dd>{{ original.amount|francs }} · {{ original.status|word }}</dd></div>
+    <div><dt>{% translate "Merchant" %}</dt><dd>{{ merchant.name }}</dd></div>{% endif %}
+    <div><dt>{% translate "Found" %}</dt><dd>{{ found.created_at|date:"j N Y, H:i" }}</dd></div>
+    <div><dt>{% translate "Provider's number" %}</dt><dd class="break">{{ found.reference }}</dd></div>
+    {% if found.booking %}<div><dt>{% translate "For now" %}</dt><dd>{% translate "The difference waits in its own account, so that the books match the statement." %}</dd></div>{% endif %}
+  </dl>
+</section>
+{% if found.note or found.action %}<section class="card">
+  <h2>{% translate "Solution" %}</h2>
+  {% if found.action %}<dl>
+    <div><dt>{% translate "What to do" %}</dt><dd>{{ found.action|word }}</dd></div>
+    {% if found.proposed_by %}<div><dt>{% translate "Proposed by" %}</dt><dd>{{ proposed_by }}</dd></div>{% endif %}
+    {% if found.note %}<div><dt>{% translate "Why" %}</dt><dd>{{ found.note }}</dd></div>{% endif %}
+    {% if found.approved_by %}<div><dt>{% translate "Approved by" %}</dt><dd>{{ approved_by }}</dd></div>{% endif %}
+    {% if found.resolved_at %}<div><dt>{% translate "Resolved" %}</dt><dd>{{ found.resolved_at|date:"j N Y, H:i" }}</dd></div>{% endif %}
+  </dl>{% else %}<p>{% translate "The last proposal was not carried out:" %} {{ found.note }}</p>{% endif %}
+</section>{% endif %}
+</div>
+{% endblock %}

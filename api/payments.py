@@ -1,4 +1,3 @@
-import re
 import uuid
 from datetime import datetime
 from typing import Annotated, Any
@@ -9,12 +8,13 @@ from ninja import Header, Query, Schema, Status
 from ninja.errors import HttpError
 from pydantic import ConfigDict, Field, StrictInt
 
-from idempotency.service import KeyReused, once
+from idempotency.service import once
 from payments import processing, service
 from payments.models import Payment
 from provider.models import Scenario
+from refunds import service as refunds
 
-from .core import ErrorOut, api, error, merchant_of
+from .core import ErrorOut, api, idempotency_key_of, merchant_of
 
 
 class NewPayment(Schema):
@@ -45,22 +45,13 @@ class PaymentOut(Schema):
 
 
 class PaymentDetail(PaymentOut):
+    refunded: int
     events: list[EventOut]
 
 
 class PaymentList(Schema):
     data: list[PaymentOut]
     has_more: bool
-
-
-@api.exception_handler(KeyReused)
-def _key_reused(request: HttpRequest, exc: Any) -> HttpResponse:
-    return error(
-        request,
-        409,
-        "idempotency_key_reused",
-        "This Idempotency-Key was used for a different request.",
-    )
 
 
 @api.post(
@@ -80,8 +71,7 @@ def create_payment(
     idempotency_key: Annotated[str, Header()] = "",
 ) -> Status[dict[str, Any]]:
     """Asks for a payment. A retry with the same Idempotency-Key never pays twice."""
-    if not re.fullmatch(r"[!-~]{1,255}", idempotency_key):
-        raise HttpError(400, "Send an Idempotency-Key of 1 to 255 ASCII characters.")
+    key = idempotency_key_of(idempotency_key)
     merchant = merchant_of(request)
 
     def action() -> dict[str, Any]:
@@ -89,9 +79,7 @@ def create_payment(
         processing.start(payment)
         return PaymentOut.from_orm(payment).model_dump(mode="json")
 
-    body, replayed = once(
-        merchant, idempotency_key, {"create_payment": new.model_dump()}, action
-    )
+    body, replayed = once(merchant, key, {"create_payment": new.model_dump()}, action)
     if replayed:
         response["Idempotent-Replayed"] = "true"
     return Status(201, body)
@@ -109,7 +97,7 @@ def list_payments(
     """Newest first. Pass the last id as `after` for the next page."""
     payments = Payment.objects.filter(merchant=merchant_of(request))
     if after:
-        last = _find(request, after)
+        last = find_payment(request, after)
         payments = payments.filter(
             Q(created_at__lt=last.created_at)
             | Q(created_at=last.created_at, id__lt=last.id)
@@ -123,14 +111,15 @@ def list_payments(
     response={200: PaymentDetail, 401: ErrorOut, 404: ErrorOut},
 )
 def get_payment(request: HttpRequest, payment_id: uuid.UUID) -> dict[str, Any]:
-    payment = _find(request, payment_id)
+    payment = find_payment(request, payment_id)
     return {
         **PaymentOut.from_orm(payment).model_dump(),
+        "refunded": refunds.refunded(payment),
         "events": list(payment.events.order_by("id")),
     }
 
 
-def _find(request: HttpRequest, payment_id: uuid.UUID) -> Payment:
+def find_payment(request: HttpRequest, payment_id: uuid.UUID) -> Payment:
     found = Payment.objects.filter(merchant=merchant_of(request), id=payment_id).first()
     if found is None:
         raise HttpError(404, "No such payment.")

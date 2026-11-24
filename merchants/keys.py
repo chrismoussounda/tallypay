@@ -24,10 +24,12 @@ def create_merchant(name: str) -> Merchant:
     return merchant
 
 
-def issue(merchant: Merchant) -> str:
+def issue(merchant: Merchant, name: str = "") -> str:
     """A new key, shown this once: only its hash is kept."""
     key = f"tp_test_{secrets.token_urlsafe(32)}"
-    ApiKey.objects.create(merchant=merchant, key_hash=_hash(key), ending=key[-4:])
+    ApiKey.objects.create(
+        merchant=merchant, name=name, key_hash=_hash(key), ending=key[-4:]
+    )
     return key
 
 

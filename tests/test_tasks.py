@@ -172,8 +172,8 @@ def test_the_daily_call_runs_what_was_missed(
     for wrong in ("", "Bearer ", "Bearer other", "Bearer s\u00e9cret", "secret"):
         assert call(wrong).status_code == 401
     assert ran == []
-    assert call("Bearer secret").json() == {"done": 1}
-    assert call("Bearer secret").json() == {"done": 0}
+    assert call("Bearer secret").json()["done"] == 1
+    assert call("Bearer secret").json() == {"done": 0, "discrepancies": 0}
 
 
 @pytest.mark.django_db
@@ -181,3 +181,18 @@ def test_it_starts_nothing_once_out_of_time(ran: list[Any]) -> None:
     add()
     assert queue.run_due(seconds=0) == 0
     assert queue.run_due(seconds=60) == 1
+
+
+@pytest.mark.django_db
+def test_webhooks_wait_for_the_money(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    seen: list[str] = []
+    monkeypatch.setitem(queue._handlers, "note", lambda s, a: seen.append("money"))
+    monkeypatch.setitem(
+        queue._handlers, "deliver_webhook", lambda s, a: seen.append("webhook")
+    )
+    add(kind="deliver_webhook")
+    add()
+    assert queue.run_due() == 2
+    assert seen == ["money", "webhook"]

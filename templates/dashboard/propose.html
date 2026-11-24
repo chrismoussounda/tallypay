@@ -1,0 +1,9 @@
+{% load i18n shown %}
+<h2 id="sheet-title">{% partialdef title inline %}{% translate "Propose a solution" %}{% endpartialdef %}</h2>
+<p>{{ found.kind|discrepancy }} · {{ found.amount|signed }}</p>
+<p class="dim">{% translate "Nothing happens until someone else approves it." %}</p>
+<form method="post" action="{{ request.path }}" hx-post="{{ request.path }}" hx-target="#sheet-body" hx-swap="innerHTML" hx-disabled-elt="find button" novalidate>
+  {% csrf_token %}
+  {% include "dashboard/fields.html" %}
+  <button>{% translate "Propose" %}</button>
+</form>

@@ -1,0 +1,9 @@
+{% load i18n shown %}
+<h2 id="sheet-title">{% partialdef title inline %}{% translate "Refund" %}{% endpartialdef %}</h2>
+<dl><div><dt>{% translate "Payment" %}</dt><dd>{{ payment.reference }}</dd></div><div><dt>{% translate "Left to refund" %}</dt><dd>{{ left|francs }}</dd></div></dl>
+<p class="dim">{% translate "The money leaves your balance at once. The fee of the payment is not given back." %}</p>
+<form method="post" action="{{ request.path }}" hx-post="{{ request.path }}" hx-target="#sheet-body" hx-swap="innerHTML" hx-disabled-elt="find button" novalidate>
+  {% csrf_token %}
+  {% include "dashboard/fields.html" %}
+  <button>{% translate "Give a refund" %}</button>
+</form>

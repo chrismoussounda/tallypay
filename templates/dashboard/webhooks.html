@@ -1,0 +1,21 @@
+{% extends "dashboard/base.html" %}{% load i18n shown %}
+{% block title %}{% translate "Webhooks" %}{% endblock %}
+{% block main %}
+<div class="heading"><h1>{% translate "Webhooks" %}</h1>{% if user.can_develop and endpoints|length < most %}<a class="button" href="{% url 'new-endpoint' %}" hx-get="{% url 'new-endpoint' %}" hx-target="#sheet-body" hx-swap="innerHTML">{% translate "New address" %}</a>{% endif %}</div>
+<section class="card">
+  <h2>{% translate "Addresses" %}</h2>
+  {% if endpoints %}<table class="list"><thead><tr><th scope="col">{% translate "Address" %}</th><th scope="col">{% translate "Since" %}</th><th scope="col"><span class="hidden">{% translate "Actions" %}</span></th></tr></thead><tbody>
+  {% for endpoint in endpoints %}<tr><td class="lead break">{{ endpoint.url }}</td><td class="dim">{{ endpoint.created_at|date:"j N Y" }}</td><td class="act">{% if user.can_develop %}<a class="button second small" href="{% url 'endpoint-secret' endpoint.id %}" hx-get="{% url 'endpoint-secret' endpoint.id %}" hx-target="#sheet-body" hx-swap="innerHTML">{% translate "Secret" %}</a> <a class="button second small" href="{% url 'remove-endpoint' endpoint.id %}" hx-get="{% url 'remove-endpoint' endpoint.id %}" hx-target="#sheet-body" hx-swap="innerHTML">{% translate "Remove" %}</a>{% endif %}</td></tr>{% endfor %}
+  </tbody></table>{% else %}<p class="dim">{% translate "Add an address to be told when a payment or a refund changes." %}</p>{% endif %}
+</section>
+<h2>{% translate "Messages" %}</h2>
+<div class="filters"><div class="segments" role="group" aria-label="{% translate 'Status' %}">
+    <a href="{% querystring status=None after=None %}"{% if not status %} aria-current="true"{% endif %}>{% translate "All" %}</a>
+    {% for s in statuses %}<a href="{% querystring status=s after=None %}"{% if s == status %} aria-current="true"{% endif %}>{{ s|word }}</a>{% endfor %}
+  </div></div>
+<section class="card">
+  {% if deliveries %}<table class="list"><thead><tr><th scope="col">{% translate "Event" %}</th><th scope="col">{% translate "Address" %}</th><th scope="col">{% translate "Status" %}</th><th scope="col">{% translate "When" %}</th></tr></thead><tbody>{% partialdef more inline %}
+  {% for delivery in deliveries %}<tr><td class="lead"><a class="row" href="{% url 'delivery' delivery.id %}">{{ delivery.event.type }}</a></td><td class="dim break">{{ delivery.endpoint.url }}</td><td>{% include "dashboard/badge.html" with status=delivery.status %}</td><td class="dim">{{ delivery.created_at|date:"j N Y, H:i" }}</td></tr>{% endfor %}{% if last %}<tr class="next"><td colspan="4"><a class="button second" href="{% querystring after=last.id %}" hx-get="{{ request.path }}{% querystring after=last.id %}" hx-target="closest tr" hx-swap="outerHTML">{% translate "Show more" %}</a></td></tr>{% endif %}{% endpartialdef %}</tbody></table>
+  {% else %}<p class="dim">{% translate "No message." %}</p>{% endif %}
+</section>
+{% endblock %}

@@ -4,7 +4,8 @@ A payment ledger and webhook gateway: money is never lost, duplicated or created
 provider times out, answers twice or disagrees. All money and providers are simulated.
 
 In progress. So far: the project, its CI, a delayed call to prove the hosting, the ledger,
-the payments API, the simulated provider and webhooks.
+the payments API, the simulated provider, webhooks,
+refunds, reconciliation and the dashboard.
 
 ## The ledger
 
@@ -46,6 +47,13 @@ The provider is another company's system, so it can fail in any way. Each paymen
 | `answer_lost` | Charges, but its answer is lost |
 | `duplicate_callback` | Calls back three times |
 | `no_callback` | Never calls back |
+| `silent` | Moves the money, but never says so |
+| `late_success` | Declines, but moves the money anyway |
+| `wrong_amount` | Moves 500 francs too much |
+| `moved_twice` | Moves the money twice |
+| `not_in_statement` | Leaves it out of its statement |
+
+The last five only come out in reconciliation.
 
 - **Charged once.** The provider is asked with the payment's own id, so asking again charges nothing.
 - **Never forgotten.** The next look is written down before the provider is asked, so a crash cannot
@@ -72,7 +80,56 @@ every payment that succeeds or fails.
 - **Public addresses only.** Each send checks the address the name leads to, connects to that very
   address, and follows no redirect.
 
-A daily call from Vercel, with `CRON_SECRET`, runs any task QStash missed.
+A daily call from Vercel, with `CRON_SECRET`, runs any task QStash missed, then reconciles.
+
+## Refunds
+
+`POST /v1/payments/{id}/refunds` gives money back, in full or in parts, never above what was paid.
+The money leaves the merchant's balance at once, and comes back if the refund fails. A refund above
+the balance is refused. The 2% fee is not returned.
+
+## Reconciliation
+
+Every day, the provider's statement is stored, then matched with the books.
+
+- **The statement settles** what the provider never answered.
+- **Money nobody expected** goes to a suspense account, so the books always say what the provider
+  holds. Money taken for a payment that had failed is given back at once.
+- **What is in the books but not in the statement** is called missing after an hour, as statements
+  can be late.
+- **Two people** resolve the rest: one proposes, another approves. Each resolution that moves money is
+  an ordinary entry. Nothing is edited.
+
+```sh
+uv run python manage.py reconcile
+uv run python manage.py discrepancies
+```
+
+## The dashboard
+
+At `/app/`, in English and French, with HTMX. Every form also works without JavaScript.
+
+| Role | Can |
+|---|---|
+| `owner` | Everything of its merchant, and read what its team did |
+| `developer` | Payments, refunds, API keys, webhooks |
+| `support` | Refunds |
+| `viewer` | Read |
+| `operator` | TallyPay's own books and discrepancies, and no merchant's pages |
+
+- **Passwords** of 15 characters or more, as there is no second factor. Tries are limited for each
+  email, each address and both together. A new key, a webhook secret and an approval ask for the password again.
+- **Sessions** end after an hour without a request, and after 12 hours anyway.
+- **A form sent twice** pays or refunds once.
+- **An approval** is for the proposal that was read: if another took its place, it is refused.
+- **Only the site's own scripts and styles** run, by its content security policy.
+
+```sh
+uv run python manage.py create_user ange@example.com "Ange" operator
+uv run python manage.py create_user shop@example.com "Shop" owner --merchant ID
+```
+
+After changing the French in `locale`: `uv run pybabel compile -D django -d locale`.
 
 ## Run it
 

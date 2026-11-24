@@ -7,7 +7,7 @@ from functools import partial
 
 from django.conf import settings
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import Case, Q, When
 from django.utils import timezone
 
 from config import qstash
@@ -80,7 +80,9 @@ def run_due(seconds: float = float("inf")) -> int:
     started = time.monotonic()
     due = Task.objects.filter(done_at=None, due_at__lte=timezone.now())
     done = 0
-    for task_id in list(due.order_by("due_at").values_list("id", flat=True)):
+    # Webhooks last: their addresses may be slow or dead, and money must not wait.
+    last = Case(When(kind="deliver_webhook", then=1), default=0)
+    for task_id in list(due.order_by(last, "due_at").values_list("id", flat=True)):
         if time.monotonic() - started >= seconds:
             break
         try:

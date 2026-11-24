@@ -1,5 +1,5 @@
 from django.templatetags.static import static
-from django.urls import path
+from django.urls import include, path
 from django.views.generic import RedirectView
 
 from api import urls as api
@@ -8,6 +8,8 @@ from wakeups import views
 
 urlpatterns = [
     path("", views.home, name="home"),
+    path("app/", include("dashboard.urls")),
+    path("i18n/", include("django.conf.urls.i18n")),
     path("v1/", api.urls),
     # Asked for by pages without a link to it, such as the API documentation.
     path("favicon.ico", RedirectView.as_view(url=static("favicon.ico"))),

@@ -1,0 +1,11 @@
+{% extends "dashboard/base.html" %}{% load i18n shown %}
+{% block title %}{% translate "API keys" %}{% endblock %}
+{% block main %}
+<div class="heading"><h1>{% translate "API keys" %}</h1>{% if user.can_develop %}<a class="button" href="{% url 'new-key' %}" hx-get="{% url 'new-key' %}" hx-target="#sheet-body" hx-swap="innerHTML">{% translate "New key" %}</a>{% endif %}</div>
+<p class="dim">{% translate "Your own systems create payments with a key." %} <a href="{% url 'v1:openapi-view' %}">{% translate "How the API works" %}</a></p>
+<section class="card">
+  {% if keys %}<table class="list"><thead><tr><th scope="col">{% translate "Name" %}</th><th scope="col">{% translate "Ends with" %}</th><th scope="col">{% translate "Created" %}</th><th scope="col"><span class="hidden">{% translate "Actions" %}</span></th></tr></thead><tbody>
+  {% for key in keys %}<tr><td class="lead">{% firstof key.name _("No name") %}</td><td><code>{{ key }}</code></td><td class="dim">{{ key.created_at|date:"j N Y" }}</td><td class="act">{% if key.revoked_at %}<span class="badge">{% translate "Revoked" %}</span>{% elif user.can_develop %}<a class="button second small" href="{% url 'revoke-key' key.id %}" hx-get="{% url 'revoke-key' key.id %}" hx-target="#sheet-body" hx-swap="innerHTML">{% translate "Revoke" %}</a>{% endif %}</td></tr>{% endfor %}
+  </tbody></table>{% else %}<p class="dim">{% translate "No key yet." %}</p>{% endif %}
+</section>
+{% endblock %}

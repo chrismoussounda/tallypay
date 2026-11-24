@@ -10,6 +10,13 @@ class InvalidEntry(ValueError):
     pass
 
 
+def system(code: str, kind: Account.Kind) -> Account:
+    """One of the app's own accounts, such as what the provider holds for it."""
+    return Account.objects.get_or_create(
+        code=code, defaults={"name": code.title(), "kind": kind}
+    )[0]
+
+
 def post(
     description: str, amounts: Mapping[Account, int], *, reverses: Entry | None = None
 ) -> Entry:

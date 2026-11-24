@@ -1,0 +1,9 @@
+{% load i18n shown %}
+<h2 id="sheet-title">{% partialdef title inline %}{% translate "Remove this address?" %}{% endpartialdef %}</h2>
+<p class="break">{{ endpoint.url }}</p>
+<p>{% translate "It is no longer told of anything. What was being sent to it stops." %}</p>
+<form method="post" action="{{ request.path }}" hx-post="{{ request.path }}" hx-target="#sheet-body" hx-swap="innerHTML" hx-disabled-elt="find button" novalidate>
+  {% csrf_token %}
+  
+  <button class="danger">{% translate "Remove the address" %}</button>
+</form>

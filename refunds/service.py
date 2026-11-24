@@ -49,8 +49,8 @@ def create(
     reason: str = Refund.Reason.REQUESTED,
 ) -> Refund:
     """Sets the money aside at once. The fee of the payment is not given back."""
+    payment = Payment.objects.get(id=payment_id)
     # Locked, so that refunds at the same time cannot add up to too much.
-    payment = Payment.objects.select_for_update().get(id=payment_id)
     merchant = (
         Merchant.objects.select_for_update(of=("self",))
         .select_related("account")

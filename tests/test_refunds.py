@@ -116,6 +116,7 @@ def test_postgres_refuses_to_tamper_with_a_refund(shop: Merchant) -> None:
     for sql in (
         "UPDATE refunds_refund SET amount = 1",
         "UPDATE refunds_refund SET status = 'pending'",
+        "UPDATE refunds_refund SET status = 'failed'",
     ):
         with (
             pytest.raises(IntegrityError),
@@ -139,8 +140,10 @@ def test_every_scenario_ends_with_one_refund_and_the_right_status(
     assert Charge.objects.filter(kind="refund").count() == 1
     lost = scenario == Scenario.REQUEST_LOST
     assert Request.objects.count() == (2 if lost else 1)
-    kinds = Event.objects.order_by("created_at").values_list("type", flat=True)
-    assert list(kinds)[-2:] == ["refund.created", f"refund.{status}"]
+    kinds = Event.objects.filter(type__startswith="refund.").values_list(
+        "type", flat=True
+    )
+    assert sorted(kinds) == sorted(["refund.created", f"refund.{status}"])
     assert totals()["refunds"] == 0
 
 

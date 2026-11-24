@@ -273,6 +273,33 @@ def test_the_faults_of_refunds_are_found_and_written_off(
     go(clock)
 
 
+def test_a_return_not_in_the_statement_is_missing(shop: Merchant, clock: Clock) -> None:
+    pay(shop, Scenario.LATE_SUCCESS)
+    clock.run_until_quiet()
+    matching.run()
+    clock.run_until_quiet()
+    Charge.objects.filter(kind="return").update(scenario="not_in_statement")
+    go(clock)
+    found = Discrepancy.objects.get(kind="missing")
+    assert (found.operation, found.amount) == ("return", 10_000)
+
+
+def test_a_refund_the_provider_never_got_is_stuck_then_failed(
+    shop: Merchant, clock: Clock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    payment = pay(shop)
+    clock.run_until_quiet()
+    refund = refunds.create(payment.id, 4_000)
+    go(clock)
+    found = Discrepancy.objects.get()
+    assert (found.kind, found.operation) == ("stuck", "refund")
+    resolving.propose(found.id, "fail", "Ange", "Never reached them")
+    resolving.approve(found.id, "Merveille")
+    refund.refresh_from_db()
+    assert refund.status == "failed"
+    assert totals()["merchant"] == -9_800
+
+
 def test_two_people_are_needed(shop: Merchant, clock: Clock) -> None:
     pay(shop, Scenario.WRONG_AMOUNT)
     go(clock)
@@ -321,7 +348,9 @@ def test_approvals_at_the_same_time_move_the_money_once(together: Together) -> N
     assert totals()["merchant"] == -10_300
 
 
-def test_runs_at_the_same_time_report_once(together: Together) -> None:
+def test_runs_at_the_same_time_report_once(
+    together: Together, caplog: pytest.LogCaptureFixture
+) -> None:
     shop = keys.create_merchant("Shop")
     for scenario in (Scenario.WRONG_AMOUNT, Scenario.MOVED_TWICE):
         payment = pay(shop, scenario)
@@ -331,6 +360,7 @@ def test_runs_at_the_same_time_report_once(together: Together) -> None:
     outcomes = together(6, matching.run)
     assert not [o for o in outcomes if isinstance(o, Exception)]
     assert Discrepancy.objects.count() == 2
+    assert caplog.records == []
     assert totals()["suspense"] == -10_500
     check_books()
 

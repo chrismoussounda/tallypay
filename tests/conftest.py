@@ -14,6 +14,7 @@ TABLES = [
     "provider_request",
     "provider_charge",
     "idempotency_idempotencyrecord",
+    "refunds_refund",
     "payments_paymentevent",
     "payments_payment",
     "merchants_apikey",

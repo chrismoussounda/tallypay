@@ -22,12 +22,6 @@ def fee_on(amount: int) -> int:
     return amount * FEE_PERCENT // 100
 
 
-def _account(code: str, kind: Account.Kind) -> Account:
-    return Account.objects.get_or_create(
-        code=code, defaults={"name": code.title(), "kind": kind}
-    )[0]
-
-
 @transaction.atomic
 def create(
     merchant: Merchant,
@@ -50,11 +44,11 @@ def succeed(payment_id: uuid.UUID) -> Payment:
         return payment
     fee = fee_on(payment.amount)
     amounts = {
-        _account("provider", Account.Kind.ASSET): payment.amount,
+        books.system("provider", Account.Kind.ASSET): payment.amount,
         payment.merchant.account: fee - payment.amount,
     }
     if fee:
-        amounts[_account("fees", Account.Kind.INCOME)] = -fee
+        amounts[books.system("fees", Account.Kind.INCOME)] = -fee
     payment.entry = books.post(f"Payment {payment.id}", amounts)
     return _settle(payment, Payment.Status.SUCCEEDED)
 

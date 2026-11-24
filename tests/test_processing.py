@@ -13,7 +13,7 @@ from ledger.models import Entry
 from merchants import keys
 from payments import processing, service
 from payments.models import Payment
-from provider import simulator
+from provider import client, simulator
 from provider.models import Charge, Request, Scenario
 from tasks import queue
 from tasks.models import Task
@@ -96,7 +96,7 @@ def test_a_provider_that_never_answers_leaves_the_payment_pending(
     clock.run_until_quiet()
     payment.refresh_from_db()
     assert payment.status == "pending"
-    assert Request.objects.count() == len(processing.RETRIES) + 1
+    assert Request.objects.count() == len(client.RETRIES) + 1
 
 
 class Crash(Exception):

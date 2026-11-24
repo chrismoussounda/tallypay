@@ -13,42 +13,48 @@ from django.utils import timezone
 
 from tasks import queue
 
-from .models import Charge, Request, Scenario
+from .models import Charge, Kind, Request, Scenario
 
 DECIDES_AFTER = timedelta(seconds=3)
 DECIDES_SLOWLY_AFTER = timedelta(minutes=1)
 CALLBACKS = {Scenario.DUPLICATE_CALLBACK: 3, Scenario.NO_CALLBACK: 0}
 
 Callback = Callable[[uuid.UUID, bool], None]
-_callbacks: list[Callback] = []
+_callbacks: dict[str, Callback] = {}
 
 
 class NoAnswer(Exception):
     """Nothing came back, so the charge may or may not exist."""
 
 
-def on_callback(callback: Callback) -> Callback:
-    _callbacks.append(callback)
-    return callback
+def on_callback(kind: str) -> Callable[[Callback], Callback]:
+    def register(callback: Callback) -> Callback:
+        _callbacks[kind] = callback
+        return callback
+
+    return register
 
 
-def charge(reference: uuid.UUID, amount: int, scenario: str) -> None:
-    """Asks for a charge. Asking again with the same reference charges nothing."""
+def charge(
+    reference: uuid.UUID, amount: int, scenario: str, kind: str = Kind.CHARGE
+) -> None:
+    """Asks to move money. Asking again with the same reference moves nothing."""
     first = not Request.objects.filter(reference=reference).exists()
     Request.objects.create(reference=reference)
     if first and scenario == Scenario.REQUEST_LOST:
         raise NoAnswer
     with transaction.atomic():
-        _record(reference, amount, scenario)
+        _record(reference, amount, scenario, kind)
     if first and scenario == Scenario.ANSWER_LOST:
         raise NoAnswer
 
 
-def _record(reference: uuid.UUID, amount: int, scenario: str) -> None:
+def _record(reference: uuid.UUID, amount: int, scenario: str, kind: str) -> None:
     delay = DECIDES_SLOWLY_AFTER if scenario == Scenario.SLOW else DECIDES_AFTER
     _, created = Charge.objects.get_or_create(
         reference=reference,
         defaults={
+            "kind": kind,
             "amount": amount,
             "scenario": scenario,
             "decided_at": timezone.now() + delay,
@@ -78,5 +84,5 @@ def _call_back(reference: uuid.UUID, attempt: int) -> None:
         # QStash may be a moment early.
         queue.add("provider_callback", reference, timedelta(seconds=2), attempt + 1)
         return
-    for callback in _callbacks:
-        callback(reference, paid)
+    kind = Charge.objects.get(reference=reference).kind
+    _callbacks[kind](reference, paid)

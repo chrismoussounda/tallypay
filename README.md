@@ -3,7 +3,8 @@
 A payment ledger and webhook gateway: money is never lost, duplicated or created, even when the
 provider times out, answers twice or disagrees. All money and providers are simulated.
 
-In progress. So far: the project, its CI, a delayed call to prove the hosting, and the ledger.
+In progress. So far: the project, its CI, a delayed call to prove the hosting, the ledger, and
+the payments API.
 
 ## The ledger
 
@@ -15,6 +16,24 @@ enforces the rules (`ledger/migrations/0002_rules.py`), so a bug in the applicat
 - a mistake is undone by one exact opposite entry
 
 The role that owns the tables could still turn these rules off; the application never does.
+
+## The payments API
+
+```sh
+uv run python manage.py create_merchant "My shop"   # shows the API key, once
+
+curl localhost:8000/v1/payments -H "Authorization: Bearer $KEY" -H "Idempotency-Key: order-1"   -H "Content-Type: application/json" -d '{"amount": 10000, "reference": "order-1"}'
+```
+
+Every route is described at `/v1/docs`.
+
+- **Retries never pay twice.** The `Idempotency-Key`, the payment and the answer are committed
+  together. A simultaneous request with the same key waits for the first, then gets its answer; if
+  the first crashed, it takes over. The same key for a different request is refused.
+- **A payment reaches the books once,** when it succeeds, less a 2% fee. It is then final.
+- **API keys are kept only as hashes,** and a merchant sees only its own payments.
+
+A payment stays pending until the simulated provider exists.
 
 ## Run it
 

@@ -3,7 +3,18 @@
 A payment ledger and webhook gateway: money is never lost, duplicated or created, even when the
 provider times out, answers twice or disagrees. All money and providers are simulated.
 
-In progress. So far: the project, its CI, and a delayed call to prove the hosting.
+In progress. So far: the project, its CI, a delayed call to prove the hosting, and the ledger.
+
+## The ledger
+
+Every movement of money is an entry whose lines add up to zero, in whole XAF francs. Postgres itself
+enforces the rules (`ledger/migrations/0002_rules.py`), so a bug in the application cannot break them:
+
+- an entry that does not balance cannot be committed
+- entries and lines cannot be changed, deleted or truncated, and nothing joins an entry once committed
+- a mistake is undone by one exact opposite entry
+
+The role that owns the tables could still turn these rules off; the application never does.
 
 ## Run it
 

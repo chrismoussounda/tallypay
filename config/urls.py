@@ -2,7 +2,7 @@ from django.templatetags.static import static
 from django.urls import path
 from django.views.generic import RedirectView
 
-from api.payments import api
+from api import urls as api
 from tasks import views as task_views
 from wakeups import views
 

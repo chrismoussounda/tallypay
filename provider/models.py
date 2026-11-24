@@ -13,16 +13,30 @@ class Scenario(models.TextChoices):
     ANSWER_LOST = "answer_lost", "Gets the request, but its answer is lost"
     DUPLICATE_CALLBACK = "duplicate_callback", "Calls back three times"
     NO_CALLBACK = "no_callback", "Never calls back"
+    # Only its statement tells the truth about these.
+    SILENT = "silent", "Moves the money, but never says so"
+    LATE_SUCCESS = "late_success", "Declines, but moves the money anyway"
+    WRONG_AMOUNT = "wrong_amount", "Moves 500 francs too much"
+    MOVED_TWICE = "moved_twice", "Moves the money twice"
+    NOT_IN_STATEMENT = "not_in_statement", "Leaves it out of its statement"
 
     @classmethod
     def recoverable(cls) -> set[str]:
         """Those that end well without reconciliation."""
-        return set(cls.values)
+        return set(cls.values) - {
+            cls.SILENT,
+            cls.LATE_SUCCESS,
+            cls.WRONG_AMOUNT,
+            cls.MOVED_TWICE,
+            cls.NOT_IN_STATEMENT,
+        }
 
 
 class Kind(models.TextChoices):
     CHARGE = "charge"
     REFUND = "refund"
+    # Money that should not have been taken, given back.
+    RETURN = "return"
 
 
 class Request(models.Model):

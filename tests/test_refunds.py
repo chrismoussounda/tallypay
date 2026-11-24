@@ -125,9 +125,7 @@ def test_postgres_refuses_to_tamper_with_a_refund(shop: Merchant) -> None:
             cursor.execute(sql)
 
 
-@pytest.mark.parametrize(
-    "scenario", [s for s in Scenario.values if s in Scenario.recoverable()]
-)
+@pytest.mark.parametrize("scenario", sorted(Scenario.recoverable()))
 def test_every_scenario_ends_with_one_refund_and_the_right_status(
     shop: Merchant, clock: Clock, scenario: str
 ) -> None:

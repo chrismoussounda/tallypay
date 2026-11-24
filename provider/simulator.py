@@ -6,7 +6,8 @@ charge, asks how a charge went, and receives its callbacks.
 
 import uuid
 from collections.abc import Callable
-from datetime import timedelta
+from dataclasses import dataclass
+from datetime import datetime, timedelta
 
 from django.db import transaction
 from django.utils import timezone
@@ -17,7 +18,12 @@ from .models import Charge, Kind, Request, Scenario
 
 DECIDES_AFTER = timedelta(seconds=3)
 DECIDES_SLOWLY_AFTER = timedelta(minutes=1)
-CALLBACKS = {Scenario.DUPLICATE_CALLBACK: 3, Scenario.NO_CALLBACK: 0}
+CALLBACKS = {
+    Scenario.DUPLICATE_CALLBACK: 3,
+    Scenario.NO_CALLBACK: 0,
+    Scenario.SILENT: 0,
+}
+TOO_MUCH = 500
 
 Callback = Callable[[uuid.UUID, bool], None]
 _callbacks: dict[str, Callback] = {}
@@ -55,11 +61,19 @@ def _record(reference: uuid.UUID, amount: int, scenario: str, kind: str) -> None
         reference=reference,
         defaults={
             "kind": kind,
-            "amount": amount,
+            "amount": amount + (TOO_MUCH if scenario == Scenario.WRONG_AMOUNT else 0),
             "scenario": scenario,
             "decided_at": timezone.now() + delay,
         },
     )
+    if created and scenario == Scenario.MOVED_TWICE:
+        Charge.objects.create(
+            reference=uuid.uuid4(),
+            kind=kind,
+            amount=amount,
+            scenario=Scenario.NORMAL,
+            decided_at=timezone.now() + delay,
+        )
     if created:
         for _ in range(CALLBACKS.get(Scenario(scenario), 1)):
             queue.add("provider_callback", reference, delay)
@@ -70,11 +84,32 @@ def outcome(reference: uuid.UUID) -> bool | None:
     charge = Charge.objects.filter(reference=reference).first()
     if charge is None or charge.decided_at > timezone.now():
         return None
-    return charge.scenario != Scenario.DECLINE
+    if charge.scenario == Scenario.SILENT:
+        return None
+    return charge.scenario not in (Scenario.DECLINE, Scenario.LATE_SUCCESS)
 
 
 def knows(reference: uuid.UUID) -> bool:
     return Charge.objects.filter(reference=reference).exists()
+
+
+@dataclass(frozen=True)
+class Moved:
+    reference: uuid.UUID
+    kind: str
+    amount: int
+    at: datetime
+
+
+def statement() -> list[Moved]:
+    """All the money that moved so far."""
+    moved = Charge.objects.filter(decided_at__lte=timezone.now()).exclude(
+        scenario__in=[Scenario.DECLINE, Scenario.NOT_IN_STATEMENT]
+    )
+    return [
+        Moved(c.reference, c.kind, c.amount, c.decided_at)
+        for c in moved.order_by("decided_at", "id")
+    ]
 
 
 @queue.handles("provider_callback")

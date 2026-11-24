@@ -35,7 +35,7 @@ def pay(scenario: str) -> Payment:
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("scenario", Scenario.values)
+@pytest.mark.parametrize("scenario", sorted(Scenario.recoverable()))
 def test_every_scenario_ends_with_one_charge_and_the_right_status(
     clock: Clock, scenario: str
 ) -> None:
@@ -152,7 +152,9 @@ def crashing(real: Callable[..., Any], crashes: Iterator[str]) -> Callable[..., 
 
 class AnySession(TestCase):
     @given(
-        scenarios=st.lists(st.sampled_from(Scenario.values), min_size=1, max_size=5),
+        scenarios=st.lists(
+            st.sampled_from(sorted(Scenario.recoverable())), min_size=1, max_size=5
+        ),
         crashes=st.lists(st.sampled_from(["no", "before", "after"]), max_size=15),
         strays=st.lists(st.integers(min_value=0, max_value=4), max_size=5),
     )

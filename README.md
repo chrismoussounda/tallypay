@@ -5,7 +5,7 @@ provider times out, answers twice or disagrees. All money and providers are simu
 
 In progress. So far: the project, its CI, a delayed call to prove the hosting, the ledger,
 the payments API, the simulated provider, webhooks,
-refunds and reconciliation.
+refunds, reconciliation and the dashboard.
 
 ## The ledger
 
@@ -104,6 +104,32 @@ Every day, the provider's statement is stored, then matched with the books.
 uv run python manage.py reconcile
 uv run python manage.py discrepancies
 ```
+
+## The dashboard
+
+At `/app/`, in English and French, with HTMX. Every form also works without JavaScript.
+
+| Role | Can |
+|---|---|
+| `owner` | Everything of its merchant, and read what its team did |
+| `developer` | Payments, refunds, API keys, webhooks |
+| `support` | Refunds |
+| `viewer` | Read |
+| `operator` | TallyPay's own books and discrepancies, and no merchant's pages |
+
+- **Passwords** of 15 characters or more, as there is no second factor. Tries are limited for each
+  email, each address and both together. A new key, a webhook secret and an approval ask for the password again.
+- **Sessions** end after an hour without a request, and after 12 hours anyway.
+- **A form sent twice** pays or refunds once.
+- **An approval** is for the proposal that was read: if another took its place, it is refused.
+- **Only the site's own scripts and styles** run, by its content security policy.
+
+```sh
+uv run python manage.py create_user ange@example.com "Ange" operator
+uv run python manage.py create_user shop@example.com "Shop" owner --merchant ID
+```
+
+After changing the French in `locale`: `uv run pybabel compile -D django -d locale`.
 
 ## Run it
 

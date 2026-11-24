@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     "provider",
     "tasks",
     "wakeups",
+    "webhooks",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

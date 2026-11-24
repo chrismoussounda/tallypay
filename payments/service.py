@@ -6,6 +6,7 @@ from ledger import books
 from ledger.models import Account
 from merchants.models import Merchant
 from provider.models import Scenario
+from webhooks import service as webhooks
 
 from .models import Payment, PaymentEvent
 
@@ -79,4 +80,15 @@ def _settle(payment: Payment, status: Payment.Status) -> Payment:
     payment.status = status
     payment.save(update_fields=["status", "entry"])
     payment.events.create(kind=PaymentEvent.Kind(status.value))
+    webhooks.emit(
+        payment.merchant,
+        f"payment.{status.value}",
+        {
+            "id": str(payment.id),
+            "amount": payment.amount,
+            "currency": "XAF",
+            "reference": payment.reference,
+            "status": status.value,
+        },
+    )
     return payment

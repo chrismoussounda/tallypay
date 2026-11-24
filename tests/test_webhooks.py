@@ -164,6 +164,15 @@ def test_a_crash_after_sending_does_not_send_or_plan_again(
     assert Task.objects.count() == 2
 
 
+def test_the_same_try_recorded_twice_counts_once(shop: Merchant) -> None:
+    service.add_endpoint(shop, "https://shop.example/")
+    delivery = emit(shop)
+    for _ in range(2):
+        service._record(delivery.id, 1, 500, "")
+    assert Try.objects.count() == 1
+    assert Task.objects.filter(attempt=2).count() == 1
+
+
 def test_a_removed_endpoint_gets_nothing_more(
     shop: Merchant, server: Receiver, clock: Clock
 ) -> None:

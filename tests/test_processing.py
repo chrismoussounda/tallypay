@@ -70,6 +70,28 @@ def test_every_scenario_ends_with_one_charge_and_the_right_status(
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize(
+    ("scenario", "settled"), [(Scenario.NORMAL, True), (Scenario.NO_CALLBACK, False)]
+)
+def test_the_callback_settles_a_payment_before_the_next_look(
+    clock: Clock, scenario: str, settled: bool
+) -> None:
+    payment = pay(scenario)
+    for _ in range(2):
+        queue.run_due()
+        clock.now += timedelta(seconds=4)
+    payment.refresh_from_db()
+    assert (payment.status == "succeeded") is settled
+
+
+@pytest.mark.django_db
+def test_a_settled_payment_is_not_looked_at_again(clock: Clock) -> None:
+    pay(Scenario.NORMAL)
+    clock.run_until_quiet()
+    assert Task.objects.filter(kind="process_payment").count() == 2
+
+
+@pytest.mark.django_db
 def test_a_lost_answer_is_not_asked_for_again_once_the_provider_knows(
     clock: Clock,
 ) -> None:

@@ -1,7 +1,9 @@
+import re
 import uuid
 from typing import Any
 
 import pytest
+from django.contrib.staticfiles import finders
 from django.test import Client
 from django.utils import timezone
 
@@ -168,3 +170,13 @@ def test_the_same_request_many_times_at_once_pays_once(together: Together) -> No
     assert len(set(map(str, outcomes))) == 1
     assert outcomes[0][0] == 201  # type: ignore[index]
     assert Payment.objects.count() == 1
+
+
+def test_the_documentation_opens_with_its_own_files(client: Client) -> None:
+    page = client.get("/v1/docs")
+    assert page.status_code == 200
+    files = re.findall(r'(?:src|href)="([^"]+)"', page.content.decode())
+    assert files
+    for file in files:
+        assert finders.find(file.removeprefix("/static/")), file
+    assert "https:" not in page["Content-Security-Policy"]

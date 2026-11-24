@@ -9,6 +9,7 @@ from merchants import keys
 from merchants.models import ApiKey
 from payments import service
 from payments.models import Payment
+from tasks.models import Task
 
 from .conftest import Together
 
@@ -52,6 +53,14 @@ def test_a_payment_is_created_and_read_back(shop: Shop) -> None:
     assert [e["kind"] for e in read["events"]] == ["created", "succeeded"]
 
 
+def test_a_payment_is_handed_to_the_provider_once(shop: Shop) -> None:
+    bodies = [shop.pay(NEW | {"scenario": "slow"}).json() for _ in range(2)]
+    assert bodies[0]["scenario"] == "slow"
+    task = Task.objects.get()
+    assert task.kind == "process_payment"
+    assert str(task.subject) == bodies[0]["id"]
+
+
 def test_a_retry_gets_the_same_answer_and_says_so(shop: Shop) -> None:
     first, again = shop.pay(), shop.pay()
     assert again.status_code == 201
@@ -91,6 +100,7 @@ def test_a_key_is_needed(shop: Shop, key: str | None) -> None:
         NEW | {"reference": "a\x00b"},
         NEW | {"reference": "\ud800"},
         NEW | {"merchant": "someone"},
+        NEW | {"scenario": "unknown"},
     ],
 )
 def test_a_request_that_makes_no_sense_is_refused(shop: Shop, body: Any) -> None:

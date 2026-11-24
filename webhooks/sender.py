@@ -2,11 +2,18 @@ import http.client
 import ipaddress
 import socket
 import ssl
+import threading
+import time
+from collections.abc import Iterator
+from concurrent.futures import ThreadPoolExecutor
+from contextlib import contextmanager, suppress
 from urllib.parse import SplitResult, urlsplit
 
 from django.conf import settings
 
+# For each wait, then for all of them together.
 TIMEOUT = 10
+LIMIT = 15
 
 
 class Refused(Exception):
@@ -48,30 +55,68 @@ def _resolve(host: str, port: int) -> str:
     return str(addresses[0])
 
 
+def _look_up(host: str, port: int) -> str:
+    """Has no time limit of its own, so it is left behind when it takes too long."""
+    pool = ThreadPoolExecutor(1)
+    try:
+        return pool.submit(_resolve, host, port).result(TIMEOUT)
+    finally:
+        pool.shutdown(wait=False)
+
+
+@contextmanager
+def _cut_after(sock: socket.socket, seconds: float) -> Iterator[threading.Event]:
+    """Cuts the connection when the time is up, even while bytes still arrive."""
+    late = threading.Event()
+
+    def cut() -> None:
+        late.set()
+        with suppress(OSError):
+            # Not the TLS one, which is not safe to call from another thread.
+            socket.socket.shutdown(sock, socket.SHUT_RDWR)
+
+    timer = threading.Timer(seconds, cut)
+    timer.start()
+    try:
+        yield late
+    finally:
+        timer.cancel()
+
+
 def send(url: str, headers: dict[str, str], body: bytes) -> int:
     """The status answered. Redirects are not followed."""
     parts = check(url)
     host = parts.hostname or ""
     secure = parts.scheme == "https"
     port = parts.port or (443 if secure else 80)
-    # Connects to the address that was checked: looked up again, it could differ.
-    ip = _resolve(host, port)
+    path = (parts.path or "/") + (f"?{parts.query}" if parts.query else "")
     connection = http.client.HTTPConnection(host, port, timeout=TIMEOUT)
+    started = time.monotonic()
     try:
-        sock = socket.create_connection((ip, port), TIMEOUT)
-        if secure:
-            context = ssl.create_default_context()
-            try:
-                sock = context.wrap_socket(sock, server_hostname=host)
-            except BaseException:
-                sock.close()
-                raise
+        # Connects to the address that was checked: looked up again, it could differ.
+        sock = socket.create_connection((_look_up(host, port), port), TIMEOUT)
         connection.sock = sock
-        path = (parts.path or "/") + (f"?{parts.query}" if parts.query else "")
-        connection.request(
-            "POST", path, body, {"Content-Type": "application/json", **headers}
-        )
-        return connection.getresponse().status
+        if secure:
+            connection.sock = sock = ssl.create_default_context().wrap_socket(
+                sock, server_hostname=host, do_handshake_on_connect=False
+            )
+        left = max(LIMIT - (time.monotonic() - started), 0)
+        with _cut_after(sock, left) as late:
+            try:
+                if isinstance(sock, ssl.SSLSocket):
+                    sock.do_handshake()
+                connection.request(
+                    "POST", path, body, {"Content-Type": "application/json", **headers}
+                )
+                status = connection.getresponse().status
+            except (OSError, http.client.HTTPException) as error:
+                if late.is_set():
+                    raise TimeoutError from error
+                raise
+            # An answer cut short can look complete.
+            if late.is_set():
+                raise TimeoutError
+            return status
     except TimeoutError as error:
         raise Unreachable("No answer in time.") from error
     except ssl.SSLError as error:

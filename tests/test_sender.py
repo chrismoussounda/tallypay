@@ -2,6 +2,8 @@ import base64
 import hashlib
 import hmac
 import socket
+import threading
+import time
 import uuid
 from typing import Any
 
@@ -140,3 +142,50 @@ def test_a_server_that_never_answers_is_given_up_on(
         url = f"http://127.0.0.1:{silent.getsockname()[1]}/"
         with pytest.raises(sender.Unreachable, match="in time"):
             sender.send(url, {}, b"{}")
+
+
+@pytest.mark.parametrize(
+    "start", [b"", b"HTTP/1.1 200 OK\r\n"], ids=["status", "headers"]
+)
+def test_a_server_that_drips_its_answer_is_cut_off(
+    settings: Settings, monkeypatch: pytest.MonkeyPatch, start: bytes
+) -> None:
+    settings.WEBHOOKS_ALLOW_LOCAL = True
+    monkeypatch.setattr(sender, "LIMIT", 0.5)
+    stop = threading.Event()
+
+    def drip(server: socket.socket) -> None:
+        client, _ = server.accept()
+        with client:
+            client.sendall(start)
+            while not stop.wait(0.05):
+                try:
+                    client.sendall(b"x")
+                except OSError:
+                    return
+
+    with socket.create_server(("127.0.0.1", 0)) as server:
+        thread = threading.Thread(target=drip, args=[server])
+        thread.start()
+        began = time.monotonic()
+        try:
+            with pytest.raises(sender.Unreachable, match="in time"):
+                sender.send(f"http://127.0.0.1:{server.getsockname()[1]}/", {}, b"{}")
+            assert time.monotonic() - began < 3
+        finally:
+            stop.set()
+            thread.join()
+
+
+def test_a_name_that_takes_too_long_to_look_up_is_given_up_on(
+    settings: Settings, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    settings.WEBHOOKS_ALLOW_LOCAL = False
+    done = threading.Event()
+    monkeypatch.setattr(sender, "TIMEOUT", 0.2)
+    monkeypatch.setattr(sender, "_resolve", lambda *a: done.wait(5))
+    began = time.monotonic()
+    with pytest.raises(sender.Unreachable, match="in time"):
+        sender.send("https://shop.example/", {}, b"{}")
+    assert time.monotonic() - began < 2
+    done.set()

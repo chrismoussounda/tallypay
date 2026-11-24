@@ -49,7 +49,7 @@ The provider is another company's system, so it can fail in any way. Each paymen
 
 - **Charged once.** The provider is asked with the payment's own id, so asking again charges nothing.
 - **Never forgotten.** The next look is written down before the provider is asked, so a crash cannot
-  lose a payment. Looks are further and further apart; after about 7 hours and a half, the payment is
+  lose a payment. Looks are further and further apart; after about 7 hours, the payment is
   left to reconciliation.
 - **Postgres keeps the work to do;** QStash only wakes the app when some is due.
 

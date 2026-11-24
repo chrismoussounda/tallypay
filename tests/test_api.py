@@ -3,6 +3,7 @@ from typing import Any
 
 import pytest
 from django.test import Client
+from django.utils import timezone
 
 from merchants import keys
 from merchants.models import ApiKey
@@ -130,6 +131,19 @@ def test_the_list_is_read_page_by_page_newest_first(shop: Shop) -> None:
         after = f"&after={seen[-1]}"
     assert seen == ids[::-1]
     assert shop.get("?limit=101").status_code == 422
+
+
+def test_payments_of_the_same_moment_are_all_listed(
+    shop: Shop, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    moment = timezone.now()
+    with monkeypatch.context() as patch:
+        patch.setattr(timezone, "now", lambda: moment)
+        ids = {shop.pay(key=f"k{i}").json()["id"] for i in range(3)}
+    first = shop.get("?limit=2").json()["data"]
+    rest = shop.get(f"?limit=2&after={first[-1]['id']}").json()["data"]
+    assert len(first) == 2
+    assert {p["id"] for p in first + rest} == ids
 
 
 def test_the_same_request_many_times_at_once_pays_once(together: Together) -> None:

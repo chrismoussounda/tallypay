@@ -20,7 +20,13 @@ DATABASES = {
     )
 }
 
-INSTALLED_APPS = ["django.contrib.staticfiles", "ledger", "merchants", "wakeups"]
+INSTALLED_APPS = [
+    "django.contrib.staticfiles",
+    "ledger",
+    "merchants",
+    "payments",
+    "wakeups",
+]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.middleware.common.CommonMiddleware",

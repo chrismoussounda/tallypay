@@ -5,7 +5,7 @@
 {% partialdef live inline %}
 <div id="live"{% if polled %} hx-get="{{ request.path }}" hx-trigger="every 3s" hx-target="this" hx-swap="outerHTML"{% endif %}>
 <div class="heading"><div><h1>{{ payment.amount|francs }} {% include "dashboard/badge.html" with status=payment.status %}</h1><p class="dim break">{{ payment.reference }}</p></div>
-{% if left and user.can_refund %}<a class="button" href="{% url 'new-refund' payment.id %}" hx-get="{% url 'new-refund' payment.id %}" hx-target="#sheet-body">{% translate "Refund" %}</a>{% endif %}</div>
+{% if left and user.can_refund %}<a class="button" href="{% url 'new-refund' payment.id %}" hx-get="{% url 'new-refund' payment.id %}" hx-target="#sheet-body" hx-swap="innerHTML">{% translate "Give a refund" %}</a>{% endif %}</div>
 <div class="columns">
 <section class="card">
   <h2>{% translate "Details" %}</h2>
@@ -14,20 +14,20 @@
     <div><dt>{% translate "Received, less the fee" %}</dt><dd>{{ net|francs }}</dd></div>
     <div><dt>{% translate "Refunded" %}</dt><dd>{{ refunded|francs }}</dd></div>
     <div><dt>{% translate "Left to refund" %}</dt><dd>{{ left|francs }}</dd></div>{% endif %}
-    <div><dt>{% translate "Created" %}</dt><dd>{{ payment.created_at|date:"j M Y, H:i:s" }}</dd></div>
+    <div><dt>{% translate "Created" %}</dt><dd>{{ payment.created_at|date:"j N Y, H:i:s" }}</dd></div>
     <div><dt>{% translate "What the simulated provider does" %}</dt><dd>{{ payment.scenario|word }}</dd></div>
     <div><dt>{% translate "Payment number" %}</dt><dd class="break">{{ payment.id }}</dd></div>
   </dl>
 </section>
 <section class="card">
   <h2>{% translate "What happened" %}</h2>
-  <ol class="timeline">{% for step in timeline %}<li class="{{ step.kind }}"><span>{% if step.refund %}{% translate "Refund" %} · {{ step.refund.amount|francs }} · {% else %}{% translate "Payment" %} · {% endif %}{{ step.kind|word }}</span><time class="dim" datetime="{{ step.at|date:'c' }}">{{ step.at|date:"j M Y, H:i:s" }}</time></li>{% endfor %}</ol>
+  <ol class="timeline">{% for step in timeline %}<li class="{{ step.kind }}"><span>{% if step.refund %}{% translate "Refund" %} · {{ step.refund.amount|francs }} · {% else %}{% translate "Payment" %} · {% endif %}{{ step.kind|word }}</span><time class="dim" datetime="{{ step.at|date:'c' }}">{{ step.at|date:"j N Y, H:i:s" }}</time></li>{% endfor %}</ol>
 </section>
 </div>
 {% if refunds %}<section class="card">
   <h2>{% translate "Refunds" %}</h2>
   <table class="list"><thead><tr><th scope="col">{% translate "Reason" %}</th><th scope="col" class="number">{% translate "Amount" %}</th><th scope="col">{% translate "Status" %}</th><th scope="col">{% translate "Created" %}</th></tr></thead><tbody>
-  {% for refund in refunds %}<tr><td class="lead">{{ refund.reason|word }}</td><td class="number">{{ refund.amount|francs }}</td><td>{% include "dashboard/badge.html" with status=refund.status %}</td><td class="dim">{{ refund.created_at|date:"j M Y, H:i" }}</td></tr>{% endfor %}
+  {% for refund in refunds %}<tr><td class="lead">{{ refund.reason|word }}</td><td class="number">{{ refund.amount|francs }}</td><td>{% include "dashboard/badge.html" with status=refund.status %}</td><td class="dim">{{ refund.created_at|date:"j N Y, H:i" }}</td></tr>{% endfor %}
   </tbody></table>
 </section>{% endif %}
 <section class="card">

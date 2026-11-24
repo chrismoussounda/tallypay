@@ -17,7 +17,6 @@
   --warn-ink: light-dark(#7a4b00, #f5cb74);
   --danger: light-dark(#b91c1c, #ff9f9f);
 }
-html { scrollbar-gutter: stable; }
 body { margin: 0; font: 16px/1.5 system-ui, sans-serif; background: var(--page); color: var(--ink); }
 a { color: var(--accent); }
 h1, h2 { line-height: 1.25; margin: 0; }
@@ -56,6 +55,7 @@ button:disabled { opacity: .5; cursor: progress; }
 .initial { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--accent); color: var(--on-accent); font-weight: 700; text-transform: uppercase; }
 .menu .card { position: absolute; right: 0; z-index: 5; width: 260px; margin-top: 8px; box-shadow: 0 8px 24px rgb(0 0 0 / .2); overflow-wrap: anywhere; }
 .menu .card button { width: 100%; }
+.short { display: none; }
 .narrow { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 .tabs { display: flex; gap: 4px; overflow-x: auto; padding: 0 8px; background: var(--card); border-bottom: 1px solid var(--line); }
 .tabs a { flex: none; display: flex; align-items: center; min-height: 48px; padding: 0 14px; color: var(--dim); text-decoration: none; font-weight: 600; border-bottom: 3px solid transparent; }
@@ -141,7 +141,7 @@ dialog {
 }
 dialog::backdrop { background: rgb(0 0 0 / .5); }
 dialog[open] { animation: from-right .2s ease-out; }
-dialog > form { display: block; float: right; margin: -8px; }
+dialog > form { display: block; position: absolute; top: 16px; right: 16px; }
 .close { padding: 0; width: 44px; background: none; color: inherit; }
 #sheet-body, .alone { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); }
 #sheet-body > *, .alone > * { margin: 0; }
@@ -178,8 +178,10 @@ figcaption { display: flex; justify-content: space-between; font-size: 14px; }
 @media (max-width: 767px) {
   .wide { display: none; }
   .tiles { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .short { display: inline; }
   .tile { padding: 14px; }
-  .tile strong { font-size: 19px; }
+  .tile:nth-child(-n+2) { grid-column: span 2; }
+  .tile strong { font-size: 22px; }
   .segments { width: 100%; }
   .list thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
   .list, .list tbody { display: block; }

@@ -1,7 +1,7 @@
 {% extends "dashboard/base.html" %}{% load i18n shown %}
 {% block title %}{% translate "Overview" %}{% endblock %}
 {% block main %}
-<div class="heading"><h1>{% translate "Overview" %}</h1>{% if user.can_develop %}<a class="button" href="{% url 'new-payment' %}" hx-get="{% url 'new-payment' %}" hx-target="#sheet-body">{% translate "New payment" %}</a>{% endif %}</div>
+<div class="heading"><h1>{% translate "Overview" %}</h1>{% if user.can_develop %}<a class="button" href="{% url 'new-payment' %}" hx-get="{% url 'new-payment' %}" hx-target="#sheet-body" hx-swap="innerHTML">{% translate "New payment" %}</a>{% endif %}</div>
 <div class="tiles">
   <a class="card tile" href="{% url 'balance' %}"><span class="dim">{% translate "Balance" %}</span><strong>{{ balance|francs }}</strong><span class="dim">{% translate "owed to you" %}</span></a>
   <div class="card tile"><span class="dim">{% translate "Received in 30 days" %}</span><strong>{{ volume|francs }}</strong><span class="dim">{% blocktranslate count n=succeeded %}{{ n }} payment{% plural %}{{ n }} payments{% endblocktranslate %}</span></div>
@@ -16,13 +16,13 @@
     <p class="dim top-label">{{ chart.top|francs }}</p>
     <svg viewBox="0 0 720 160" preserveAspectRatio="none" role="img" aria-label="{% translate 'Received each day' %}">
       <path class="grid" d="M0 10H720M0 85H720"/><path class="axis" d="M0 160H720"/>
-      {% for bar in chart.bars %}<g tabindex="-1" data-tip="{{ bar.day|date:'j M' }}: {{ bar.amount|francs }}"><rect class="hit" x="{{ bar.x }}" y="0" width="24" height="160"/>{% if bar.amount %}<rect class="bar" x="{{ bar.x|add:2 }}" y="{{ bar.y }}" width="20" height="{{ bar.height }}"/>{% endif %}</g>{% endfor %}
+      {% for bar in chart.bars %}<g tabindex="-1" data-tip="{{ bar.day|date:'j N' }}: {{ bar.amount|francs }}"><rect class="hit" x="{{ bar.x }}" y="0" width="24" height="160"/>{% if bar.amount %}<rect class="bar" x="{{ bar.x|add:2 }}" y="{{ bar.y }}" width="20" height="{{ bar.height }}"/>{% endif %}</g>{% endfor %}
     </svg>
-    <figcaption class="dim"><span>{{ chart.first|date:"j M" }}</span><span>{{ chart.last|date:"j M" }}</span></figcaption>
+    <figcaption class="dim"><span>{{ chart.first|date:"j N" }}</span><span>{{ chart.last|date:"j N" }}</span></figcaption>
     <p id="tip" hidden></p>
   </figure>
   <details class="more"><summary>{% translate "As a table" %}</summary>
-    <table><thead><tr><th scope="col">{% translate "Day" %}</th><th scope="col" class="number">{% translate "Received" %}</th></tr></thead><tbody>{% for bar in chart.bars reversed %}{% if bar.amount %}<tr><td>{{ bar.day|date:"j M Y" }}</td><td class="number">{{ bar.amount|francs }}</td></tr>{% endif %}{% endfor %}</tbody></table>
+    <table><thead><tr><th scope="col">{% translate "Day" %}</th><th scope="col" class="number">{% translate "Received" %}</th></tr></thead><tbody>{% for bar in chart.bars reversed %}{% if bar.amount %}<tr><td>{{ bar.day|date:"j N Y" }}</td><td class="number">{{ bar.amount|francs }}</td></tr>{% endif %}{% endfor %}</tbody></table>
   </details>
   {% else %}<p class="dim">{% translate "Nothing received in the last 30 days." %}</p>{% endif %}
 </section>
@@ -32,7 +32,7 @@
   <td class="lead"><a class="row" href="{% url 'payment' payment.id %}">{{ payment.reference }}</a></td>
   <td class="number">{{ payment.amount|francs }}</td>
   <td>{% include "dashboard/badge.html" with status=payment.status %}</td>
-  <td class="dim"><time datetime="{{ payment.created_at|date:'c' }}">{{ payment.created_at|date:"j M Y, H:i" }}</time></td>
+  <td class="dim"><time datetime="{{ payment.created_at|date:'c' }}">{{ payment.created_at|date:"j N Y, H:i" }}</time></td>
 </tr>{% endfor %}</tbody></table>{% else %}<p class="dim">{% translate "No payment yet." %}</p>{% endif %}
 </section>
 {% endblock %}

@@ -1,5 +1,5 @@
 {% load i18n shown %}
-<h2 id="sheet-title">{% translate "Reject this solution?" %}</h2>
+<h2 id="sheet-title">{% partialdef title inline %}{% translate "Reject this solution?" %}{% endpartialdef %}</h2>
 {% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
 <dl>
   <div><dt>{% translate "What to do" %}</dt><dd>{{ found.action|word }}</dd></div>
@@ -8,7 +8,7 @@
   <div><dt>{% translate "Proposed by" %}</dt><dd>{{ proposed_by }}</dd></div>
   <div><dt>{% translate "Why" %}</dt><dd>{{ found.note }}</dd></div>
 </dl>
-<form method="post" action="{{ request.path }}" hx-post="{{ request.path }}" hx-target="#sheet-body" hx-disabled-elt="find button" novalidate>
+<form method="post" action="{{ request.path }}" hx-post="{{ request.path }}" hx-target="#sheet-body" hx-swap="innerHTML" hx-disabled-elt="find button" novalidate>
   {% csrf_token %}
   <input type="hidden" name="proposal" value="{{ found.proposal }}">
   <button class="danger">{% translate "Reject" %}</button>

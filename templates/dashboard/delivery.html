@@ -8,7 +8,7 @@
 <div class="columns">
 <section class="card">
   <h2>{% translate "Tries" %}</h2>
-  {% if history %}<ol class="timeline">{% for try in history %}<li class="{% if try.status_code and try.status_code >= 200 and try.status_code < 300 %}succeeded{% else %}failed{% endif %}"><span>{% if try.status_code %}{% translate "Answered" %} {{ try.status_code }}{% else %}{{ try.error }}{% endif %}</span><time class="dim" datetime="{{ try.created_at|date:'c' }}">{{ try.created_at|date:"j M Y, H:i:s" }}</time></li>{% endfor %}</ol>{% else %}<p class="dim">{% translate "Not tried yet." %}</p>{% endif %}
+  {% if history %}<ol class="timeline">{% for try in history %}<li class="{% if try.status_code and try.status_code >= 200 and try.status_code < 300 %}succeeded{% else %}failed{% endif %}"><span>{% if try.status_code %}{% translate "Answered" %} {{ try.status_code }}{% else %}{{ try.error }}{% endif %}</span><time class="dim" datetime="{{ try.created_at|date:'c' }}">{{ try.created_at|date:"j N Y, H:i:s" }}</time></li>{% endfor %}</ol>{% else %}<p class="dim">{% translate "Not tried yet." %}</p>{% endif %}
 </section>
 <section class="card"><h2>{% translate "Message" %}</h2><pre>{{ payload }}</pre></section>
 </div>

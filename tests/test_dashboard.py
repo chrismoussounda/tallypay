@@ -3,6 +3,7 @@ import uuid
 from collections.abc import Iterator
 from contextlib import contextmanager
 from datetime import timedelta
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -190,6 +191,9 @@ def test_a_stranger_is_asked_to_sign_in_everywhere(shop: Shop) -> None:
 
 
 def test_a_merchant_never_reaches_what_is_another_merchants(shop: Shop) -> None:
+    Action.objects.create(
+        user=shop.user("owner"), what="key_created", subject="localhost/shop"
+    )
     owner = Shop("Other").user("owner")
     hers = {shop.payment, shop.endpoint, shop.delivery, shop.key}
     ids = {str(thing.pk) for thing in hers}
@@ -511,6 +515,28 @@ def test_what_merchants_write_is_shown_as_text(shop: Shop) -> None:
     text = browser(shop.user("viewer")).get("/app/payments").content.decode()
     assert "<img src=x" not in text
     assert "&lt;img src=x" in text
+
+
+def test_no_sheet_inherits_how_a_waiting_payment_is_replaced() -> None:
+    for path in Path("templates/dashboard").glob("*.html"):
+        text = path.read_text(encoding="utf-8")
+        wanted = text.count('hx-target="#sheet-body" hx-swap="innerHTML"')
+        assert text.count('hx-target="#sheet-body"') == wanted, path
+
+
+def test_a_sheet_is_a_whole_page_without_javascript(shop: Shop) -> None:
+    client, path = browser(shop.user("owner")), "/app/payments/new"
+    page = client.get(path).content.decode()
+    assert "<title>New payment · TallyPay</title>" in page
+    assert "<html" not in client.get(path, headers=HTMX).content.decode()
+
+
+def test_refusals_are_said_in_words(shop: Shop) -> None:
+    viewer = browser(shop.user("viewer"))
+    page = viewer.get("/app/keys/new").content.decode()
+    assert "Your role does not allow this." in page
+    page = viewer.get("/app/nothing").content.decode()
+    assert "There is nothing at this address." in page
 
 
 # Keys and webhooks

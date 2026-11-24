@@ -1,0 +1,791 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: fr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Books"
+msgstr "Comptes"
+
+msgid "The books do not balance:"
+msgstr "Les comptes ne sont pas équilibrés :"
+
+msgid "Our accounts"
+msgstr "Nos comptes"
+
+msgid "Account"
+msgstr "Compte"
+
+msgid "Kind"
+msgstr "Nature"
+
+msgid "Balance"
+msgstr "Solde"
+
+msgid "Owed to merchants"
+msgstr "Dû aux marchands"
+
+msgid "Merchant"
+msgstr "Marchand"
+
+msgid "No merchant yet."
+msgstr "Aucun marchand pour l’instant."
+
+msgid "Activity"
+msgstr "Activité"
+
+msgid "The last 100 things your team did here."
+msgstr "Les 100 dernières actions de votre équipe."
+
+msgid "What"
+msgstr "Quoi"
+
+msgid "On"
+msgstr "Sur"
+
+msgid "Who"
+msgstr "Qui"
+
+msgid "When"
+msgstr "Quand"
+
+msgid "Nothing yet."
+msgstr "Rien pour l’instant."
+
+msgid "Approve this solution?"
+msgstr "Approuver cette solution ?"
+
+msgid "What to do"
+msgstr "Que faire"
+
+msgid "Difference"
+msgstr "Écart"
+
+msgid "Proposed by"
+msgstr "Proposé par"
+
+msgid "Why"
+msgstr "Pourquoi"
+
+msgid "This cannot be undone."
+msgstr "Ceci ne peut pas être annulé."
+
+msgid "Approve"
+msgstr "Approuver"
+
+msgid "What TallyPay owes you, after fees and refunds. It is the sum of every line below."
+msgstr "Ce que TallyPay vous doit, après frais et remboursements. C’est la somme de toutes les lignes ci-dessous."
+
+msgid "Movement"
+msgstr "Mouvement"
+
+msgid "Amount"
+msgstr "Montant"
+
+msgid "Show more"
+msgstr "Afficher plus"
+
+msgid "No movement yet."
+msgstr "Aucun mouvement pour l’instant."
+
+msgid "Skip to the page"
+msgstr "Aller à la page"
+
+msgid "Operations"
+msgstr "Opérations"
+
+msgid "My account"
+msgstr "Mon compte"
+
+msgid "Sign out"
+msgstr "Se déconnecter"
+
+msgid "Pages"
+msgstr "Pages"
+
+msgid "All money here is simulated."
+msgstr "Tout l’argent est ici simulé."
+
+msgid "Close"
+msgstr "Fermer"
+
+msgid "Discrepancies"
+msgstr "Écarts"
+
+msgid "Overview"
+msgstr "Aperçu"
+
+msgid "Payments"
+msgstr "Paiements"
+
+msgid "Webhooks"
+msgstr "Webhooks"
+
+msgid "API keys"
+msgstr "Clés API"
+
+msgid "Send again"
+msgstr "Renvoyer"
+
+msgid "Tries"
+msgstr "Essais"
+
+msgid "Answered"
+msgstr "Réponse"
+
+msgid "Not tried yet."
+msgstr "Pas encore essayé."
+
+msgid "Message"
+msgstr "Message"
+
+msgid "Where the provider's statement and our books differ. One person proposes a solution, another approves it."
+msgstr "Là où le relevé du prestataire et nos comptes diffèrent. Une personne propose une solution, une autre l’approuve."
+
+msgid "Status"
+msgstr "État"
+
+msgid "All"
+msgstr "Tous"
+
+msgid "Found"
+msgstr "Trouvé"
+
+msgid "No discrepancy."
+msgstr "Aucun écart."
+
+msgid "Propose a solution"
+msgstr "Proposer une solution"
+
+msgid "Reject"
+msgstr "Rejeter"
+
+msgid "You proposed this, so someone else must approve it."
+msgstr "Vous avez proposé cette solution : quelqu’un d’autre doit l’approuver."
+
+msgid "What was found"
+msgstr "Ce qui a été trouvé"
+
+msgid "We expected"
+msgstr "Nous attendions"
+
+msgid "Provider's number"
+msgstr "Numéro du prestataire"
+
+msgid "For now"
+msgstr "Pour l’instant"
+
+msgid "The difference waits in its own account, so that the books match the statement."
+msgstr "L’écart attend dans un compte à part, pour que les comptes correspondent au relevé."
+
+msgid "Solution"
+msgstr "Solution"
+
+msgid "Approved by"
+msgstr "Approuvé par"
+
+msgid "Resolved"
+msgstr "Résolu"
+
+msgid "The last proposal was not carried out:"
+msgstr "La dernière proposition n’a pas été appliquée :"
+
+msgid "Signing secret"
+msgstr "Secret de signature"
+
+msgid "Show the secret"
+msgstr "Afficher le secret"
+
+msgid "Your new key"
+msgstr "Votre nouvelle clé"
+
+msgid "Copy it now. It is never shown again."
+msgstr "Copiez-la maintenant. Elle ne sera plus jamais affichée."
+
+msgid "Copied"
+msgstr "Copié"
+
+msgid "Copy"
+msgstr "Copier"
+
+msgid "Done"
+msgstr "Terminé"
+
+msgid "New key"
+msgstr "Nouvelle clé"
+
+msgid "Your own systems create payments with a key."
+msgstr "Vos propres systèmes créent des paiements avec une clé."
+
+msgid "How the API works"
+msgstr "Comment marche l’API"
+
+msgid "Name"
+msgstr "Nom"
+
+msgid "Ends with"
+msgstr "Se termine par"
+
+msgid "Created"
+msgstr "Créé"
+
+msgid "Actions"
+msgstr "Actions"
+
+msgid "Revoked"
+msgstr "Révoquée"
+
+msgid "Revoke"
+msgstr "Révoquer"
+
+msgid "No key yet."
+msgstr "Aucune clé pour l’instant."
+
+msgid "No name"
+msgstr "Sans nom"
+
+msgid "New webhook address"
+msgstr "Nouvelle adresse de webhook"
+
+msgid "It is told of every payment and refund from now on."
+msgstr "Elle sera prévenue de chaque paiement et remboursement à partir de maintenant."
+
+msgid "Add the address"
+msgstr "Ajouter l’adresse"
+
+msgid "New API key"
+msgstr "Nouvelle clé API"
+
+msgid "The key is shown once, then kept only in a form nobody can read."
+msgstr "La clé est affichée une fois, puis conservée sous une forme que personne ne peut lire."
+
+msgid "Create the key"
+msgstr "Créer la clé"
+
+msgid "New payment"
+msgstr "Nouveau paiement"
+
+msgid "The customer is asked to pay this amount."
+msgstr "Ce montant est demandé au client."
+
+msgid "Create the payment"
+msgstr "Créer le paiement"
+
+msgid "Refund"
+msgstr "Remboursement"
+
+msgid "Give a refund"
+msgstr "Rembourser"
+
+msgid "Payment"
+msgstr "Paiement"
+
+msgid "Left to refund"
+msgstr "Reste à rembourser"
+
+msgid "The money leaves your balance at once. The fee of the payment is not given back."
+msgstr "L’argent quitte votre solde aussitôt. Les frais du paiement ne sont pas rendus."
+
+msgid "owed to you"
+msgstr "qui vous est dû"
+
+msgid "Received in 30 days"
+msgstr "Reçu en 30 jours"
+
+msgid "Success in 30 days"
+msgstr "Réussite sur 30 jours"
+
+msgid "Waiting"
+msgstr "En attente"
+
+msgid "for the provider's answer"
+msgstr "de la réponse du prestataire"
+
+msgid "Received each day"
+msgstr "Reçu chaque jour"
+
+msgid "As a table"
+msgstr "En tableau"
+
+msgid "Day"
+msgstr "Jour"
+
+msgid "Received"
+msgstr "Reçu"
+
+msgid "Nothing received in the last 30 days."
+msgstr "Rien reçu ces 30 derniers jours."
+
+msgid "Latest payments"
+msgstr "Derniers paiements"
+
+msgid "See all"
+msgstr "Tout voir"
+
+msgid "Reference"
+msgstr "Référence"
+
+msgid "No payment yet."
+msgstr "Aucun paiement pour l’instant."
+
+msgid "Details"
+msgstr "Détails"
+
+msgid "Fee"
+msgstr "Frais"
+
+msgid "Received, less the fee"
+msgstr "Reçu, frais déduits"
+
+msgid "Refunded"
+msgstr "Remboursé"
+
+msgid "What the simulated provider does"
+msgstr "Ce que fait le prestataire simulé"
+
+msgid "Payment number"
+msgstr "Numéro du paiement"
+
+msgid "What happened"
+msgstr "Ce qui s’est passé"
+
+msgid "Refunds"
+msgstr "Remboursements"
+
+msgid "Reason"
+msgstr "Motif"
+
+msgid "Event"
+msgstr "Événement"
+
+msgid "Address"
+msgstr "Adresse"
+
+msgid "No address was told of this payment."
+msgstr "Aucune adresse n’a été prévenue de ce paiement."
+
+msgid "Reference or number"
+msgstr "Référence ou numéro"
+
+msgid "Search"
+msgstr "Rechercher"
+
+msgid "Period"
+msgstr "Période"
+
+msgid "Always"
+msgstr "Toujours"
+
+msgid "30 days"
+msgstr "30 jours"
+
+msgid "7 days"
+msgstr "7 jours"
+
+msgid "No payment matches."
+msgstr "Aucun paiement ne correspond."
+
+msgid "Remove the filters"
+msgstr "Retirer les filtres"
+
+msgid "Nothing happens until someone else approves it."
+msgstr "Rien ne se passe tant que quelqu’un d’autre ne l’a pas approuvé."
+
+msgid "Propose"
+msgstr "Proposer"
+
+msgid "Reject this solution?"
+msgstr "Rejeter cette solution ?"
+
+msgid "Remove this address?"
+msgstr "Retirer cette adresse ?"
+
+msgid "It is no longer told of anything. What was being sent to it stops."
+msgstr "Elle ne sera plus prévenue de rien. Les envois en cours s’arrêtent."
+
+msgid "Remove the address"
+msgstr "Retirer l’adresse"
+
+msgid "Revoke this key?"
+msgstr "Révoquer cette clé ?"
+
+msgid "Whatever uses it stops working at once. This cannot be undone."
+msgstr "Ce qui l’utilise cesse aussitôt de fonctionner. Ceci ne peut pas être annulé."
+
+msgid "Revoke the key"
+msgstr "Révoquer la clé"
+
+msgid "Check the signature of every message with it."
+msgstr "Vérifiez avec lui la signature de chaque message."
+
+msgid "That did not work. Try again."
+msgstr "Cela n’a pas marché. Réessayez."
+
+msgid "Sign in"
+msgstr "Se connecter"
+
+msgid "A demonstration. All money here is simulated."
+msgstr "Une démonstration. Tout l’argent est ici simulé."
+
+msgid "New address"
+msgstr "Nouvelle adresse"
+
+msgid "Addresses"
+msgstr "Adresses"
+
+msgid "Since"
+msgstr "Depuis"
+
+msgid "Secret"
+msgstr "Secret"
+
+msgid "Remove"
+msgstr "Retirer"
+
+msgid "Add an address to be told when a payment or a refund changes."
+msgstr "Ajoutez une adresse pour être prévenu quand un paiement ou un remboursement change."
+
+msgid "Messages"
+msgstr "Messages"
+
+msgid "No message."
+msgstr "Aucun message."
+
+msgid "Key revoked."
+msgstr "Clé révoquée."
+
+msgid "Address removed."
+msgstr "Adresse retirée."
+
+msgid "It is still being sent."
+msgstr "L’envoi est encore en cours."
+
+msgid "This address was removed."
+msgstr "Cette adresse a été retirée."
+
+msgid "Sent again."
+msgstr "Renvoyé."
+
+msgid "There are as many addresses as allowed."
+msgstr "Le nombre maximal d’adresses est atteint."
+
+msgid "Your password"
+msgstr "Votre mot de passe"
+
+msgid "Password"
+msgstr "Mot de passe"
+
+msgid "Amount in francs"
+msgstr "Montant en francs"
+
+msgid "Email"
+msgstr "Adresse e-mail"
+
+msgid "Order 1042"
+msgstr "Commande 1042"
+
+msgid "Website"
+msgstr "Site web"
+
+msgid "What you found"
+msgstr "Ce que vous avez trouvé"
+
+msgid "TallyPay, by rule"
+msgstr "TallyPay, par règle"
+
+msgid "Rejected."
+msgstr "Rejeté."
+
+msgid "Proposed. Someone else must approve it."
+msgstr "Proposé. Quelqu’un d’autre doit l’approuver."
+
+msgid "Approved."
+msgstr "Approuvé."
+
+msgid "Correction"
+msgstr "Correction"
+
+msgid "Payment, less its fee"
+msgstr "Paiement, frais déduits"
+
+msgid "Payment created."
+msgstr "Paiement créé."
+
+msgid "Refund started."
+msgstr "Remboursement lancé."
+
+msgid "Refund that failed, given back"
+msgstr "Remboursement échoué, rendu"
+
+msgid "This form was already sent. Open it again."
+msgstr "Ce formulaire a déjà été envoyé. Ouvrez-le de nouveau."
+
+msgid "The password is not right."
+msgstr "Le mot de passe n’est pas le bon."
+
+msgid "Too many tries. Try again in 15 minutes."
+msgstr "Trop d’essais. Réessayez dans 15 minutes."
+
+msgid "The email or the password is not right."
+msgstr "L’adresse ou le mot de passe n’est pas le bon."
+
+msgid "Succeeded"
+msgstr "Réussi"
+
+msgid "Failed"
+msgstr "Échoué"
+
+msgid "Delivered"
+msgstr "Remis"
+
+msgid "Open"
+msgstr "Ouvert"
+
+msgid "To approve"
+msgstr "À approuver"
+
+msgid "Being returned"
+msgstr "En cours de retour"
+
+msgid "The customer asked"
+msgstr "À la demande du client"
+
+msgid "Paid twice"
+msgstr "Payé deux fois"
+
+msgid "Fraud"
+msgstr "Fraude"
+
+msgid "Accepts, then calls back"
+msgstr "Accepte, puis rappelle"
+
+msgid "Declines, then calls back"
+msgstr "Refuse, puis rappelle"
+
+msgid "Takes a minute to decide"
+msgstr "Met une minute à décider"
+
+msgid "Never gets the first request"
+msgstr "Ne reçoit jamais la première demande"
+
+msgid "Gets the request, but its answer is lost"
+msgstr "Reçoit la demande, mais sa réponse se perd"
+
+msgid "Calls back three times"
+msgstr "Rappelle trois fois"
+
+msgid "Never calls back"
+msgstr "Ne rappelle jamais"
+
+msgid "Moves the money, but never says so"
+msgstr "Déplace l’argent sans jamais le dire"
+
+msgid "Declines, but moves the money anyway"
+msgstr "Refuse, mais déplace quand même l’argent"
+
+msgid "Moves 500 francs too much"
+msgstr "Déplace 500 francs de trop"
+
+msgid "Moves the money twice"
+msgstr "Déplace l’argent deux fois"
+
+msgid "Leaves it out of its statement"
+msgstr "L’oublie dans son relevé"
+
+msgid "What we hold"
+msgstr "Ce que nous détenons"
+
+msgid "What we owe"
+msgstr "Ce que nous devons"
+
+msgid "What we earned"
+msgstr "Ce que nous avons gagné"
+
+msgid "What we lost"
+msgstr "Ce que nous avons perdu"
+
+msgid "Held by the provider"
+msgstr "Détenu par le prestataire"
+
+msgid "Fees"
+msgstr "Frais"
+
+msgid "Refunds on their way"
+msgstr "Remboursements en cours"
+
+msgid "Money not explained yet"
+msgstr "Argent pas encore expliqué"
+
+msgid "Differences taken on"
+msgstr "Écarts pris en charge"
+
+msgid "Give the money back to the customer"
+msgstr "Rendre l’argent au client"
+
+msgid "Give the money to the merchant"
+msgstr "Donner l’argent au marchand"
+
+msgid "Take the difference on ourselves"
+msgstr "Prendre l’écart à notre charge"
+
+msgid "Call it failed"
+msgstr "Le déclarer échoué"
+
+msgid "Settled by itself"
+msgstr "Réglé tout seul"
+
+msgid "Owner"
+msgstr "Propriétaire"
+
+msgid "Developer"
+msgstr "Développeur"
+
+msgid "Support"
+msgstr "Support"
+
+msgid "Viewer"
+msgstr "Lecture seule"
+
+msgid "Operator"
+msgstr "Opérateur"
+
+msgid "Signed in"
+msgstr "Connexion"
+
+msgid "Created a payment"
+msgstr "Paiement créé"
+
+msgid "Refunded a payment"
+msgstr "Paiement remboursé"
+
+msgid "Created a key"
+msgstr "Clé créée"
+
+msgid "Revoked a key"
+msgstr "Clé révoquée"
+
+msgid "Added a webhook address"
+msgstr "Adresse de webhook ajoutée"
+
+msgid "Removed a webhook address"
+msgstr "Adresse de webhook retirée"
+
+msgid "Looked at a webhook secret"
+msgstr "Secret de webhook consulté"
+
+msgid "Sent a webhook again"
+msgstr "Webhook renvoyé"
+
+msgid "Proposed a solution"
+msgstr "Solution proposée"
+
+msgid "Approved a solution"
+msgstr "Solution approuvée"
+
+msgid "Rejected a solution"
+msgstr "Solution rejetée"
+
+msgid "Money moved that nobody asked for"
+msgstr "De l’argent a bougé sans demande"
+
+msgid "Money moved after it was said to have failed"
+msgstr "De l’argent a bougé après un échec annoncé"
+
+msgid "Another amount moved"
+msgstr "Un autre montant a bougé"
+
+msgid "In our books, not in the statement"
+msgstr "Dans nos comptes, pas dans le relevé"
+
+msgid "In the statement, after it was written off"
+msgstr "Dans le relevé, après l’avoir passé en perte"
+
+msgid "Still waiting, and not in the statement"
+msgstr "Toujours en attente, et pas dans le relevé"
+
+msgid "Only a payment that succeeded can be refunded."
+msgstr "Seul un paiement réussi peut être remboursé."
+
+msgid "That is more than is left of the payment."
+msgstr "C’est plus que ce qui reste du paiement."
+
+msgid "That is more than your balance."
+msgstr "C’est plus que votre solde."
+
+msgid "Someone else must approve it."
+msgstr "Quelqu’un d’autre doit l’approuver."
+
+msgid "Another proposal was made since. Read it first."
+msgstr "Une autre proposition a été faite depuis. Lisez-la d’abord."
+
+msgid "It is open."
+msgstr "Il est ouvert."
+
+msgid "It is proposed."
+msgstr "Il attend une approbation."
+
+msgid "It is returning."
+msgstr "L’argent est en cours de retour."
+
+msgid "It is resolved."
+msgstr "Il est résolu."
+
+msgid "This is not an address."
+msgstr "Ce n’est pas une adresse."
+
+msgid "The address may not hold a user name or a fragment."
+msgstr "L’adresse ne peut contenir ni nom d’utilisateur ni fragment."
+
+msgid "The address must be https, on the usual port."
+msgstr "L’adresse doit être en https, sur le port habituel."
+
+msgid "The address is not a public one."
+msgstr "L’adresse n’est pas publique."
+
+msgid "The address could not be found."
+msgstr "L’adresse est introuvable."
+
+#, python-format
+msgid "The books balance: every debit has its credit, over %(n)s entry."
+msgid_plural "The books balance: every debit has its credit, over %(n)s entries."
+msgstr[0] "Les comptes sont équilibrés : chaque débit a son crédit, sur %(n)s écriture."
+msgstr[1] "Les comptes sont équilibrés : chaque débit a son crédit, sur %(n)s écritures."
+
+#, python-format
+msgid "%(n)s payment"
+msgid_plural "%(n)s payments"
+msgstr[0] "%(n)s paiement"
+msgstr[1] "%(n)s paiements"
+
+#, python-format
+msgid "of %(n)s decided"
+msgid_plural "of %(n)s decided"
+msgstr[0] "sur %(n)s décidé"
+msgstr[1] "sur %(n)s décidés"
+
+#, python-format
+msgid "%(n)s webhook could not be delivered."
+msgid_plural "%(n)s webhooks could not be delivered."
+msgstr[0] "%(n)s webhook n’a pas pu être remis."
+msgstr[1] "%(n)s webhooks n’ont pas pu être remis."
+
+msgid "Not allowed"
+msgstr "Non autorisé"
+
+msgid "Your role does not allow this."
+msgstr "Votre rôle ne le permet pas."
+
+msgid "Form expired"
+msgstr "Formulaire expiré"
+
+msgid "Go back, open the page again, then send the form again."
+msgstr "Revenez en arrière, rouvrez la page, puis renvoyez le formulaire."
+
+msgid "Not found"
+msgstr "Introuvable"
+
+msgid "There is nothing at this address."
+msgstr "Il n’y a rien à cette adresse."
+
+msgid "To the dashboard"
+msgstr "Au tableau de bord"

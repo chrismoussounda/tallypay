@@ -1,8 +1,8 @@
 {% load i18n shown %}
-<h2 id="sheet-title">{% translate "Revoke this key?" %}</h2>
+<h2 id="sheet-title">{% partialdef title inline %}{% translate "Revoke this key?" %}{% endpartialdef %}</h2>
 <p>{{ key.name }} <code>{{ key }}</code></p>
 <p>{% translate "Whatever uses it stops working at once. This cannot be undone." %}</p>
-<form method="post" action="{{ request.path }}" hx-post="{{ request.path }}" hx-target="#sheet-body" hx-disabled-elt="find button" novalidate>
+<form method="post" action="{{ request.path }}" hx-post="{{ request.path }}" hx-target="#sheet-body" hx-swap="innerHTML" hx-disabled-elt="find button" novalidate>
   {% csrf_token %}
   
   <button class="danger">{% translate "Revoke the key" %}</button>

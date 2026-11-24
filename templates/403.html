@@ -1,0 +1,9 @@
+{% extends "dashboard/shell.html" %}{% load i18n %}
+{% block title %}{% translate "Not allowed" %}{% endblock %}
+{% block body %}
+<main class="sign-in"><div class="card">
+  <h1>{% translate "Not allowed" %}</h1>
+  <p>{% translate "Your role does not allow this." %}</p>
+  <p><a class="button" href="{% url 'start' %}">{% translate "To the dashboard" %}</a></p>
+</div></main>
+{% endblock %}

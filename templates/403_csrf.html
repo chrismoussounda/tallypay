@@ -1,0 +1,9 @@
+{% extends "dashboard/shell.html" %}{% load i18n %}
+{% block title %}{% translate "Form expired" %}{% endblock %}
+{% block body %}
+<main class="sign-in"><div class="card">
+  <h1>{% translate "Form expired" %}</h1>
+  <p>{% translate "Go back, open the page again, then send the form again." %}</p>
+  <p><a class="button" href="{% url 'start' %}">{% translate "To the dashboard" %}</a></p>
+</div></main>
+{% endblock %}

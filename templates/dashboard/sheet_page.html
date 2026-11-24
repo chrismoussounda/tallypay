@@ -1,3 +1,3 @@
 {% extends "dashboard/base.html" %}{% load i18n %}
-{% block title %}TallyPay{% endblock %}
+{% block title %}{% include sheet|add:"#title" %}{% endblock %}
 {% block main %}<section class="card alone">{% include sheet %}</section>{% endblock %}

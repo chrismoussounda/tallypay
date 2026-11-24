@@ -11,8 +11,10 @@ document.addEventListener("htmx:afterSwap", (event) => {
 });
 
 // A tap beside the sheet closes it.
-sheet?.addEventListener("click", (event) => {
-  if (event.target === sheet) sheet.close();
+sheet?.addEventListener("pointerdown", (event) => {
+  const { left, right, top, bottom } = sheet.getBoundingClientRect();
+  const { clientX: x, clientY: y } = event;
+  if (x < left || x > right || y < top || y > bottom) sheet.close();
 });
 
 function failed() {
@@ -50,3 +52,7 @@ document.querySelector(".chart svg")?.addEventListener("pointermove", (event) =>
 document.querySelector(".chart svg")?.addEventListener("pointerleave", () => {
   tip.hidden = true;
 });
+
+document
+  .querySelector(".tabs [aria-current]")
+  ?.scrollIntoView({ block: "nearest", inline: "center" });

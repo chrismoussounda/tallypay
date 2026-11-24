@@ -6,6 +6,7 @@ from django.db import connection
 from pytest_django import DjangoDbBlocker
 
 TABLES = [
+    "idempotency_idempotencyrecord",
     "payments_paymentevent",
     "payments_payment",
     "merchants_apikey",

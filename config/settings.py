@@ -22,6 +22,7 @@ DATABASES = {
 
 INSTALLED_APPS = [
     "django.contrib.staticfiles",
+    "idempotency",
     "ledger",
     "merchants",
     "payments",

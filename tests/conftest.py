@@ -6,6 +6,10 @@ from django.db import connection
 from pytest_django import DjangoDbBlocker
 
 TABLES = [
+    "webhooks_try",
+    "webhooks_delivery",
+    "webhooks_event",
+    "webhooks_endpoint",
     "tasks_task",
     "provider_request",
     "provider_charge",

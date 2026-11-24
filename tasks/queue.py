@@ -1,4 +1,5 @@
 import logging
+import time
 import uuid
 from collections.abc import Callable
 from datetime import timedelta
@@ -74,11 +75,14 @@ def run(task_id: uuid.UUID) -> bool:
     return True
 
 
-def run_due() -> int:
-    """Runs what is due, and returns how many tasks were done."""
+def run_due(seconds: float = float("inf")) -> int:
+    """Runs what is due, starting nothing after that long. How many were done."""
+    started = time.monotonic()
     due = Task.objects.filter(done_at=None, due_at__lte=timezone.now())
     done = 0
     for task_id in list(due.order_by("due_at").values_list("id", flat=True)):
+        if time.monotonic() - started >= seconds:
+            break
         try:
             done += run(task_id)
         except Exception:

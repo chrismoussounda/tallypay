@@ -1,8 +1,10 @@
+import hmac
 import uuid
 
-from django.http import HttpRequest, HttpResponse
+from django.conf import settings
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 
 from config import qstash
 
@@ -21,3 +23,15 @@ def wake(request: HttpRequest) -> HttpResponse:
         return HttpResponse(status=401)
     # QStash calls again after anything but a success.
     return HttpResponse(status=204 if queue.run(task_id) else 409)
+
+
+@require_GET
+def cron(request: HttpRequest) -> HttpResponse:
+    """Called by Vercel every day, for the tasks QStash missed."""
+    expected = f"Bearer {settings.CRON_SECRET}"
+    given = request.headers.get("Authorization", "")
+    if not settings.CRON_SECRET or not hmac.compare_digest(
+        given.encode(), expected.encode()
+    ):
+        return HttpResponse(status=401)
+    return JsonResponse({"done": queue.run_due(seconds=120)})

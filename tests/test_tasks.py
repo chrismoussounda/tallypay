@@ -155,3 +155,29 @@ def test_only_a_signed_call_runs_a_task(ran: list[Any], settings: Settings) -> N
     assert call(str(early.id)) == 409
     assert [call(str(due.id)) for _ in range(2)] == [204, 204]
     assert len(ran) == 1
+
+
+@pytest.mark.django_db
+def test_the_daily_call_runs_what_was_missed(
+    ran: list[Any], settings: Settings
+) -> None:
+    add()
+
+    def call(value: str) -> Any:
+        return Client().get("/internal/cron", headers={"Authorization": value})
+
+    settings.CRON_SECRET = ""
+    assert call("Bearer ").status_code == 401
+    settings.CRON_SECRET = "secret"
+    for wrong in ("", "Bearer ", "Bearer other", "Bearer s\u00e9cret", "secret"):
+        assert call(wrong).status_code == 401
+    assert ran == []
+    assert call("Bearer secret").json() == {"done": 1}
+    assert call("Bearer secret").json() == {"done": 0}
+
+
+@pytest.mark.django_db
+def test_it_starts_nothing_once_out_of_time(ran: list[Any]) -> None:
+    add()
+    assert queue.run_due(seconds=0) == 0
+    assert queue.run_due(seconds=60) == 1

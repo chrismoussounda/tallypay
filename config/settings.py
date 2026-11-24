@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     "provider",
     "tasks",
     "wakeups",
+    "webhooks",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -62,3 +63,7 @@ QSTASH_URL = os.environ.get("QSTASH_URL", "https://qstash.upstash.io")
 QSTASH_TOKEN = os.environ.get("QSTASH_TOKEN", "")
 QSTASH_CURRENT_SIGNING_KEY = os.environ.get("QSTASH_CURRENT_SIGNING_KEY", "")
 QSTASH_NEXT_SIGNING_KEY = os.environ.get("QSTASH_NEXT_SIGNING_KEY", "")
+CRON_SECRET = os.environ.get("CRON_SECRET", "")
+
+# Lets webhooks reach a server on this computer.
+WEBHOOKS_ALLOW_LOCAL = not ON_VERCEL

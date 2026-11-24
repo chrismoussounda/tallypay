@@ -2,5 +2,6 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "django",
   "git": { "deploymentEnabled": { "main": true, "**": false } },
+  "crons": [{ "path": "/internal/cron", "schedule": "0 4 * * *" }],
   "regions": ["fra1"]
 }

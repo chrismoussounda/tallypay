@@ -4,7 +4,7 @@ A payment ledger and webhook gateway: money is never lost, duplicated or created
 provider times out, answers twice or disagrees. All money and providers are simulated.
 
 In progress. So far: the project, its CI, a delayed call to prove the hosting, the ledger,
-the payments API and the simulated provider.
+the payments API, the simulated provider and webhooks.
 
 ## The ledger
 
@@ -57,6 +57,22 @@ Tests run random mixes of scenarios, crashes and repeated calls. Each time, ever
 been charged once and the books must balance.
 
 Without QStash, as on your own computer, `uv run python manage.py run_tasks --watch` does the work.
+
+## Webhooks
+
+A merchant adds an address with `POST /v1/webhook-endpoints`, which shows its secret, and is told of
+every payment that succeeds or fails.
+
+- **Signed** as [Standard Webhooks](https://www.standardwebhooks.com) describe. Secrets are derived from
+  `SECRET_KEY`, so they are not in the database; changing that key changes them all.
+- **At least once.** The event is committed with the payment. A failure is tried again 6 times, over
+  about 31 hours, with the same `Webhook-Id`, so that a merchant can spot a repeat.
+- **Replay.** `GET /v1/webhook-deliveries?status=failed` lists what failed, and
+  `POST /v1/webhook-deliveries/{id}/replay` sends it again.
+- **Public addresses only.** Each send checks the address the name leads to, connects to that very
+  address, and follows no redirect.
+
+A daily call from Vercel, with `CRON_SECRET`, runs any task QStash missed.
 
 ## Run it
 

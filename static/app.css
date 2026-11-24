@@ -14,6 +14,7 @@ body {
 main { padding: 24px 16px; }
 @media (min-width: 768px) { main { padding: 40px; } }
 h1, h2 { line-height: 1.2; margin: 0 0 8px; }
+h1 { display: flex; align-items: center; gap: 12px; }
 h2 { font-size: 18px; }
 section {
   margin-top: 24px;

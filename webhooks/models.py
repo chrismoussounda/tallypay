@@ -59,6 +59,11 @@ class Delivery(models.Model):
                 fields=["event", "endpoint"], name="delivery_once_per_endpoint"
             )
         ]
+        indexes: ClassVar = [
+            models.Index(
+                fields=["endpoint", "-created_at", "-id"], name="delivery_newest"
+            )
+        ]
 
     def __str__(self) -> str:
         return str(self.id)

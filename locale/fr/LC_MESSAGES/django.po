@@ -802,8 +802,8 @@ msgstr "Attendez quelques minutes, puis réessayez."
 msgid "You are signed in. Sign out to try the demo."
 msgstr "Vous êtes connecté. Déconnectez-vous pour essayer la démo."
 
-msgid "Leave this demo for good"
-msgstr "Quitter cette démo définitivement"
+msgid "Leave for good"
+msgstr "Quitter pour de bon"
 
 msgid "All demos"
 msgstr "Toutes les démos"

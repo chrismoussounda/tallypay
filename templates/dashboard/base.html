@@ -9,7 +9,7 @@
     <summary><span class="initial" aria-hidden="true">{{ user.name|first }}</span><span class="wide">{{ user.name }}</span><span class="narrow">{% translate "My account" %}</span></summary>
     <div class="card">
       <p><strong>{{ user.name }}</strong><br>{{ user.email }}<br><span class="dim">{{ user.role|word }}</span></p>
-      <form method="post" action="{% url 'sign-out' %}">{% csrf_token %}<button class="second">{% if user.demo %}{% translate "Leave this demo for good" %}{% else %}{% translate "Sign out" %}{% endif %}</button></form>
+      <form method="post" action="{% url 'sign-out' %}">{% csrf_token %}<button class="second">{% if user.demo %}{% translate "Leave for good" %}{% else %}{% translate "Sign out" %}{% endif %}</button></form>
     </div>
   </details>
 </header>

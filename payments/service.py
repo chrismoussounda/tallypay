@@ -34,7 +34,11 @@ def create(
 ) -> Payment:
     demos.spend(merchant)
     payment = Payment.objects.create(
-        merchant=merchant, amount=amount, reference=reference, scenario=scenario
+        merchant=merchant,
+        amount=amount,
+        reference=reference,
+        scenario=scenario,
+        created_at=timezone.now(),
     )
     payment.events.create(kind=PaymentEvent.Kind.CREATED)
     return payment

@@ -4,8 +4,8 @@
     <span id="seen-as">{% translate "Seen as" %}</span>
     <div class="segments" role="group" aria-labelledby="seen-as">
       <button name="who" value="owner"{% if user.merchant %} aria-current="true"{% endif %}>{% translate "Shop" %}</button>
-      <button name="who" value="proposer"{% if user.name == "Prisca" %} aria-current="true"{% endif %}>Prisca</button>
-      <button name="who" value="approver"{% if user.name == "Divin" %} aria-current="true"{% endif %}>Divin</button>
+      <button name="who" value="proposer"{% if user.name == "Prisca" %} aria-current="true"{% endif %}>{% translate "Operator 1" %}</button>
+      <button name="who" value="approver"{% if user.name == "Divin" %} aria-current="true"{% endif %}>{% translate "Operator 2" %}</button>
     </div>
   </form>
 </div>

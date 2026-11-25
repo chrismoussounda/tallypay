@@ -1,7 +1,7 @@
 {% extends "site.html" %}
 {% block title %}How it was built{% endblock %}
 {% block main %}
-<article>
+<article class="write-up">
 <h1>How TallyPay was built</h1>
 <p>TallyPay is a payment ledger and webhook gateway, built as a portfolio project. The provider and all money are simulated.</p>
 
@@ -9,28 +9,26 @@
 <p>A shop that takes mobile money depends on a provider it does not control. A request may be lost, or its answer. A callback may come three times, or never. The provider may decline a payment and take the money anyway. Each case can lose a franc, or count it twice.</p>
 
 <h2>The decisions</h2>
-<h3>Double entry, enforced by the database</h3>
-<p>Every movement of money is an entry whose lines add up to zero. Postgres checks that when the entry is committed, and refuses any change or deletion afterwards. A bug in the application cannot get around this.</p>
-<h3>Write first, then ask</h3>
-<p>The next look at a payment is saved before the provider is called. The provider is asked with the payment's own number, so asking again charges nothing more. If the application crashes between the two, the work is still there.</p>
-<h3>One request, one payment</h3>
-<p>The idempotency key, the payment and the answer are committed together. Two identical requests at the same moment give one payment and the same answer.</p>
-<h3>The statement has the last word</h3>
-<p>Once a day, the provider's statement is compared with the books. Money that nobody expected waits in an account of its own, so that the books always say what the provider holds. Two people resolve each difference: one proposes, the other approves.</p>
-<h3>Postgres keeps the work to do</h3>
-<p>Tasks are rows, committed with whatever asks for them. QStash only wakes the application at the right time. A daily call finds whatever it missed.</p>
-<h3>Plain pages</h3>
-<p>The dashboard is HTML from the server, with HTMX. Every form works without JavaScript, and only the site's own scripts may run.</p>
-<h3>A demo that deletes nothing</h3>
-<p>Each visitor gets a new shop. After a day its users, keys and addresses are closed, but its entries stay: the demo must not be a way around books that cannot be changed. One demo takes about 33 KB, and limits keep the growth slow.</p>
+<ul class="facts">
+<li class="card"><h3>Double entry, enforced by the database</h3><p>Every movement of money is an entry whose lines add up to zero. Postgres checks that when the entry is committed, and refuses any change or deletion afterwards. A bug in the application cannot get around this.</p></li>
+<li class="card"><h3>Write first, then ask</h3><p>The next look at a payment is saved before the provider is called. The provider is asked with the payment's own number, so asking again charges nothing more. If the application crashes between the two, the work is still there.</p></li>
+<li class="card"><h3>One request, one payment</h3><p>The idempotency key, the payment and the answer are committed together. Two identical requests at the same moment give one payment and the same answer.</p></li>
+<li class="card"><h3>The statement has the last word</h3><p>Once a day, the provider's statement is compared with the books. Money that nobody expected waits in an account of its own, so that the books always say what the provider holds. Two people resolve each difference: one proposes, the other approves.</p></li>
+<li class="card"><h3>Postgres keeps the work to do</h3><p>Tasks are rows, committed with whatever asks for them. QStash only wakes the application at the right time. A daily call finds whatever it missed.</p></li>
+<li class="card"><h3>Plain pages</h3><p>The dashboard is HTML from the server, with HTMX. Every form works without JavaScript, and only the site's own scripts may run.</p></li>
+<li class="card"><h3>A demo that deletes nothing</h3><p>Each visitor gets a new shop. After a day its users, keys and addresses are closed, but its entries stay: the demo must not be a way around books that cannot be changed. One demo takes about 33 KB, and limits keep the growth slow.</p></li>
+</ul>
 
+<div class="columns">
+<section class="card">
 <h2>How it was tested</h2>
 <ul>
 <li>Automated tests on a real Postgres, some with many threads doing the same thing at once.</li>
 <li>Random mixes of failures, crashes and repeated calls, including runs of 60 days. Each payment must be charged once, and the books must match the statement in the end.</li>
 <li>The protections were broken on purpose, one by one, to see the tests fail.</li>
 </ul>
-
+</section>
+<section class="card">
 <h2>The limits</h2>
 <ul>
 <li>The provider is simulated, inside the same application. A real one would need its own connection, and its own certification.</li>
@@ -40,6 +38,8 @@
 <li>The sample payments of a demo have past dates, but the books date them from when the demo was opened.</li>
 <li>It runs on free plans: above their daily quota, webhooks and payments wait for the daily call.</li>
 </ul>
+</section>
+</div>
 <p><a href="https://github.com/chrismoussounda/tallypay">Read the code</a> or <a href="{% url 'home' %}">try the demo</a>.</p>
 </article>
 {% endblock %}

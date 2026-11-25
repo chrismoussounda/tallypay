@@ -803,7 +803,7 @@ msgid "The demo is used up for today."
 msgstr "La démo est épuisée pour aujourd’hui."
 
 msgid "The statement was compared with the books."
-msgstr "Le relevé a été comparé aux livres."
+msgstr "Le relevé a été comparé aux comptes."
 
 msgid "You opened several demos. Try again in an hour."
 msgstr "Vous avez ouvert plusieurs démos. Réessayez dans une heure."
@@ -881,10 +881,10 @@ msgid "Watch it settle, and the signed webhook reach the shop's test server. Swi
 msgstr "Regardez-le aboutir, et le webhook signé arriver au serveur de test de la boutique. Éteignez ce serveur pour voir les nouveaux essais."
 
 msgid "Become an operator, and compare the statement with the books: the 500 francs are found."
-msgstr "Devenez opérateur, et comparez le relevé aux livres : les 500 francs sont trouvés."
+msgstr "Devenez opérateur, et comparez le relevé aux comptes : les 500 francs sont trouvés."
 
 msgid "Propose a solution, then become the other operator to approve it. The books still balance."
-msgstr "Proposez une solution, puis devenez l’autre opérateur pour l’approuver. Les livres restent équilibrés."
+msgstr "Proposez une solution, puis devenez l’autre opérateur pour l’approuver. Les comptes restent justes."
 
 msgid "For developers"
 msgstr "Pour les développeurs"
@@ -941,3 +941,9 @@ msgstr "L’allumer"
 
 msgid "Try the demo instead, without an account"
 msgstr "Essayer plutôt la démo, sans compte"
+
+msgid "Operator 1"
+msgstr "Opérateur 1"
+
+msgid "Operator 2"
+msgstr "Opérateur 2"

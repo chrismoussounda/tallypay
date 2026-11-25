@@ -2,6 +2,7 @@
 {% block title %}{% translate "Payments that add up" %}{% endblock %}
 {% block main %}
 {% for message in messages %}<p class="notice warn" role="alert">{{ message }}</p>{% endfor %}
+<div class="first">
 <section class="hero">
   <h1>{% translate "Payments that add up, even when the provider fails" %}</h1>
   <p>{% translate "TallyPay takes mobile-money payments for shops. When the provider goes silent, answers twice or takes the wrong amount, no franc is lost, duplicated or made up." %}</p>
@@ -11,6 +12,16 @@
   </div>
   <p class="dim">{% translate "No account needed. You get a shop of your own with sample payments, closed after 24 hours. All money is simulated." %}</p>
 </section>
+<section class="card">
+  <h2>{% translate "See it in two minutes" %}</h2>
+  <ol class="steps">
+    <li>{% translate "As a shop, create a payment. Choose what the provider does, for instance “Moves 500 francs too much”." %}</li>
+    <li>{% translate "Watch it settle, and the signed webhook reach the shop's test server. Switch that server off to see the retries." %}</li>
+    <li>{% translate "Become an operator, and compare the statement with the books: the 500 francs are found." %}</li>
+    <li>{% translate "Propose a solution, then become the other operator to approve it. The books still balance." %}</li>
+  </ol>
+</section>
+</div>
 <section>
   <h2>{% translate "What goes wrong, and what happens here" %}</h2>
   <ul class="facts">
@@ -21,15 +32,6 @@
     <li class="card"><h3>{% translate "The code has a bug" %}</h3><p>{% translate "Postgres itself refuses an entry that does not balance, and any change to the past." %}</p></li>
     <li class="card"><h3>{% translate "Someone makes a mistake" %}</h3><p>{% translate "Nothing is edited. A mistake is undone by one exact opposite entry." %}</p></li>
   </ul>
-</section>
-<section>
-  <h2>{% translate "See it in two minutes" %}</h2>
-  <ol class="steps">
-    <li>{% translate "As a shop, create a payment. Choose what the provider does, for instance “Moves 500 francs too much”." %}</li>
-    <li>{% translate "Watch it settle, and the signed webhook reach the shop's test server. Switch that server off to see the retries." %}</li>
-    <li>{% translate "Become an operator, and compare the statement with the books: the 500 francs are found." %}</li>
-    <li>{% translate "Propose a solution, then become the other operator to approve it. The books still balance." %}</li>
-  </ol>
 </section>
 <section>
   <h2>{% translate "For developers" %}</h2>

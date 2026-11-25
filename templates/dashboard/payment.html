@@ -6,7 +6,7 @@
 <div id="live"{% if polled %} hx-get="{{ request.path }}" hx-trigger="every 3s" hx-target="this" hx-swap="outerHTML"{% endif %}>
 <div class="heading"><div><h1 class="amount">{{ payment.amount|francs }} {% include "dashboard/badge.html" with status=payment.status %}</h1><p class="dim break">{{ payment.reference }}</p></div>
 {% if left and user.can_refund %}<a class="button" href="{% url 'new-refund' payment.id %}" hx-get="{% url 'new-refund' payment.id %}" hx-target="#sheet-body" hx-swap="innerHTML">{% translate "Give a refund" %}</a>{% endif %}</div>
-{% if hidden_fault %}<p class="notice warn">{% translate "Here the provider does wrong, and only its statement shows it. To find out, become operator 1 and compare." %}</p>{% endif %}
+{% if hidden_fault %}<p class="notice warn">{% translate "Something is off with this payment, and only the provider's statement shows it. To catch it, become operator 1 and compare." %}</p>{% endif %}
 <div class="columns">
 <section class="card">
   <h2>{% translate "What happened" %}</h2>

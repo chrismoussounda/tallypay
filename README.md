@@ -146,6 +146,12 @@ passwords.
 - **Operators of a demo** see its discrepancies only, and can compare the statement at once. Those of
   shops do not see the demos. The one scenario that leads to no shop, money moved twice, is left out.
 
+## The look
+
+A ledger: ruled lines, figures in columns and a double line under what adds up. Red ink is for
+differences. The fonts are [Besley](https://github.com/indestructible-type/Besley) and
+[Public Sans](https://public-sans.digital.gov), served by the app, under the SIL Open Font License.
+
 ## Run it
 
 Needs [uv](https://docs.astral.sh/uv/) and Docker.

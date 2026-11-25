@@ -16,6 +16,7 @@ from api.refunds import REFUSALS
 from idempotency.service import KeyReused, once
 from ledger import books
 from ledger.models import Entry, Line
+from merchants import demos
 from payments import processing, service
 from payments.models import Payment
 from refunds import processing as refund_processing
@@ -24,6 +25,7 @@ from refunds.models import Refund
 from webhooks.models import Delivery
 
 from .core import (
+    DEMO_USED_UP,
     developer_page,
     done,
     merchant_of,
@@ -194,6 +196,8 @@ def new_payment(request: HttpRequest) -> HttpResponse:
             made, _again = once(merchant, *_asked(asked, "payment"), action)
         except KeyReused:
             form.add_error(None, _("This form was already sent. Open it again."))
+        except demos.UsedUp:
+            form.add_error(None, str(DEMO_USED_UP))
         else:
             return done(request, _("Payment created."), "payment", made["id"])
     return _form(request, "dashboard/new_payment.html", form)
@@ -222,6 +226,8 @@ def new_refund(request: HttpRequest, payment_id: uuid.UUID) -> HttpResponse:
             once(merchant, *_asked(asked, str(payment.id)), action)
         except KeyReused:
             form.add_error(None, _("This form was already sent. Open it again."))
+        except demos.UsedUp:
+            form.add_error(None, str(DEMO_USED_UP))
         except tuple(REFUSALS) as refusal:
             form.add_error("amount", _(REFUSALS[type(refusal)]))
         else:

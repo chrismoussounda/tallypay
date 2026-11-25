@@ -3,6 +3,7 @@ from typing import Any
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
+from accounts.models import User
 from merchants.models import ApiKey
 from provider.models import Scenario
 from refunds.models import Refund
@@ -75,6 +76,11 @@ class SignIn(forms.Form):
 
 class Password(forms.Form):
     password = _password()
+
+    def for_user(self, user: User) -> None:
+        """Nobody in a demo has a password."""
+        if user.demo_id:
+            del self.fields["password"]
 
 
 class NewPayment(Once):

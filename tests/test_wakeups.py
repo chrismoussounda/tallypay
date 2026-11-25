@@ -130,7 +130,7 @@ def test_the_command_says_what_is_missing(
 
 
 def test_the_pages_answer(client: Client) -> None:
-    assert b"None yet" in client.get("/").content
+    assert b"None yet" in client.get("/last-wakeup").content
     call(client, sign())
     assert b"Received" in client.get("/last-wakeup").content
     assert client.get("/healthz").json() == {"status": "ok"}

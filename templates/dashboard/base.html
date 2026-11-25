@@ -2,7 +2,7 @@
 {% block body %}
 <a class="skip" href="#main">{% translate "Skip to the page" %}</a>
 <header class="top">
-  <a class="brand" href="{% url 'start' %}"><img src="{% static 'logo.svg' %}" alt="" width="32" height="32">TallyPay</a>
+  <a class="brand" href="{% if user.demo %}{% url 'home' %}{% else %}{% url 'start' %}{% endif %}"><img src="{% static 'logo.svg' %}" alt="" width="32" height="32">TallyPay</a>
   <span class="who">{% if user.merchant %}{{ user.merchant.name }}{% else %}{% translate "Operations" %}{% endif %}</span>
   {% include "dashboard/language.html" %}
   <details class="menu">
@@ -26,7 +26,7 @@
   {% if user.role == "owner" %}{% include "dashboard/tab.html" with name="activity" starts="/app/activity" text=_("Activity") %}{% endif %}
   {% endif %}
 </nav>
-<p class="simulated">{% translate "All money here is simulated." %}</p>
+{% if user.demo %}{% include "dashboard/demo.html" %}{% else %}<p class="simulated">{% translate "All money here is simulated." %}</p>{% endif %}
 <main id="main">
   {% for message in messages %}<p class="notice" role="status">{{ message }}</p>{% endfor %}
   {% block main %}{% endblock %}

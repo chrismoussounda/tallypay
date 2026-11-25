@@ -5,16 +5,19 @@ from datetime import timedelta
 from functools import partial
 
 from django.db import transaction
+from django.db.models import QuerySet
 from django.utils import timezone
 
 from accounts.models import User
 from ledger import books
 from ledger.models import Account, Entry
+from merchants.models import Merchant
 from payments import service as payments
 from payments.models import Payment
 from provider import client, simulator
 from provider.models import Kind, Scenario
 from refunds import service as refunds
+from refunds.models import Refund
 from tasks import queue
 
 from .models import Discrepancy
@@ -38,9 +41,25 @@ def allowed(found: Discrepancy) -> set[str]:
     return {Action.RETURN, Action.WRITE_OFF} | ({Action.CREDIT} if known else set())
 
 
+def references_of(merchant: Merchant) -> set[uuid.UUID]:
+    """Its payments, its refunds, and the money returned for them."""
+    own = set(merchant.payments.values_list("id", flat=True))
+    own |= set(
+        Refund.objects.filter(payment__merchant=merchant).values_list("id", flat=True)
+    )
+    found = Discrepancy.objects.filter(reference__in=own)
+    return own | set(found.values_list("id", flat=True))
+
+
+def seen_by(user: User) -> QuerySet[Discrepancy]:
+    if user.demo is None:
+        return Discrepancy.objects.all()
+    return Discrepancy.objects.filter(reference__in=references_of(user.demo.merchant))
+
+
 @transaction.atomic
 def propose(found_id: uuid.UUID, action: str, by: User, note: str) -> Discrepancy:
-    _check(by)
+    _check(by, found_id)
     found = _lock(found_id, Status.OPEN)
     if not note:
         raise NotPossible("Say why.")
@@ -55,7 +74,7 @@ def propose(found_id: uuid.UUID, action: str, by: User, note: str) -> Discrepanc
 
 @transaction.atomic
 def reject(found_id: uuid.UUID, by: User, proposal: int) -> Discrepancy:
-    _check(by)
+    _check(by, found_id)
     found = _proposed(found_id, proposal)
     found.status, found.action = Status.OPEN, ""
     found.save()
@@ -64,7 +83,7 @@ def reject(found_id: uuid.UUID, by: User, proposal: int) -> Discrepancy:
 
 @transaction.atomic
 def approve(found_id: uuid.UUID, by: User, proposal: int) -> Discrepancy:
-    _check(by)
+    _check(by, found_id)
     found = _proposed(found_id, proposal)
     if by.email == found.proposed_by:
         raise NotPossible("Someone else must approve it.")
@@ -145,8 +164,9 @@ def settle_return(found_id: uuid.UUID, paid: bool) -> None:
     close(found, Action.RETURN, _post(found, provider, -found.amount))
 
 
-def _check(by: User) -> None:
-    if not (by.is_operator and by.is_active):
+def _check(by: User, found_id: uuid.UUID) -> None:
+    seen = seen_by(by).filter(id=found_id).exists()
+    if not (by.is_operator and by.is_active and seen):
         raise NotPossible("Only an operator can do this.")
 
 

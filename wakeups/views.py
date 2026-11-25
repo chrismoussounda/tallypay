@@ -13,11 +13,6 @@ def _last() -> dict[str, WakeUp | None]:
 
 
 @require_GET
-def home(request: HttpRequest) -> HttpResponse:
-    return render(request, "home.html", _last())
-
-
-@require_GET
 def last_wakeup(request: HttpRequest) -> HttpResponse:
     return render(request, "last_wakeup.html", _last())
 

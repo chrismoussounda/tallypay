@@ -1,8 +1,8 @@
 {% extends "dashboard/base.html" %}{% load i18n shown %}
 {% block title %}{% translate "Discrepancies" %}{% endblock %}
 {% block main %}
-<div class="heading"><h1>{% translate "Discrepancies" %}</h1></div>
-<p class="dim">{% translate "Where the provider's statement and our books differ. One person proposes a solution, another approves it." %}</p>
+<div class="heading"><h1>{% translate "Discrepancies" %}</h1>{% if user.demo %}<form method="post" action="{% url 'reconcile' %}">{% csrf_token %}<button>{% translate "Compare now" %}</button></form>{% endif %}</div>
+<p class="dim">{% translate "Where the provider's statement and our books differ. One person proposes a solution, another approves it." %}{% if user.demo %} {% translate "This is done every day. In a demo, also when you ask." %}{% endif %}</p>
 <div class="filters"><div class="segments" role="group" aria-label="{% translate 'Status' %}">
     <a href="{% querystring status=None after=None %}"{% if not status %} aria-current="true"{% endif %}>{% translate "All" %}</a>
     {% for s in statuses %}<a href="{% querystring status=s after=None %}"{% if s == status %} aria-current="true"{% endif %}>{{ s|word }}</a>{% endfor %}

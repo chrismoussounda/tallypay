@@ -22,6 +22,7 @@ TABLES = [
     "accounts_action",
     "accounts_attempt",
     "accounts_user",
+    "merchants_demo",
     "merchants_apikey",
     "merchants_merchant",
     "ledger_line",

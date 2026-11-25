@@ -1,9 +1,12 @@
 import uuid
+from datetime import datetime
 
 from django.db import transaction
+from django.utils import timezone
 
 from ledger import books
 from ledger.models import Account
+from merchants import demos
 from merchants.models import Merchant
 from provider.models import Scenario
 from webhooks import service as webhooks
@@ -29,6 +32,7 @@ def create(
     reference: str,
     scenario: str = Scenario.NORMAL,
 ) -> Payment:
+    demos.spend(merchant)
     payment = Payment.objects.create(
         merchant=merchant, amount=amount, reference=reference, scenario=scenario
     )
@@ -37,7 +41,7 @@ def create(
 
 
 @transaction.atomic
-def succeed(payment_id: uuid.UUID) -> Payment:
+def succeed(payment_id: uuid.UUID, at: datetime | None = None) -> Payment:
     """Puts the payment in the books, once however many times it is called."""
     payment, done = _lock(payment_id, Payment.Status.SUCCEEDED)
     if done:
@@ -50,13 +54,13 @@ def succeed(payment_id: uuid.UUID) -> Payment:
     if fee:
         amounts[books.system("fees", Account.Kind.INCOME)] = -fee
     payment.entry = books.post(f"Payment {payment.id}", amounts)
-    return _settle(payment, Payment.Status.SUCCEEDED)
+    return _settle(payment, Payment.Status.SUCCEEDED, at)
 
 
 @transaction.atomic
-def fail(payment_id: uuid.UUID) -> Payment:
+def fail(payment_id: uuid.UUID, at: datetime | None = None) -> Payment:
     payment, done = _lock(payment_id, Payment.Status.FAILED)
-    return payment if done else _settle(payment, Payment.Status.FAILED)
+    return payment if done else _settle(payment, Payment.Status.FAILED, at)
 
 
 def _lock(payment_id: uuid.UUID, wanted: Payment.Status) -> tuple[Payment, bool]:
@@ -70,10 +74,12 @@ def _lock(payment_id: uuid.UUID, wanted: Payment.Status) -> tuple[Payment, bool]
     return payment, payment.status == wanted
 
 
-def _settle(payment: Payment, status: Payment.Status) -> Payment:
+def _settle(payment: Payment, status: Payment.Status, at: datetime | None) -> Payment:
     payment.status = status
     payment.save(update_fields=["status", "entry"])
-    payment.events.create(kind=PaymentEvent.Kind(status.value))
+    payment.events.create(
+        kind=PaymentEvent.Kind(status.value), created_at=at or timezone.now()
+    )
     webhooks.emit(
         payment.merchant,
         f"payment.{status.value}",

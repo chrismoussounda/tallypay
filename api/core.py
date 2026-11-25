@@ -10,7 +10,7 @@ from ninja.security import HttpBearer
 
 from idempotency.service import KeyReused
 from limits.service import Limit, TooMany
-from merchants import keys
+from merchants import demos, keys
 from merchants.models import Merchant
 
 # For each merchant.
@@ -79,6 +79,11 @@ def _too_many(request: HttpRequest, exc: TooMany) -> HttpResponse:
     )
     response["Retry-After"] = str(exc.wait)
     return response
+
+
+@api.exception_handler(demos.UsedUp)
+def _used_up(request: HttpRequest, exc: Any) -> HttpResponse:
+    return error(request, 403, "demo_used_up", "The demo is used up for today.")
 
 
 @api.exception_handler(ValidationError)

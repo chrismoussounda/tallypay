@@ -6,6 +6,7 @@ from typing import Any
 from django.db import transaction
 from django.utils import timezone
 
+from merchants import demos
 from merchants.models import Merchant
 from tasks import queue
 
@@ -34,6 +35,8 @@ class Removed(Exception):
 @transaction.atomic
 def add_endpoint(merchant: Merchant, url: str) -> Endpoint:
     sender.check(url)
+    if hasattr(merchant, "demo"):
+        raise sender.Refused("A demo has an address of its own, and no other.")
     # Locked, so that two requests at once cannot both be the last allowed.
     Merchant.objects.select_for_update().get(id=merchant.id)
     if merchant.endpoints.filter(removed_at=None).count() >= MAX_ENDPOINTS:
@@ -121,13 +124,14 @@ def replay(delivery_id: uuid.UUID) -> Delivery:
     """Sends again what was delivered or had failed, with all its retries."""
     delivery = (
         Delivery.objects.select_for_update(of=("self",))
-        .select_related("event", "endpoint")
+        .select_related("event", "endpoint__merchant")
         .get(id=delivery_id)
     )
     if delivery.status == Delivery.Status.PENDING:
         raise UnderWay
     if delivery.endpoint.removed_at:
         raise Removed
+    demos.spend(delivery.endpoint.merchant)
     delivery.status = Delivery.Status.PENDING
     delivery.tries_before = delivery.tries
     delivery.save(update_fields=["status", "tries_before"])

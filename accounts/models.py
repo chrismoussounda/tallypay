@@ -4,7 +4,7 @@ from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.db import models
 from django.db.models import Q
 
-from merchants.models import Merchant
+from merchants.models import Demo, Merchant
 
 
 class UserManager(BaseUserManager["User"]):
@@ -36,6 +36,10 @@ class User(AbstractBaseUser):
         related_name="users",
         null=True,
         blank=True,
+    )
+    # Someone made up for a demo. An operator of one sees nothing else.
+    demo = models.ForeignKey(
+        Demo, on_delete=models.PROTECT, related_name="people", null=True, blank=True
     )
     is_active = models.BooleanField(default=True)
 

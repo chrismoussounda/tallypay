@@ -789,3 +789,155 @@ msgstr "Il n’y a rien à cette adresse."
 
 msgid "To the dashboard"
 msgstr "Au tableau de bord"
+
+msgid "All other merchants"
+msgstr "Tous les autres marchands"
+
+msgid "Too fast"
+msgstr "Trop vite"
+
+msgid "Wait a few seconds, then try again."
+msgstr "Attendez quelques secondes, puis réessayez."
+
+msgid "The demo is used up for today."
+msgstr "La démo est épuisée pour aujourd’hui."
+
+msgid "The statement was compared with the books."
+msgstr "Le relevé a été comparé aux livres."
+
+msgid "You opened several demos. Try again in an hour."
+msgstr "Vous avez ouvert plusieurs démos. Réessayez dans une heure."
+
+msgid "All of today's demos are open. Try tomorrow."
+msgstr "Toutes les démos du jour sont ouvertes. Réessayez demain."
+
+msgid "A demo has an address of its own, and no other."
+msgstr "Une démo a sa propre adresse, et aucune autre."
+
+msgid "Payments that add up"
+msgstr "Des paiements qui tombent juste"
+
+msgid "Payments that add up, even when the provider fails"
+msgstr "Des paiements qui tombent juste, même quand le prestataire défaille"
+
+msgid "TallyPay takes mobile-money payments for shops. When the provider goes silent, answers twice or takes the wrong amount, no franc is lost, duplicated or made up."
+msgstr "TallyPay encaisse des paiements mobile money pour des boutiques. Quand le prestataire se tait, répond deux fois ou prélève un mauvais montant, aucun franc n’est perdu, doublé ni inventé."
+
+msgid "Try it as a shop"
+msgstr "Essayer comme boutique"
+
+msgid "Try it as an operator"
+msgstr "Essayer comme opérateur"
+
+msgid "No account needed. You get a shop of your own with sample payments, closed after 24 hours. All money is simulated."
+msgstr "Sans compte. Vous recevez votre propre boutique avec des paiements d’exemple, fermée après 24 heures. Tout l’argent est simulé."
+
+msgid "What goes wrong, and what happens here"
+msgstr "Ce qui tourne mal, et ce qui se passe ici"
+
+msgid "The answer never comes"
+msgstr "La réponse ne vient jamais"
+
+msgid "The next check is written down before the provider is asked. A crash cannot lose the payment."
+msgstr "La prochaine vérification est notée avant d’appeler le prestataire. Une panne ne peut pas perdre le paiement."
+
+msgid "The same request comes twice"
+msgstr "La même demande arrive deux fois"
+
+msgid "The shop's own key makes it one payment. The second request gets the first answer."
+msgstr "La clé de la boutique en fait un seul paiement. La seconde demande reçoit la première réponse."
+
+msgid "The wrong amount is taken"
+msgstr "Un mauvais montant est prélevé"
+
+msgid "The daily comparison with the provider finds it. One person proposes a solution, another approves it."
+msgstr "La comparaison quotidienne avec le prestataire le trouve. Une personne propose une solution, une autre l’approuve."
+
+msgid "The shop's server is down"
+msgstr "Le serveur de la boutique est en panne"
+
+msgid "Signed webhooks are tried again for about 31 hours, then can be sent again by hand."
+msgstr "Les webhooks signés sont réessayés pendant environ 31 heures, puis peuvent être renvoyés à la main."
+
+msgid "The code has a bug"
+msgstr "Le code a une erreur"
+
+msgid "Postgres itself refuses an entry that does not balance, and any change to the past."
+msgstr "Postgres refuse lui-même une écriture déséquilibrée, et toute modification du passé."
+
+msgid "Someone makes a mistake"
+msgstr "Quelqu’un se trompe"
+
+msgid "Nothing is edited. A mistake is undone by one exact opposite entry."
+msgstr "Rien n’est modifié. Une erreur est annulée par une écriture exactement inverse."
+
+msgid "See it in two minutes"
+msgstr "À voir en deux minutes"
+
+msgid "As a shop, create a payment. Choose what the provider does, for instance “Moves 500 francs too much”."
+msgstr "Comme boutique, créez un paiement. Choisissez ce que fait le prestataire, par exemple qu’il prélève 500 francs de trop."
+
+msgid "Watch it settle, and the signed webhook reach the shop's test server. Switch that server off to see the retries."
+msgstr "Regardez-le aboutir, et le webhook signé arriver au serveur de test de la boutique. Éteignez ce serveur pour voir les nouveaux essais."
+
+msgid "Become an operator, and compare the statement with the books: the 500 francs are found."
+msgstr "Devenez opérateur, et comparez le relevé aux livres : les 500 francs sont trouvés."
+
+msgid "Propose a solution, then become the other operator to approve it. The books still balance."
+msgstr "Proposez une solution, puis devenez l’autre opérateur pour l’approuver. Les livres restent équilibrés."
+
+msgid "For developers"
+msgstr "Pour les développeurs"
+
+msgid "Python, Django, Postgres and HTMX. The whole code is public."
+msgstr "Python, Django, Postgres et HTMX. Tout le code est public."
+
+msgid "How it was built"
+msgstr "Comment il a été construit"
+
+msgid "API documentation"
+msgstr "Documentation de l’API"
+
+msgid "Code on GitHub"
+msgstr "Code sur GitHub"
+
+msgid "A demo: all money is simulated."
+msgstr "Une démo : tout l’argent est simulé."
+
+#, python-format
+msgid "It closes on %(until)s."
+msgstr "Elle ferme le %(until)s."
+
+#, python-format
+msgid "%(left)s more payments, refunds or resends."
+msgstr "Encore %(left)s paiements, remboursements ou renvois."
+
+msgid "Seen as"
+msgstr "Vu comme"
+
+msgid "Shop"
+msgstr "Boutique"
+
+msgid "Compare now"
+msgstr "Comparer maintenant"
+
+msgid "This is done every day. In a demo, also when you ask."
+msgstr "Cela se fait chaque jour. Dans une démo, aussi à votre demande."
+
+msgid "A demo has one address, a test server that checks each signature. It cannot have others, so that nobody makes it call strangers."
+msgstr "Une démo a une seule adresse : un serveur de test qui vérifie chaque signature. Elle ne peut pas en avoir d’autres, pour que personne ne lui fasse appeler des inconnus."
+
+msgid "The test server works."
+msgstr "Le serveur de test fonctionne."
+
+msgid "Switch it off"
+msgstr "L’éteindre"
+
+msgid "The test server is off: webhooks fail, then are tried again."
+msgstr "Le serveur de test est éteint : les webhooks échouent, puis sont réessayés."
+
+msgid "Switch it on"
+msgstr "L’allumer"
+
+msgid "Try the demo instead, without an account"
+msgstr "Essayer plutôt la démo, sans compte"

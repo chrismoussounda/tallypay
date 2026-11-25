@@ -64,6 +64,8 @@ def confirmed(request: HttpRequest, form: Password) -> bool:
     """Whether the form is right, the password of the user included."""
     if not form.is_valid():
         return False
+    if user_of(request).demo_id:
+        return True
     try:
         user = signin.check(
             request, user_of(request).email, form.cleaned_data["password"]

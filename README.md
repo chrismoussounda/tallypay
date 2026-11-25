@@ -151,7 +151,7 @@ On Vercel, with Neon for Postgres and QStash for delayed calls. Set the variable
 migrations; previews never do, and need a database of their own.
 
 With the live `PUBLIC_URL`, `QSTASH_URL` and `QSTASH_TOKEN` set, this asks for a call in 60
-seconds. The home page then shows when it arrived:
+seconds. `/last-wakeup` then shows when it arrived:
 
 ```sh
 uv run python manage.py prove_wakeup --delay 60

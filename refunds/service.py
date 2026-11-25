@@ -6,6 +6,7 @@ from django.utils import timezone
 
 from ledger import books
 from ledger.models import Account, Entry
+from merchants import demos
 from merchants.models import Merchant
 from payments.models import Payment
 from provider.models import Scenario
@@ -62,6 +63,7 @@ def create(
         raise TooMuch
     if amount > -books.balance(merchant.account):
         raise NotEnough
+    demos.spend(merchant)
     refund = Refund(payment=payment, amount=amount, scenario=scenario, reason=reason)
     refund.hold = books.post(
         f"Refund {refund.id}", {merchant.account: amount, _set_aside(): -amount}

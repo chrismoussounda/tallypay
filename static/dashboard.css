@@ -166,6 +166,27 @@ figcaption { display: flex; justify-content: space-between; font-size: 14px; }
 .sign-in .card { width: 100%; display: grid; gap: 14px; padding: 28px; }
 .sign-in .card > * { margin: 0; }
 
+.demo { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 20px; }
+.demo p { margin: 0; }
+.demo form { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.segments button { min-height: 40px; padding: 6px 16px; border: 0; border-radius: 8px; background: none; color: inherit; font-weight: 500; }
+.segments button[aria-current] { background: var(--accent); color: var(--on-accent); }
+.site { gap: 48px; }
+.site section { display: grid; gap: 16px; }
+.site section > * { margin: 0; }
+.hero h1 { font-size: clamp(30px, 5vw, 48px); text-wrap: balance; }
+.hero > p { max-width: 70ch; font-size: 18px; }
+.hero p.dim { font-size: 16px; }
+.facts { list-style: none; padding: 0; display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); }
+.facts h3, .facts p { margin: 0; }
+.facts p { margin-top: 6px; }
+.steps { padding-left: 24px; display: grid; gap: 10px; }
+article { max-width: 75ch; }
+article h2 { margin: 32px 0 8px; font-size: 22px; }
+article h3 { margin: 20px 0 4px; font-size: 16px; }
+article p { margin: 6px 0; }
+article li { margin: 6px 0; }
+
 @media (min-width: 768px) {
   main { padding: 28px 32px 64px; }
   .top { padding: 10px 32px; }

@@ -1,11 +1,14 @@
 from django.urls import path
 
-from . import developers, operators, payments, sessions
+from . import demo, developers, operators, payments, sessions
 
 urlpatterns = [
     path("", sessions.start, name="start"),
     path("sign-in", sessions.sign_in, name="sign-in"),
     path("sign-out", sessions.sign_out, name="sign-out"),
+    path("demo/become", demo.become, name="become"),
+    path("demo/reconcile", demo.reconcile, name="reconcile"),
+    path("demo/inbox", demo.switch_inbox, name="switch-inbox"),
     path("overview", payments.overview, name="overview"),
     path("payments", payments.payment_list, name="payments"),
     path("payments/new", payments.new_payment, name="new-payment"),

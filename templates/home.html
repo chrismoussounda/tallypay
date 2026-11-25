@@ -1,24 +1,39 @@
-{% load static %}<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>TallyPay</title>
-    <link rel="icon" href="{% static 'favicon.ico' %}" sizes="32x32">
-    <link rel="icon" href="{% static 'logo.svg' %}" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="{% static 'apple-touch-icon.png' %}">
-    <link rel="stylesheet" href="{% static 'app.css' %}">
-    <script src="{% static 'vendor/htmx-2.0.11.min.js' %}" defer></script>
-  </head>
-  <body>
-    <main>
-      <h1><img src="{% static 'logo.svg' %}" alt="" width="40" height="40">TallyPay</h1>
-      <p>A payment ledger and webhook gateway, in progress. All money is simulated.</p>
-      <section>
-        <h2>Last delayed call</h2>
-        <div id="last" aria-live="polite">{% include "last_wakeup.html" %}</div>
-        <button type="button" hx-get="{% url 'last-wakeup' %}" hx-target="#last">Refresh</button>
-      </section>
-    </main>
-  </body>
-</html>
+{% extends "site.html" %}{% load i18n %}
+{% block title %}{% translate "Payments that add up" %}{% endblock %}
+{% block main %}
+{% for message in messages %}<p class="notice warn" role="alert">{{ message }}</p>{% endfor %}
+<section class="hero">
+  <h1>{% translate "Payments that add up, even when the provider fails" %}</h1>
+  <p>{% translate "TallyPay takes mobile-money payments for shops. When the provider goes silent, answers twice or takes the wrong amount, no franc is lost, duplicated or made up." %}</p>
+  <div class="actions">
+    <form method="post" action="{% url 'open-demo' %}">{% csrf_token %}<button name="who" value="owner">{% translate "Try it as a shop" %}</button></form>
+    <form method="post" action="{% url 'open-demo' %}">{% csrf_token %}<button class="second" name="who" value="proposer">{% translate "Try it as an operator" %}</button></form>
+  </div>
+  <p class="dim">{% translate "No account needed. You get a shop of your own with sample payments, closed after 24 hours. All money is simulated." %}</p>
+</section>
+<section>
+  <h2>{% translate "What goes wrong, and what happens here" %}</h2>
+  <ul class="facts">
+    <li class="card"><h3>{% translate "The answer never comes" %}</h3><p>{% translate "The next check is written down before the provider is asked. A crash cannot lose the payment." %}</p></li>
+    <li class="card"><h3>{% translate "The same request comes twice" %}</h3><p>{% translate "The shop's own key makes it one payment. The second request gets the first answer." %}</p></li>
+    <li class="card"><h3>{% translate "The wrong amount is taken" %}</h3><p>{% translate "The daily comparison with the provider finds it. One person proposes a solution, another approves it." %}</p></li>
+    <li class="card"><h3>{% translate "The shop's server is down" %}</h3><p>{% translate "Signed webhooks are tried again for about 31 hours, then can be sent again by hand." %}</p></li>
+    <li class="card"><h3>{% translate "The code has a bug" %}</h3><p>{% translate "Postgres itself refuses an entry that does not balance, and any change to the past." %}</p></li>
+    <li class="card"><h3>{% translate "Someone makes a mistake" %}</h3><p>{% translate "Nothing is edited. A mistake is undone by one exact opposite entry." %}</p></li>
+  </ul>
+</section>
+<section>
+  <h2>{% translate "See it in two minutes" %}</h2>
+  <ol class="steps">
+    <li>{% translate "As a shop, create a payment. Choose what the provider does, for instance “Moves 500 francs too much”." %}</li>
+    <li>{% translate "Watch it settle, and the signed webhook reach the shop's test server. Switch that server off to see the retries." %}</li>
+    <li>{% translate "Become an operator, and compare the statement with the books: the 500 francs are found." %}</li>
+    <li>{% translate "Propose a solution, then become the other operator to approve it. The books still balance." %}</li>
+  </ol>
+</section>
+<section>
+  <h2>{% translate "For developers" %}</h2>
+  <p>{% translate "Python, Django, Postgres and HTMX. The whole code is public." %}</p>
+  <div class="actions"><a class="button second" href="{% url 'about' %}">{% translate "How it was built" %}</a><a class="button second" href="/v1/docs">{% translate "API documentation" %}</a><a class="button second" href="https://github.com/chrismoussounda/tallypay">{% translate "Code on GitHub" %}</a></div>
+</section>
+{% endblock %}

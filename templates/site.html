@@ -1,0 +1,11 @@
+{% extends "dashboard/shell.html" %}{% load static i18n %}
+{% block body %}
+<a class="skip" href="#main">{% translate "Skip to the page" %}</a>
+<header class="top">
+  <a class="brand" href="{% url 'home' %}"><img src="{% static 'logo.svg' %}" alt="" width="32" height="32">TallyPay</a>
+  <span class="who"></span>
+  {% include "dashboard/language.html" %}
+  <a class="button second small" href="{% url 'sign-in' %}">{% if user.is_authenticated %}{% translate "To the dashboard" %}{% else %}{% translate "Sign in" %}{% endif %}</a>
+</header>
+<main id="main" class="site">{% block main %}{% endblock %}</main>
+{% endblock %}

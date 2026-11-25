@@ -11,7 +11,7 @@
 </section>
 <section class="card">
   <h2>{% translate "Owed to merchants" %}</h2>
-  {% if merchants %}<table class="list"><thead><tr><th scope="col">{% translate "Merchant" %}</th><th scope="col" class="number">{% translate "Balance" %}</th></tr></thead><tbody>{% for account, amount in merchants %}<tr><td class="lead">{{ account.name }}</td><td class="number">{{ amount|francs }}</td></tr>{% endfor %}{% if user.demo %}<tr><td class="lead">{% translate "All other merchants" %}</td><td class="number">{{ others|francs }}</td></tr>{% endif %}</tbody></table>{% else %}<p class="dim">{% translate "No merchant yet." %}</p>{% endif %}
+  {% if merchants or others is not None %}<table class="list"><thead><tr><th scope="col">{% translate "Merchant" %}</th><th scope="col" class="number">{% translate "Balance" %}</th></tr></thead><tbody>{% for account, amount in merchants %}<tr><td class="lead">{{ account.name }}</td><td class="number">{{ amount|francs }}</td></tr>{% endfor %}{% if others is not None %}<tr><td class="lead">{% if user.demo %}{% translate "All other merchants" %}{% else %}{% translate "All demos" %}{% endif %}</td><td class="number">{{ others|francs }}</td></tr>{% endif %}</tbody></table>{% else %}<p class="dim">{% translate "No merchant yet." %}</p>{% endif %}
 </section>
 </div>
 {% endblock %}

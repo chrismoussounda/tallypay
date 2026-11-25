@@ -140,10 +140,11 @@ passwords.
 - **Nothing is deleted.** After 24 hours its users, keys and address are closed. Its entries stay, as
   the books have no way to lose one.
 - **Limits:** 3 demos an hour for each address, 50 a day in all; 20 payments, refunds or webhooks
-  sent again for each demo, 80 a day in all. The visitor's address is kept hashed, while it is open.
+  sent again for each demo, 50 a day in all, and webhooks tried again 3 times only. The visitor's address is kept hashed, while it is open.
 - **Webhooks go only to a test server** of the app itself, which checks their signatures. The visitor
   can switch it off to see the retries.
-- **Operators of a demo** see its discrepancies only, and can compare the statement at once.
+- **Operators of a demo** see its discrepancies only, and can compare the statement at once. Those of
+  shops do not see the demos. The one scenario that leads to no shop, money moved twice, is left out.
 
 ## Run it
 

@@ -27,16 +27,17 @@ def account_list(request: HttpRequest) -> HttpResponse:
     own = accounts.exclude(code__startswith="merchant:").order_by("kind", "code")
     owed = accounts.filter(code__startswith="merchant:")
     demo = user_of(request).demo
-    others: Any = 0
     if demo:
-        mine = demo.merchant.account
-        others = owed.exclude(id=mine.id).aggregate(all=Sum("total"))["all"]
-        owed = owed.filter(id=mine.id)
+        shown = owed.filter(id=demo.merchant.account_id)
+    else:
+        shown = owed.filter(merchant__demo=None)
+    ids = shown.values("id")
+    others: Any = owed.exclude(id__in=ids).aggregate(all=Sum("total"))["all"]
     total: Any = accounts.aggregate(all=Sum("total"))["all"]
     context = {
         "accounts": [(a, _natural(a)) for a in own],
-        "merchants": [(a, _natural(a)) for a in owed.order_by("total", "name")[:100]],
-        "others": -int(others or 0),
+        "merchants": [(a, _natural(a)) for a in shown.order_by("total", "name")[:100]],
+        "others": None if others is None else -int(others),
         "difference": int(total or 0),
         "entries": Entry.objects.count(),
     }

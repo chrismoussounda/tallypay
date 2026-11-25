@@ -1,15 +1,12 @@
 """What only the visitor of a demo can do."""
 
-import time
-
 from django.contrib import messages
 from django.contrib.auth import login
-from django.http import HttpRequest, HttpResponse
+from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
-from accounts.middleware import STARTED
 from accounts.models import User
 from merchants.models import Demo
 from reconciliation import matching
@@ -17,26 +14,28 @@ from reconciliation import matching
 from .core import demo_page, user_of
 
 BACKEND = "django.contrib.auth.backends.ModelBackend"
+WHO = {"owner", "proposer", "approver"}
 
 
 def enter(request: HttpRequest, user: User) -> None:
     """Without a password, which nobody in a demo has."""
-    current = request.user
-    same = isinstance(current, User) and current.demo_id == user.demo_id
-    # Becoming someone else does not make the visit longer.
-    started = request.session.get(STARTED) if same else None
+    assert user.demo is not None  # noqa: S101
     login(request, user, backend=BACKEND)
-    request.session[STARTED] = started or time.time()
+    # Kept while the demo is open, as it is the only way back into it.
+    request.session.set_expiry(user.demo.closes_at)
 
 
 @demo_page
 @require_POST
 def become(request: HttpRequest) -> HttpResponse:
+    who = request.POST.get("who", "")
+    if who not in WHO:
+        raise Http404
     person = get_object_or_404(
         User,
         demo=user_of(request).demo,
         is_active=True,
-        email__startswith=f"{request.POST.get('who', '')[:20]}-",
+        email__startswith=f"{who}-",
     )
     enter(request, person)
     return redirect("start")

@@ -796,8 +796,17 @@ msgstr "Tous les autres marchands"
 msgid "Too fast"
 msgstr "Trop vite"
 
-msgid "Wait a few seconds, then try again."
-msgstr "Attendez quelques secondes, puis réessayez."
+msgid "Wait a few minutes, then try again."
+msgstr "Attendez quelques minutes, puis réessayez."
+
+msgid "You are signed in. Sign out to try the demo."
+msgstr "Vous êtes connecté. Déconnectez-vous pour essayer la démo."
+
+msgid "Leave this demo for good"
+msgstr "Quitter cette démo définitivement"
+
+msgid "All demos"
+msgstr "Toutes les démos"
 
 msgid "The demo is used up for today."
 msgstr "La démo est épuisée pour aujourd’hui."
@@ -856,8 +865,8 @@ msgstr "La comparaison quotidienne avec le prestataire le trouve. Une personne p
 msgid "The shop's server is down"
 msgstr "Le serveur de la boutique est en panne"
 
-msgid "Signed webhooks are tried again for about 31 hours, then can be sent again by hand."
-msgstr "Les webhooks signés sont réessayés pendant environ 31 heures, puis peuvent être renvoyés à la main."
+msgid "Signed webhooks are tried again for about 31 hours, or 11 minutes in a demo. Then they can be sent again by hand."
+msgstr "Les webhooks signés sont réessayés pendant environ 31 heures, ou 11 minutes dans une démo. Ensuite, on peut les renvoyer à la main."
 
 msgid "The code has a bug"
 msgstr "Le code a une erreur"

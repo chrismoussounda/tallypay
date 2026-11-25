@@ -41,7 +41,9 @@ def revoke(key: ApiKey) -> None:
 def owner(key: str) -> Merchant | None:
     found = (
         ApiKey.objects.filter(key_hash=_hash(key), revoked_at=None)
-        .select_related("merchant")
+        .select_related("merchant__demo")
         .first()
     )
-    return found.merchant if found else None
+    if found is None or (hasattr(found.merchant, "demo") and found.merchant.demo.over):
+        return None
+    return found.merchant

@@ -23,6 +23,7 @@ TABLES = [
     "accounts_attempt",
     "accounts_user",
     "merchants_demo",
+    "merchants_demoday",
     "merchants_apikey",
     "merchants_merchant",
     "ledger_line",

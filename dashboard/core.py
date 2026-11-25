@@ -20,7 +20,7 @@ from merchants.models import Merchant
 View = Callable[..., HttpResponse]
 PAGE = 20
 # So that a demo cannot fill the database.
-DEMO_LIMIT = Limit(per_second=0.5, burst=30)
+DEMO_LIMIT = Limit(per_second=1 / 120, burst=100)
 DEMO_USED_UP = _("The demo is used up for today.")
 
 

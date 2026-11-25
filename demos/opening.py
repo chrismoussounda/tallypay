@@ -104,14 +104,18 @@ def _sample(
         created_at=at,
     )
     payment.events.create(kind=PaymentEvent.Kind.CREATED, created_at=at)
+    settled = at + timedelta(seconds=5)
     more = 500 if scenario == Scenario.WRONG_AMOUNT else 0
     Charge.objects.create(
-        reference=payment.id, amount=amount + more, scenario=scenario, decided_at=at
+        reference=payment.id,
+        amount=amount + more,
+        scenario=scenario,
+        decided_at=settled,
     )
     if scenario == Scenario.DECLINE:
-        payments.fail(payment.id, at)
+        payments.fail(payment.id, settled)
     elif scenario != Scenario.SILENT:
-        payments.succeed(payment.id, at)
+        payments.succeed(payment.id, settled)
 
 
 @queue.handles("close_demo")
@@ -124,7 +128,6 @@ def _close(merchant_id: uuid.UUID, attempt: int) -> None:
     demo.closed_at, demo.address = timezone.now(), ""
     demo.save(update_fields=["closed_at", "address"])
     User.objects.filter(demo=demo).update(is_active=False)
-    for key in demo.merchant.keys.filter(revoked_at=None):
-        keys.revoke(key)
+    demo.merchant.keys.filter(revoked_at=None).update(revoked_at=timezone.now())
     for endpoint in demo.merchant.endpoints.filter(removed_at=None):
         webhooks.remove_endpoint(endpoint)

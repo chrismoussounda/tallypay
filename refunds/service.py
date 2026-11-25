@@ -50,7 +50,8 @@ def create(
     reason: str = Refund.Reason.REQUESTED,
 ) -> Refund:
     """Sets the money aside at once. The fee of the payment is not given back."""
-    payment = Payment.objects.get(id=payment_id)
+    payment = Payment.objects.select_related("merchant").get(id=payment_id)
+    demos.spend(payment.merchant, scenario)
     # Locked, so that refunds at the same time cannot add up to too much.
     merchant = (
         Merchant.objects.select_for_update(of=("self",))
@@ -63,7 +64,6 @@ def create(
         raise TooMuch
     if amount > -books.balance(merchant.account):
         raise NotEnough
-    demos.spend(merchant)
     refund = Refund(payment=payment, amount=amount, scenario=scenario, reason=reason)
     refund.hold = books.post(
         f"Refund {refund.id}", {merchant.account: amount, _set_aside(): -amount}

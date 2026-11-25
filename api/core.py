@@ -86,6 +86,11 @@ def _used_up(request: HttpRequest, exc: Any) -> HttpResponse:
     return error(request, 403, "demo_used_up", "The demo is used up for today.")
 
 
+@api.exception_handler(demos.NotInDemo)
+def _not_in_demo(request: HttpRequest, exc: Any) -> HttpResponse:
+    return error(request, 422, "not_in_demo", "A demo does not have this scenario.")
+
+
 @api.exception_handler(ValidationError)
 def _invalid(request: HttpRequest, exc: ValidationError) -> HttpResponse:
     problems = [f"{e['loc'][-1]}: {e['msg']}" for e in exc.errors]

@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from typing import ClassVar
 
 from django.db import models
+from django.utils import timezone
 
 from ledger.models import Account
 
@@ -47,8 +48,23 @@ class Demo(models.Model):
         return self.created_at + self.LASTS
 
     @property
+    def over(self) -> bool:
+        """By date too, as the task that closes it may be late."""
+        return self.closed_at is not None or timezone.now() >= self.closes_at
+
+    @property
     def left(self) -> int:
         return max(self.MOST - self.used, 0)
+
+
+class DemoDay(models.Model):
+    """What all the demos did in a day."""
+
+    day = models.DateField(primary_key=True)
+    used = models.PositiveIntegerField(default=0)
+
+    def __str__(self) -> str:
+        return str(self.day)
 
 
 class ApiKey(models.Model):

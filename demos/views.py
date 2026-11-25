@@ -2,7 +2,7 @@ import hmac
 import uuid
 
 from django.contrib import messages
-from django.http import HttpRequest, HttpResponse
+from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.translation import get_language
@@ -42,6 +42,9 @@ def open_demo(request: HttpRequest) -> HttpResponse:
     who = request.POST.get("who", "")
     if who not in WHO:
         return HttpResponse(status=400)
+    if request.user.is_authenticated and _mine(request) is None:
+        messages.error(request, _("You are signed in. Sign out to try the demo."))
+        return redirect("home")
     try:
         demo = _mine(request) or opening.open_one(address_of(request))
     except opening.TooMany:
@@ -64,7 +67,9 @@ def _mine(request: HttpRequest) -> Demo | None:
 @require_POST
 def inbox(request: HttpRequest, merchant_id: uuid.UUID) -> HttpResponse:
     """A merchant's server, which checks the signature and keeps nothing."""
-    demo = get_object_or_404(Demo, merchant_id=merchant_id, closed_at=None)
+    demo = get_object_or_404(Demo, merchant_id=merchant_id)
+    if demo.over:
+        raise Http404
     if not demo.inbox_works:
         return HttpResponse(status=503)
     return HttpResponse(status=204 if _signed(request, demo) else 401)
@@ -77,7 +82,7 @@ def _signed(request: HttpRequest, demo: Demo) -> bool:
         sent = int(request.headers.get("Webhook-Timestamp", ""))
     except ValueError:
         return False
-    if abs(timezone.now().timestamp() - sent) > TOLERANCE:
+    if abs(int(timezone.now().timestamp()) - sent) > TOLERANCE:
         return False
     for endpoint in demo.merchant.endpoints.filter(removed_at=None):
         secret = signing.secret_of(endpoint.id)

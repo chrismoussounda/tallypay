@@ -4,6 +4,7 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 
 from accounts.models import User
+from merchants import demos
 from merchants.models import ApiKey
 from provider.models import Scenario
 from refunds.models import Refund
@@ -48,10 +49,14 @@ def _password(label: Any = YOUR_PASSWORD) -> forms.CharField:
     )
 
 
+def _scenarios() -> list[tuple[str, Any]]:
+    return [(value, words.WORDS[value]) for value in Scenario.values]
+
+
 def _scenario() -> forms.ChoiceField:
     return forms.ChoiceField(
         label=_("What the simulated provider does"),
-        choices=[(value, words.WORDS[value]) for value in Scenario.values],
+        choices=_scenarios(),
         initial=Scenario.NORMAL,
         widget=forms.RadioSelect,
     )
@@ -83,7 +88,17 @@ class Password(forms.Form):
             del self.fields["password"]
 
 
-class NewPayment(Once):
+class Simulated(Once):
+    scenario = _scenario()
+
+    def for_user(self, user: User) -> None:
+        field = self.fields["scenario"]
+        assert isinstance(field, forms.ChoiceField)  # noqa: S101
+        if user.demo_id:
+            field.choices = [c for c in _scenarios() if c[0] not in demos.NOT_HERE]
+
+
+class NewPayment(Simulated):
     amount = _amount()
     reference = forms.RegexField(
         label=_("Reference"),
@@ -91,10 +106,10 @@ class NewPayment(Once):
         max_length=64,
         widget=_text(_("Order 1042"), autocomplete="off"),
     )
-    scenario = _scenario()
+    field_order = ("once", "amount", "reference", "scenario")
 
 
-class NewRefund(Once):
+class NewRefund(Simulated):
     amount = _amount()
     reason = forms.ChoiceField(
         label=_("Reason"),
@@ -102,7 +117,7 @@ class NewRefund(Once):
         initial=Refund.Reason.REQUESTED,
         widget=forms.RadioSelect,
     )
-    scenario = _scenario()
+    field_order = ("once", "amount", "reason", "scenario")
 
 
 class NewKey(Password):

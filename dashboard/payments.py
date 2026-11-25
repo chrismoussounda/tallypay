@@ -35,6 +35,7 @@ from .core import (
     refunds_page,
     rows,
     sheet,
+    user_of,
 )
 from .forms import NewPayment, NewRefund
 
@@ -181,6 +182,7 @@ def _timeline(payment: Payment, made: list[Refund]) -> list[dict[str, Any]]:
 def new_payment(request: HttpRequest) -> HttpResponse:
     merchant = merchant_of(request)
     form = NewPayment(request.POST or None, initial={"once": uuid.uuid4()})
+    form.for_user(user_of(request))
     if request.method == "POST" and form.is_valid():
         asked = form.cleaned_data
 
@@ -211,6 +213,7 @@ def new_refund(request: HttpRequest, payment_id: uuid.UUID) -> HttpResponse:
     left = payment.amount - refunds.refunded(payment)
     initial = {"once": uuid.uuid4(), "amount": left}
     form = NewRefund(request.POST or None, initial=initial)
+    form.for_user(user_of(request))
     if request.method == "POST" and form.is_valid():
         asked = form.cleaned_data
 

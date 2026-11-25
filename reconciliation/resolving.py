@@ -5,7 +5,7 @@ from datetime import timedelta
 from functools import partial
 
 from django.db import transaction
-from django.db.models import QuerySet
+from django.db.models import Q, QuerySet
 from django.utils import timezone
 
 from accounts.models import User
@@ -53,8 +53,17 @@ def references_of(merchant: Merchant) -> set[uuid.UUID]:
 
 def seen_by(user: User) -> QuerySet[Discrepancy]:
     if user.demo is None:
-        return Discrepancy.objects.all()
+        return of_shops()
     return Discrepancy.objects.filter(reference__in=references_of(user.demo.merchant))
+
+
+def of_shops() -> QuerySet[Discrepancy]:
+    """Without those of demos, which nobody resolves once they are closed."""
+    paid = Payment.objects.filter(merchant__demo__isnull=False)
+    refunded = Refund.objects.filter(payment__merchant__demo__isnull=False)
+    direct = Q(reference__in=paid.values("id")) | Q(reference__in=refunded.values("id"))
+    returned = Discrepancy.objects.filter(direct).values("id")
+    return Discrepancy.objects.exclude(direct | Q(reference__in=returned))
 
 
 @transaction.atomic

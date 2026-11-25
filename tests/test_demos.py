@@ -12,7 +12,7 @@ from demos import opening
 from ledger import books
 from limits.service import Limit
 from merchants import demos, keys
-from merchants.models import ApiKey, Demo
+from merchants.models import ApiKey, Demo, DemoDay
 from payments import service as payments
 from payments.models import Payment
 from provider.models import Charge
@@ -26,7 +26,7 @@ from webhooks import service as webhooks
 from webhooks.models import Delivery, Endpoint
 
 from .receiver import Receiver
-from .test_dashboard import Shop, ago, operator
+from .test_dashboard import Shop, ago, browser, operator
 
 pytestmark = pytest.mark.django_db
 
@@ -216,7 +216,7 @@ def test_forms_sent_too_fast_are_refused(monkeypatch: pytest.MonkeyPatch) -> Non
     assert codes == [302, 302, 429]
     assert client.get("/app/overview").status_code == 200
     page = client.post("/app/demo/reconcile").content.decode()
-    assert "Wait a few seconds" in page
+    assert "Wait a few minutes" in page
 
 
 # Webhooks
@@ -302,7 +302,12 @@ def test_an_operator_of_a_demo_sees_nothing_else() -> None:
         with pytest.raises(resolving.NotPossible):
             resolving.propose(found.id, "write_off", user_of(client), "x")
     assert Discrepancy.objects.count() == 4
-    assert resolving.seen_by(operator()).count() == 4
+    real = operator()
+    assert resolving.seen_by(real).count() == 0
+    for found in Discrepancy.objects.all():
+        with pytest.raises(resolving.NotPossible):
+            resolving.propose(found.id, "write_off", real, "x")
+    assert matching.run() == 0
     books_page = client.get("/app/books").content.decode()
     assert shop.merchant.name not in books_page
     assert "The books balance" in books_page
@@ -351,11 +356,138 @@ def test_nobody_becomes_someone_of_another_demo() -> None:
     assert not user_of(real).demo_id if "_auth_user_id" in real.session else True
 
 
-def test_becoming_someone_does_not_make_the_visit_longer() -> None:
+def test_the_visitor_stays_in_until_the_demo_closes() -> None:
     client = visit()
-    started = client.session["started"]
+    demo = Demo.objects.get()
     become(client, "approver")
-    assert client.session["started"] == started
+    left = client.session.get_expiry_date() - demo.closes_at
+    assert abs(left) < timedelta(seconds=1)
+    assert not client.session.get_expire_at_browser_close()
+    Demo.objects.update(created_at=timezone.now() - timedelta(hours=23, minutes=59))
+    assert client.get("/app/discrepancies").status_code == 200
+    client.post("/app/sign-out")
+    assert client.get("/app/discrepancies").status_code == 302
+
+
+def test_past_its_time_it_is_closed_even_if_the_task_is_late() -> None:
+    client = visit()
+    demo = Demo.objects.get()
+    key = keys.issue(demo.merchant)
+    inbox = f"/demo/inbox/{demo.merchant_id}"
+    bearer = {"Authorization": f"Bearer {key}"}
+    assert Client().get("/v1/payments", headers=bearer).status_code == 200
+    assert Client().post(inbox).status_code == 401
+    Demo.objects.update(created_at=timezone.now() - Demo.LASTS)
+    assert Demo.objects.get().closed_at is None
+    assert client.get("/app/overview").status_code == 302
+    assert Client().get("/v1/payments", headers=bearer).status_code == 401
+    assert Client().post(inbox).status_code == 404
+    with pytest.raises(demos.UsedUp):
+        payments.create(demo.merchant, 1, "x")
+
+
+def test_money_moved_twice_is_not_in_a_demo() -> None:
+    client = visit()
+    demo = Demo.objects.get()
+    payment = demo.merchant.payments.get(reference="CMD-1001")
+    for path in ("/app/payments/new", f"/app/payments/{payment.id}/refund"):
+        page = client.get(path).content.decode()
+        assert "moved_twice" not in page
+        assert "wrong_amount" in page
+    key = keys.issue(demo.merchant)
+    for path, more in (
+        ("/v1/payments", {"reference": "x"}),
+        (f"/v1/payments/{payment.id}/refunds", {}),
+    ):
+        answer = Client().post(
+            path,
+            {"amount": 1, "scenario": "moved_twice", **more},
+            content_type="application/json",
+            headers={"Authorization": f"Bearer {key}", "Idempotency-Key": path},
+        )
+        assert (answer.status_code, answer.json()["code"]) == (422, "not_in_demo")
+    form = {"once": uuid.uuid4(), "amount": 100, "reference": "x"}
+    form["scenario"] = "moved_twice"
+    assert client.post("/app/payments/new", form).status_code == 422
+    demo.refresh_from_db()
+    assert demo.used == 0
+    shop = Shop()
+    payments.create(shop.merchant, 1, "x", "moved_twice")
+    page = browser(shop.user("owner")).get("/app/payments/new").content.decode()
+    assert "moved_twice" in page
+
+
+def test_money_missing_after_a_return_is_not_shown_to_real_operators() -> None:
+    opening.open_one("a")
+    found = Discrepancy.objects.get(kind="wrong_amount")
+    Discrepancy.objects.create(
+        kind="missing", reference=found.id, operation="return", amount=500
+    )
+    assert not resolving.seen_by(operator()).exists()
+
+
+def test_the_books_show_real_operators_one_row_for_all_demos() -> None:
+    opening.open_one("a")
+    opening.open_one("b")
+    shop = Shop("Realone")
+    page = browser(operator()).get("/app/books").content.decode()
+    assert shop.merchant.name in page
+    assert "Boutique Démo" not in page
+    assert page.count("All demos") == 1
+
+
+def test_someone_signed_in_is_not_taken_out_of_their_account() -> None:
+    real = operator()
+    client = browser(real)
+    page = client.post("/demo/open", {"who": "owner"}, follow=True)
+    assert "Sign out to try" in page.content.decode()
+    assert user_of(client) == real
+    assert not Demo.objects.exists()
+
+
+def test_the_newest_is_first_in_what_happened_to_a_sample() -> None:
+    client = visit()
+    payment = Payment.objects.get(reference="CMD-1001")
+    page = client.get(f"/app/payments/{payment.id}").content.decode()
+    page = page[page.index("What happened") :]
+    assert page.index("Succeeded") < page.index("Created")
+
+
+def test_crafted_input_is_refused() -> None:
+    client = visit()
+    assert client.post("/app/demo/become", {"who": "owner\x00"}).status_code == 404
+    sent = {"webhook-id": str(uuid.uuid4()), "webhook-timestamp": "9" * 400}
+    path = f"/demo/inbox/{Demo.objects.get().merchant_id}"
+    assert Client().post(path, headers=sent).status_code == 401
+
+
+def test_webhooks_of_a_demo_are_tried_again_three_times() -> None:
+    demo = opening.open_one("a")
+    payments.succeed(payments.create(demo.merchant, 100, "x").id)
+    delivery = Delivery.objects.get()
+    for attempt in range(1, 5):
+        assert delivery.status == "pending"
+        webhooks._record(delivery.id, attempt, 503, "")
+        delivery.refresh_from_db()
+    assert delivery.status == "failed"
+
+
+def test_the_day_is_counted_whenever_the_demo_was_opened(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(demos, "PER_DAY", 1)
+    first, second = opening.open_one("a"), opening.open_one("b")
+    Demo.objects.filter(merchant=first.merchant).update(
+        created_at=timezone.now() - timedelta(hours=23)
+    )
+    payments.create(first.merchant, 1, "x")
+    Demo.objects.filter(merchant=first.merchant).update(
+        created_at=timezone.now() - timedelta(hours=30)
+    )
+    with pytest.raises(demos.UsedUp):
+        payments.create(second.merchant, 1, "x")
+    DemoDay.objects.update(day=timezone.now().date() - timedelta(days=1))
+    payments.create(second.merchant, 1, "x")
 
 
 def test_nobody_in_a_demo_can_sign_in_with_a_password() -> None:

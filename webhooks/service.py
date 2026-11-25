@@ -19,6 +19,9 @@ RETRIES = [
     timedelta(seconds=seconds) for seconds in (10, 60, 600, 3600, 6 * 3600, 24 * 3600)
 ]
 
+# Each wakes the app, so a demo has fewer of them.
+DEMO_RETRIES = RETRIES[:3]
+
 
 class TooMany(Exception):
     pass
@@ -104,18 +107,24 @@ def _record(
     error: str,
     final: bool = False,
 ) -> None:
-    delivery = Delivery.objects.select_for_update().get(id=delivery_id)
+    delivery = (
+        Delivery.objects.select_for_update(of=("self",))
+        .select_related("endpoint__merchant__demo")
+        .get(id=delivery_id)
+    )
     if delivery.tries >= attempt:
         return
     delivery.tries = attempt
     Try.objects.create(delivery=delivery, status_code=status, error=error)
+    demo = hasattr(delivery.endpoint.merchant, "demo")
+    retries = DEMO_RETRIES if demo else RETRIES
     failures = attempt - delivery.tries_before
     if status is not None and 200 <= status < 300:
         delivery.status = Delivery.Status.DELIVERED
-    elif final or failures > len(RETRIES):
+    elif final or failures > len(retries):
         delivery.status = Delivery.Status.FAILED
     else:
-        queue.add("deliver_webhook", delivery_id, RETRIES[failures - 1], attempt + 1)
+        queue.add("deliver_webhook", delivery_id, retries[failures - 1], attempt + 1)
     delivery.save(update_fields=["tries", "status"])
 
 

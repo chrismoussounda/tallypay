@@ -31,7 +31,7 @@ STUCK_AFTER = timedelta(hours=8)
 
 
 def run(demo: Merchant | None = None) -> int:
-    """Returns how many discrepancies wait for someone.
+    """Returns how many discrepancies of shops wait for someone.
 
     Of a demo, only its own money is compared, and nothing is late.
     """
@@ -52,7 +52,8 @@ def run(demo: Merchant | None = None) -> int:
     else:
         _find_missing(started - STATEMENT_LAG)
         _find_stuck()
-    return Discrepancy.objects.exclude(status=Discrepancy.Status.RESOLVED).count()
+    waiting_for = resolving.of_shops()
+    return waiting_for.exclude(status=Discrepancy.Status.RESOLVED).count()
 
 
 def _import(only: Collection[uuid.UUID] | None) -> None:

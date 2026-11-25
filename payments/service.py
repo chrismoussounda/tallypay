@@ -32,7 +32,7 @@ def create(
     reference: str,
     scenario: str = Scenario.NORMAL,
 ) -> Payment:
-    demos.spend(merchant)
+    demos.spend(merchant, scenario)
     payment = Payment.objects.create(
         merchant=merchant,
         amount=amount,

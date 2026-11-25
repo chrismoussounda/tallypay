@@ -29,8 +29,10 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "accounts",
     "dashboard",
+    "demos",
     "idempotency",
     "ledger",
+    "limits",
     "merchants",
     # For the assets of the API documentation.
     "ninja",

@@ -26,10 +26,18 @@ def account_list(request: HttpRequest) -> HttpResponse:
     accounts = Account.objects.annotate(total=Sum("lines__amount", default=0))
     own = accounts.exclude(code__startswith="merchant:").order_by("kind", "code")
     owed = accounts.filter(code__startswith="merchant:")
+    demo = user_of(request).demo
+    if demo:
+        shown = owed.filter(id=demo.merchant.account_id)
+    else:
+        shown = owed.filter(merchant__demo=None)
+    ids = shown.values("id")
+    others: Any = owed.exclude(id__in=ids).aggregate(all=Sum("total"))["all"]
     total: Any = accounts.aggregate(all=Sum("total"))["all"]
     context = {
         "accounts": [(a, _natural(a)) for a in own],
-        "merchants": [(a, _natural(a)) for a in owed.order_by("total", "name")[:100]],
+        "merchants": [(a, _natural(a)) for a in shown.order_by("total", "name")[:100]],
+        "others": None if others is None else -int(others),
         "difference": int(total or 0),
         "entries": Entry.objects.count(),
     }
@@ -45,7 +53,7 @@ def _natural(account: Any) -> int:
 @require_safe
 @operator_page
 def discrepancy_list(request: HttpRequest) -> HttpResponse:
-    found = Discrepancy.objects.all()
+    found = resolving.seen_by(user_of(request))
     status = request.GET.get("status", "")
     if status in Discrepancy.Status.values:
         found = found.filter(status=status)
@@ -59,8 +67,8 @@ def discrepancy_list(request: HttpRequest) -> HttpResponse:
     return rows(request, "dashboard/discrepancies.html", context)
 
 
-def _find(found_id: uuid.UUID) -> Discrepancy:
-    return get_object_or_404(Discrepancy, id=found_id)
+def _find(request: HttpRequest, found_id: uuid.UUID) -> Discrepancy:
+    return get_object_or_404(resolving.seen_by(user_of(request)), id=found_id)
 
 
 def _about(request: HttpRequest, found: Discrepancy) -> dict[str, Any]:
@@ -82,14 +90,14 @@ def _about(request: HttpRequest, found: Discrepancy) -> dict[str, Any]:
 @require_safe
 @operator_page
 def discrepancy_detail(request: HttpRequest, found_id: uuid.UUID) -> HttpResponse:
-    context = _about(request, _find(found_id))
+    context = _about(request, _find(request, found_id))
     return render(request, "dashboard/discrepancy.html", context)
 
 
 @require_http_methods(["GET", "POST"])
 @operator_page
 def propose(request: HttpRequest, found_id: uuid.UUID) -> HttpResponse:
-    found = _find(found_id)
+    found = _find(request, found_id)
     form = Proposal(resolving.allowed(found), request.POST or None)
     if request.method == "POST" and form.is_valid():
         asked = form.cleaned_data
@@ -116,9 +124,10 @@ def propose(request: HttpRequest, found_id: uuid.UUID) -> HttpResponse:
 @require_http_methods(["GET", "POST"])
 @operator_page
 def approve(request: HttpRequest, found_id: uuid.UUID) -> HttpResponse:
-    found = _find(found_id)
+    found = _find(request, found_id)
     initial = {"proposal": found.proposal}
     form = Decision(request.POST or None, initial=initial)
+    form.for_user(user_of(request))
     if request.method == "POST" and confirmed(request, form):
         try:
             with transaction.atomic():
@@ -138,7 +147,7 @@ def approve(request: HttpRequest, found_id: uuid.UUID) -> HttpResponse:
 @require_http_methods(["GET", "POST"])
 @operator_page
 def reject(request: HttpRequest, found_id: uuid.UUID) -> HttpResponse:
-    found = _find(found_id)
+    found = _find(request, found_id)
     context = _about(request, found)
     if request.method == "POST":
         try:

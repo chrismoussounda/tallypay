@@ -3,9 +3,8 @@
 A payment ledger and webhook gateway: money is never lost, duplicated or created, even when the
 provider times out, answers twice or disagrees. All money and providers are simulated.
 
-In progress. So far: the project, its CI, a delayed call to prove the hosting, the ledger,
-the payments API, the simulated provider, webhooks,
-refunds, reconciliation and the dashboard.
+**[Try it](https://tallypay-ledger.vercel.app)** without an account, or read
+[how it was built](https://tallypay-ledger.vercel.app/about).
 
 ## The ledger
 
@@ -32,6 +31,8 @@ Every route is described at `/v1/docs`.
   together. A simultaneous request with the same key waits for the first, then gets its answer; if
   the first crashed, it takes over. The same key for a different request is refused.
 - **A payment reaches the books once,** when it succeeds, less a 2% fee. It is then final.
+- **At most 10 requests a second** for each merchant, 30 at once. Above, the answer is 429 and
+  `Retry-After` says how long to wait. Counted in one statement of Postgres.
 - **API keys are kept only as hashes,** and a merchant sees only its own payments.
 
 ## The simulated provider
@@ -131,6 +132,20 @@ uv run python manage.py create_user shop@example.com "Shop" owner --merchant ID
 
 After changing the French in `locale`: `uv run pybabel compile -D django -d locale`.
 
+## The demo
+
+Each visitor gets a shop of their own with sample payments, its owner and two operators, without
+passwords.
+
+- **Nothing is deleted.** After 24 hours its users, keys and address are closed. Its entries stay, as
+  the books have no way to lose one.
+- **Limits:** 3 demos an hour for each address, 50 a day in all; 20 payments, refunds or webhooks
+  sent again for each demo, 50 a day in all, and webhooks tried again 3 times only. The visitor's address is kept hashed, while it is open.
+- **Webhooks go only to a test server** of the app itself, which checks their signatures. The visitor
+  can switch it off to see the retries.
+- **Operators of a demo** see its discrepancies only, and can compare the statement at once. Those of
+  shops do not see the demos. The one scenario that leads to no shop, money moved twice, is left out.
+
 ## Run it
 
 Needs [uv](https://docs.astral.sh/uv/) and Docker.
@@ -151,7 +166,7 @@ On Vercel, with Neon for Postgres and QStash for delayed calls. Set the variable
 migrations; previews never do, and need a database of their own.
 
 With the live `PUBLIC_URL`, `QSTASH_URL` and `QSTASH_TOKEN` set, this asks for a call in 60
-seconds. The home page then shows when it arrived:
+seconds. `/last-wakeup` then shows when it arrived:
 
 ```sh
 uv run python manage.py prove_wakeup --delay 60

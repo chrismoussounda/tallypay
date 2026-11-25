@@ -1,0 +1,11 @@
+{% load i18n shown %}<div class="simulated demo">
+  <p>{% translate "A demo: all money is simulated." %} {% blocktranslate with until=user.demo.closes_at|date:"j N, H:i" %}It closes on {{ until }}.{% endblocktranslate %} {% blocktranslate with left=user.demo.left %}{{ left }} more payments, refunds or resends.{% endblocktranslate %}</p>
+  <form method="post" action="{% url 'become' %}">{% csrf_token %}
+    <span id="seen-as">{% translate "Seen as" %}</span>
+    <div class="segments" role="group" aria-labelledby="seen-as">
+      <button name="who" value="owner"{% if user.merchant %} aria-current="true"{% endif %}>{% translate "Shop" %}</button>
+      <button name="who" value="proposer"{% if user.name == "Prisca" %} aria-current="true"{% endif %}>{% translate "Operator 1" %}</button>
+      <button name="who" value="approver"{% if user.name == "Divin" %} aria-current="true"{% endif %}>{% translate "Operator 2" %}</button>
+    </div>
+  </form>
+</div>

@@ -12,6 +12,7 @@
       <button>{% translate "Sign in" %}</button>
     </form>
   </div>
+  <p><a href="{% url 'home' %}">{% translate "Try the demo instead, without an account" %}</a></p>
   {% include "dashboard/language.html" %}
 </main>
 {% endblock %}

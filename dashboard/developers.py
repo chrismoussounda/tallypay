@@ -7,12 +7,13 @@ from django.utils.translation import gettext as _
 from django.views.decorators.http import require_http_methods, require_safe
 
 from accounts.models import Action
-from merchants import keys
+from merchants import demos, keys
 from merchants.models import ApiKey
 from webhooks import sender, service, signing
 from webhooks.models import Delivery, Endpoint
 
 from .core import (
+    DEMO_USED_UP,
     developer_page,
     done,
     merchant_of,
@@ -39,6 +40,7 @@ def key_list(request: HttpRequest) -> HttpResponse:
 @developer_page
 def new_key(request: HttpRequest) -> HttpResponse:
     form = NewKey(request.POST or None)
+    form.for_user(user_of(request))
     if request.method == "POST" and confirmed(request, form):
         with transaction.atomic():
             key = keys.issue(merchant_of(request), form.cleaned_data["name"])
@@ -118,6 +120,7 @@ def _endpoint(request: HttpRequest, endpoint_id: uuid.UUID) -> Endpoint:
 def endpoint_secret(request: HttpRequest, endpoint_id: uuid.UUID) -> HttpResponse:
     endpoint = _endpoint(request, endpoint_id)
     form = Password(request.POST or None)
+    form.for_user(user_of(request))
     if request.method == "POST" and confirmed(request, form):
         record(request, "secret_shown", endpoint.url)
         context = {"value": signing.secret_of(endpoint.id), "back": "webhooks"}
@@ -155,6 +158,8 @@ def delivery_detail(request: HttpRequest, delivery_id: uuid.UUID) -> HttpRespons
                 record(request, "delivery_replayed", delivery.event.type)
         except service.UnderWay:
             error = _("It is still being sent.")
+        except demos.UsedUp:
+            error = str(DEMO_USED_UP)
         except service.Removed:
             error = _("This address was removed.")
         else:

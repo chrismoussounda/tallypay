@@ -2,7 +2,8 @@
 
 import logging
 import uuid
-from datetime import timedelta
+from collections.abc import Collection
+from datetime import datetime, timedelta
 
 from django.db import transaction
 from django.db.models import Q
@@ -10,6 +11,7 @@ from django.utils import timezone
 
 from ledger import books
 from ledger.models import Account, Entry
+from merchants.models import Merchant
 from payments import service as payments
 from payments.models import Payment
 from provider import simulator
@@ -28,22 +30,33 @@ STATEMENT_LAG = timedelta(hours=1)
 STUCK_AFTER = timedelta(hours=8)
 
 
-def run() -> int:
-    """Returns how many discrepancies wait for someone."""
-    _import()
+def run(demo: Merchant | None = None) -> int:
+    """Returns how many discrepancies of shops wait for someone.
+
+    Of a demo, only its own money is compared, and nothing is late.
+    """
+    started = timezone.now()
+    only = resolving.references_of(demo) if demo else None
+    _import(only)
     waiting = StatementLine.objects.filter(matched_at=None).order_by("moved_at", "id")
+    if only is not None:
+        waiting = waiting.filter(reference__in=only)
     for line_id in list(waiting.values_list("id", flat=True)):
         try:
             _match(line_id)
         except Exception:
             # Left for the next run, so that the others are still compared.
             log.exception("Statement line %s was not matched", line_id)
-    _find_missing()
-    _find_stuck()
-    return Discrepancy.objects.exclude(status=Discrepancy.Status.RESOLVED).count()
+    if demo:
+        _find_missing(started, demo)
+    else:
+        _find_missing(started - STATEMENT_LAG)
+        _find_stuck()
+    waiting_for = resolving.of_shops()
+    return waiting_for.exclude(status=Discrepancy.Status.RESOLVED).count()
 
 
-def _import() -> None:
+def _import(only: Collection[uuid.UUID] | None) -> None:
     StatementLine.objects.bulk_create(
         [
             StatementLine(
@@ -52,7 +65,7 @@ def _import() -> None:
                 amount=moved.amount,
                 moved_at=moved.at,
             )
-            for moved in simulator.statement()
+            for moved in simulator.statement(only)
         ],
         ignore_conflicts=True,
     )
@@ -136,17 +149,22 @@ def _close_those_explained(line: StatementLine) -> None:
             _report(Discrepancy.Kind.LATE, line, -found.amount)
 
 
-def _find_missing() -> None:
-    before = timezone.now() - STATEMENT_LAG
+def _find_missing(before: datetime, demo: Merchant | None = None) -> None:
+    payments_of = {"merchant": demo} if demo else {}
+    refunds_of = {"payment__merchant": demo} if demo else {}
     listed = StatementLine.objects.values("reference")
     for payment in Payment.objects.filter(
-        status=Payment.Status.SUCCEEDED, entry__created_at__lt=before
+        **payments_of,
+        status=Payment.Status.SUCCEEDED,
+        entry__created_at__lt=before,
     ).exclude(id__in=listed):
         _notice(Discrepancy.Kind.MISSING, payment.id, Kind.CHARGE, -payment.amount)
     for refund in Refund.objects.filter(
-        status=Refund.Status.SUCCEEDED, settled_at__lt=before
+        **refunds_of, status=Refund.Status.SUCCEEDED, settled_at__lt=before
     ).exclude(id__in=listed):
         _notice(Discrepancy.Kind.MISSING, refund.id, Kind.REFUND, refund.amount)
+    if demo:
+        return
     for returned in Discrepancy.objects.filter(
         action=Discrepancy.Action.RETURN,
         status=Discrepancy.Status.RESOLVED,

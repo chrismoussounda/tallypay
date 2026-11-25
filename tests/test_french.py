@@ -21,9 +21,11 @@ def used() -> set[str]:
         text = path.read_text(encoding="utf-8")
         found |= {m[1] for m in re.findall(r"""translate (["'])(.*?)\1 *%}""", text)}
         found |= set(re.findall(r'_\("(.*?)"\)', text))
-        for one in re.findall(r"{% blocktranslate .*?%}(.*?){% plural", text):
+        for one in re.findall(
+            r"{% blocktranslate .*?%}(.*?){% (?:plural|endblock)", text
+        ):
             found.add(re.sub(r"{{ (\w+) }}", r"%(\1)s", one))
-    for path in (ROOT / "dashboard").rglob("*.py"):
+    for path in [*(ROOT / "dashboard").rglob("*.py"), *(ROOT / "demos").rglob("*.py")]:
         for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"))):
             if (
                 isinstance(node, ast.Call)
@@ -32,9 +34,10 @@ def used() -> set[str]:
                 and isinstance(node.args[0], ast.Constant)
             ):
                 found.add(str(node.args[0].value))
-    # Why an address was refused, said by the sender.
+    # Why an address was refused.
+    service = (ROOT / "webhooks/service.py").read_text(encoding="utf-8")
     sender = (ROOT / "webhooks/sender.py").read_text(encoding="utf-8")
-    return found | set(re.findall(r'Refused\("(.*?)"\)', sender))
+    return found | set(re.findall(r'Refused\("(.*?)"\)', sender + service))
 
 
 def test_every_word_is_in_french_and_compiled() -> None:

@@ -3,6 +3,7 @@ from typing import ClassVar
 
 from django.db import models
 from django.db.models import Q
+from django.utils import timezone
 
 from ledger.models import Entry
 from merchants.models import Merchant
@@ -31,7 +32,7 @@ class Payment(models.Model):
         max_length=10, choices=Status, default=Status.PENDING, db_default="pending"
     )
     entry = models.OneToOneField(Entry, on_delete=models.PROTECT, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
 
     class Meta:
         constraints: ClassVar = [
@@ -67,7 +68,7 @@ class PaymentEvent(models.Model):
         Payment, on_delete=models.PROTECT, related_name="events"
     )
     kind = models.CharField(max_length=10, choices=Kind)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self) -> str:
         return self.kind

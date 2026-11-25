@@ -22,11 +22,14 @@ TABLES = [
     "accounts_action",
     "accounts_attempt",
     "accounts_user",
+    "merchants_demo",
+    "merchants_demoday",
     "merchants_apikey",
     "merchants_merchant",
     "ledger_line",
     "ledger_entry",
     "ledger_account",
+    "limits_bucket",
 ]
 
 Together = Callable[[int, Callable[[], object]], list[object]]

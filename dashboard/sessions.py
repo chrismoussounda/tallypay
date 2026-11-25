@@ -10,6 +10,7 @@ from django.views.decorators.http import require_POST, require_safe
 
 from accounts import signin
 from accounts.middleware import STARTED
+from accounts.models import User
 
 from .core import any_page, record, user_of
 from .forms import Password, SignIn
@@ -50,8 +51,9 @@ def _next(request: HttpRequest) -> str:
 
 @require_POST
 def sign_out(request: HttpRequest) -> HttpResponse:
+    demo = isinstance(request.user, User) and request.user.demo_id
     logout(request)
-    return redirect("sign-in")
+    return redirect("home" if demo else "sign-in")
 
 
 @require_safe
@@ -64,6 +66,8 @@ def confirmed(request: HttpRequest, form: Password) -> bool:
     """Whether the form is right, the password of the user included."""
     if not form.is_valid():
         return False
+    if user_of(request).demo_id:
+        return True
     try:
         user = signin.check(
             request, user_of(request).email, form.cleaned_data["password"]

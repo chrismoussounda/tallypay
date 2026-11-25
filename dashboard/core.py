@@ -10,13 +10,18 @@ from django.db.models import Model, Q, QuerySet
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.cache import never_cache
 
 from accounts.models import Action, User
+from limits.service import Limit, TooMany
 from merchants.models import Merchant
 
 View = Callable[..., HttpResponse]
 PAGE = 20
+# So that a demo cannot fill the database.
+DEMO_LIMIT = Limit(per_second=1 / 120, burst=100)
+DEMO_USED_UP = _("The demo is used up for today.")
 
 
 def is_htmx(request: HttpRequest) -> bool:
@@ -49,6 +54,12 @@ def _guard(allows: Callable[[User], bool]) -> Callable[[View], View]:
                 return redirect_to_login(request.get_full_path())
             if not allows(user_of(request)):
                 raise PermissionDenied
+            demo = user_of(request).demo_id
+            if demo and request.method == "POST":
+                try:
+                    DEMO_LIMIT.take(f"demo {demo}")
+                except TooMany:
+                    return render(request, "429.html", status=429)
             return view(request, *args, **kwargs)
 
         return guarded
@@ -61,6 +72,7 @@ owner_page = _guard(lambda user: user.role == User.Role.OWNER)
 refunds_page = _guard(lambda user: user.can_refund)
 developer_page = _guard(lambda user: user.can_develop)
 operator_page = _guard(lambda user: user.is_operator)
+demo_page = _guard(lambda user: user.demo_id is not None)
 any_page = _guard(lambda user: True)
 
 

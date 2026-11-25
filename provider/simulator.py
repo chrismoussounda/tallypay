@@ -5,7 +5,7 @@ charge, asks how a charge went, and receives its callbacks.
 """
 
 import uuid
-from collections.abc import Callable
+from collections.abc import Callable, Collection
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
@@ -101,11 +101,13 @@ class Moved:
     at: datetime
 
 
-def statement() -> list[Moved]:
-    """All the money that moved so far."""
+def statement(references: Collection[uuid.UUID] | None = None) -> list[Moved]:
+    """All the money that moved so far, or only for these references."""
     moved = Charge.objects.filter(decided_at__lte=timezone.now()).exclude(
         scenario__in=[Scenario.DECLINE, Scenario.NOT_IN_STATEMENT]
     )
+    if references is not None:
+        moved = moved.filter(reference__in=references)
     return [
         Moved(c.reference, c.kind, c.amount, c.decided_at)
         for c in moved.order_by("decided_at", "id")

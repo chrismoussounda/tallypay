@@ -6,6 +6,7 @@ from django.utils import timezone
 
 from ledger import books
 from ledger.models import Account, Entry
+from merchants import demos
 from merchants.models import Merchant
 from payments.models import Payment
 from provider.models import Scenario
@@ -49,7 +50,8 @@ def create(
     reason: str = Refund.Reason.REQUESTED,
 ) -> Refund:
     """Sets the money aside at once. The fee of the payment is not given back."""
-    payment = Payment.objects.get(id=payment_id)
+    payment = Payment.objects.select_related("merchant").get(id=payment_id)
+    demos.spend(payment.merchant, scenario)
     # Locked, so that refunds at the same time cannot add up to too much.
     merchant = (
         Merchant.objects.select_for_update(of=("self",))

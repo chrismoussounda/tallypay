@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "dashboard",
     "idempotency",
     "ledger",
+    "limits",
     "merchants",
     # For the assets of the API documentation.
     "ninja",

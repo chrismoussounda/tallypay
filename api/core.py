@@ -9,13 +9,21 @@ from ninja.errors import AuthenticationError, HttpError, ValidationError
 from ninja.security import HttpBearer
 
 from idempotency.service import KeyReused
+from limits.service import Limit, TooMany
 from merchants import keys
 from merchants.models import Merchant
+
+# For each merchant.
+LIMIT = Limit(per_second=10, burst=30)
 
 
 class ApiKeyAuth(HttpBearer):
     def authenticate(self, request: HttpRequest, token: str) -> Merchant | None:
-        return keys.owner(token)
+        merchant = keys.owner(token)
+        if merchant:
+            # Not for each key, as a merchant could make more of them.
+            LIMIT.take(f"api {merchant.id}")
+        return merchant
 
 
 # Swagger UI styles itself inline.
@@ -27,6 +35,8 @@ docs_csp: dict[str, list[str]] = {
 api = NinjaAPI(
     title="TallyPay",
     version="1",
+    description="At most 10 requests a second, 30 at once. Above, the answer is 429 "
+    "and `Retry-After` says how many seconds to wait.",
     auth=ApiKeyAuth(),
     urls_namespace="v1",
     docs_decorator=csp_override(docs_csp),
@@ -60,6 +70,15 @@ def error(request: HttpRequest, status: int, code: str, message: str) -> HttpRes
 @api.exception_handler(AuthenticationError)
 def _unauthorized(request: HttpRequest, exc: Any) -> HttpResponse:
     return error(request, 401, "unauthorized", "The API key is missing or not valid.")
+
+
+@api.exception_handler(TooMany)
+def _too_many(request: HttpRequest, exc: TooMany) -> HttpResponse:
+    response = error(
+        request, 429, "too_many_requests", "Too many requests. " + str(exc)
+    )
+    response["Retry-After"] = str(exc.wait)
+    return response
 
 
 @api.exception_handler(ValidationError)

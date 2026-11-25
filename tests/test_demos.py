@@ -7,7 +7,7 @@ from django.test import Client, override_settings
 from django.utils import timezone
 
 from accounts.models import Action, User
-from dashboard import core
+from dashboard import core, guide
 from demos import opening
 from ledger import books
 from limits.service import Limit
@@ -445,12 +445,83 @@ def test_someone_signed_in_is_not_taken_out_of_their_account() -> None:
     assert not Demo.objects.exists()
 
 
-def test_the_newest_is_first_in_what_happened_to_a_sample() -> None:
+def test_what_happened_to_a_sample_is_told_in_order() -> None:
     client = visit()
     payment = Payment.objects.get(reference="CMD-1001")
     page = client.get(f"/app/payments/{payment.id}").content.decode()
     page = page[page.index("What happened") :]
-    assert page.index("Succeeded") < page.index("Created")
+    assert page.index("Created") < page.index("Succeeded")
+
+
+def test_a_hidden_fault_is_hinted_in_a_demo_only() -> None:
+    client = visit()
+    merchant = Demo.objects.get().merchant
+    hints = {}
+    for payment in merchant.payments.all():
+        page = client.get(f"/app/payments/{payment.id}").content.decode()
+        hints[payment.scenario] = "become operator 1 and compare" in page
+    assert {s for s, hinted in hints.items() if hinted} == {
+        "silent",
+        "wrong_amount",
+        "not_in_statement",
+    }
+    shop = Shop()
+    payment = payments.create(shop.merchant, 1, "x", "wrong_amount")
+    payments.succeed(payment.id)
+    answer = browser(shop.user("owner")).get(f"/app/payments/{payment.id}")
+    assert "become operator 1" not in answer.content.decode()
+
+
+def test_the_guide_ticks_what_was_done() -> None:
+    client = visit()
+    demo = Demo.objects.get()
+
+    def did() -> list[bool]:
+        return [step["did"] for step in guide.steps(demo)["steps"]]
+
+    other = opening.open_one("b").merchant
+    payments.succeed(payments.create(other, 1, "x").id)
+    Delivery.objects.update(status="delivered")
+    missing = resolving.seen_by(user_of(client)).get(kind="missing")
+    # As the rules do, without anyone.
+    resolving.close(missing, Discrepancy.Action.MATCHED)
+    assert did() == [False] * 4
+    payment = payments.create(demo.merchant, 5_000, "x", "wrong_amount")
+    Charge.objects.create(
+        reference=payment.id,
+        amount=5_500,
+        scenario="wrong_amount",
+        decided_at=timezone.now(),
+    )
+    payments.succeed(payment.id)
+    assert did() == [True, False, False, False]
+    mine = Delivery.objects.get(endpoint__merchant=demo.merchant)
+    webhooks._record(mine.id, 1, 204, "")
+    assert did() == [True, True, False, False]
+    become(client, "proposer")
+    client.post("/app/demo/reconcile")
+    assert did() == [True, True, True, False]
+    found = Discrepancy.objects.get(reference=payment.id)
+    path = f"/app/discrepancies/{found.id}"
+    client.post(f"{path}/propose", {"action": "credit", "note": "x"})
+    assert did()[3] is False
+    become(client, "approver")
+    client.post(f"{path}/approve", {"proposal": 1})
+    assert did() == [True] * 4
+    assert "You have seen it all." in client.get("/app/books").content.decode()
+
+
+def test_the_books_and_the_statement_are_shown_side_by_side() -> None:
+    client = visit("proposer")
+    rows = client.get("/app/discrepancies").context["discrepancies"]
+    shown = {row.paid.reference: (row.ours, row.theirs, row.amount) for row in rows}
+    assert shown == {
+        "CMD-1008": (20_000, 20_500, 500),
+        "CMD-1010": (18_500, None, -18_500),
+    }
+    for row in rows:
+        page = client.get(f"/app/discrepancies/{row.id}").content.decode()
+        assert row.paid.reference in page
 
 
 def test_crafted_input_is_refused() -> None:

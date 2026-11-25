@@ -21,7 +21,7 @@ from merchants import keys
 from merchants.models import ApiKey, Merchant
 from payments import service as payments
 from payments.models import Payment
-from reconciliation.models import Discrepancy
+from reconciliation.models import Discrepancy, StatementLine
 from refunds import service as refunds
 from refunds.models import Refund
 from webhooks import service as webhooks
@@ -645,3 +645,55 @@ def test_the_books_page_says_whether_they_balance(shop: Shop) -> None:
     shown = {account.code: amount for account, amount in context["accounts"]}
     assert shown == {"provider": 10_000, "fees": 200, "refunds": 1_000}
     assert [amount for _, amount in context["merchants"]] == [8_800]
+
+
+def test_a_payment_shows_its_entries_which_balance(shop: Shop) -> None:
+    refunds.succeed(shop.refund.id)
+    client = browser(shop.user("viewer"))
+    entries = client.get(f"/app/payments/{shop.payment.id}").context["entries"]
+    assert [entry["debit"] for entry in entries] == [10_000, 1_000, 1_000]
+    for entry in entries:
+        assert entry["debit"] == entry["credit"]
+    shown = [
+        (str(line["account"]), line["debit"], line["credit"])
+        for line in entries[0]["lines"]
+    ]
+    assert shown == [
+        ("Held by the provider", 10_000, 0),
+        ("Fees", 0, 200),
+        (shop.merchant.name, 0, 9_800),
+    ]
+
+
+def test_a_refund_moved_wrongly_is_shown_as_money_out(shop: Shop) -> None:
+    refunds.succeed(shop.refund.id)
+    Discrepancy.objects.create(
+        kind="wrong_amount", reference=shop.refund.id, operation="refund", amount=-500
+    )
+    StatementLine.objects.create(
+        reference=shop.refund.id,
+        kind="refund",
+        amount=1_500,
+        moved_at=timezone.now(),
+    )
+    row = browser(operator()).get("/app/discrepancies").context["discrepancies"][0]
+    assert (row.ours, row.theirs) == (-1_000, -1_500)
+    assert row.paid == shop.payment
+    unknown = Discrepancy.objects.create(
+        kind="unknown", reference=uuid.uuid4(), operation="charge", amount=5
+    )
+    page = browser(operator("b")).get(f"/app/discrepancies/{unknown.id}")
+    assert page.status_code == 200
+    failed = Discrepancy.objects.create(
+        kind="after_failure",
+        reference=shop.payment.id,
+        operation="charge",
+        amount=10_000,
+    )
+    page = browser(operator("c")).get(f"/app/discrepancies/{failed.id}")
+    assert page.context["found"].ours is None
+
+
+def test_the_balance_names_each_payment(shop: Shop) -> None:
+    page = browser(shop.user("viewer")).get("/app/balance").content.decode()
+    assert f"<small>{shop.payment.reference}</small>" in page

@@ -1,5 +1,10 @@
 {% load i18n shown %}<div class="simulated demo">
-  <p>{% translate "A demo: all money is simulated." %} {% blocktranslate with until=user.demo.closes_at|date:"j N, H:i" %}It closes on {{ until }}.{% endblocktranslate %} {% blocktranslate with left=user.demo.left %}{{ left }} more payments, refunds or resends.{% endblocktranslate %}</p>
+  {% guide_of user.demo as guide %}<p class="always">{% translate "A demo: all money is simulated." %}</p>
+  <details class="guide">
+    <summary><span class="tally{% if guide.all %} all{% endif %}" aria-hidden="true">{% for step in guide.steps %}<i{% if step.did %} class="did"{% endif %}></i>{% endfor %}</span><span>{% if guide.next %}{{ guide.next }}{% else %}{% translate "You have seen it all." %}{% endif %}</span></summary>
+    <ol>{% for step in guide.steps %}<li{% if step.did %} class="did"{% endif %}><span>{{ step.text }}{% if step.did %}<span class="hidden"> {% translate "Done" %}</span>{% endif %}</span></li>{% endfor %}</ol>
+    <p>{% blocktranslate with until=user.demo.closes_at|date:"j N, H:i" %}It closes on {{ until }}.{% endblocktranslate %} {% blocktranslate with left=user.demo.left %}{{ left }} more payments, refunds or resends.{% endblocktranslate %}</p>
+  </details>
   <form method="post" action="{% url 'become' %}">{% csrf_token %}
     <span id="seen-as">{% translate "Seen as" %}</span>
     <div class="segments" role="group" aria-labelledby="seen-as">

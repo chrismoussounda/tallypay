@@ -11,8 +11,9 @@ from django.views.decorators.http import require_http_methods, require_safe
 from accounts.models import User
 from ledger.models import Account, Entry
 from payments.models import Payment
+from provider.models import Kind
 from reconciliation import resolving
-from reconciliation.models import Discrepancy
+from reconciliation.models import Discrepancy, StatementLine
 from refunds.models import Refund
 
 from .core import done, operator_page, page_of, record, rows, sheet, user_of
@@ -58,6 +59,7 @@ def discrepancy_list(request: HttpRequest) -> HttpResponse:
     if status in Discrepancy.Status.values:
         found = found.filter(status=status)
     page, last = page_of(request, found)
+    _sides(page)
     context = {
         "discrepancies": page,
         "last": last,
@@ -67,11 +69,32 @@ def discrepancy_list(request: HttpRequest) -> HttpResponse:
     return rows(request, "dashboard/discrepancies.html", context)
 
 
+def _sides(page: list[Any]) -> None:
+    """Adds what our books and the statement say of each, or None for nothing."""
+    ids = [found.reference for found in page]
+    paid = Payment.objects.select_related("merchant").in_bulk(ids)
+    refunded = Refund.objects.select_related("payment__merchant").in_bulk(ids)
+    returned = Discrepancy.objects.in_bulk(ids)
+    lines = {
+        line.reference: line for line in StatementLine.objects.filter(reference__in=ids)
+    }
+    for found in page:
+        asked = paid.get(found.reference) or refunded.get(found.reference)
+        found.paid = asked.payment if isinstance(asked, Refund) else asked
+        line = lines.get(found.reference)
+        sign = 1 if found.operation == Kind.CHARGE else -1
+        expected = asked or returned.get(found.reference)
+        booked = found.kind in (Discrepancy.Kind.WRONG_AMOUNT, Discrepancy.Kind.MISSING)
+        found.ours = sign * expected.amount if booked and expected else None
+        found.theirs = sign * line.amount if line else None
+
+
 def _find(request: HttpRequest, found_id: uuid.UUID) -> Discrepancy:
     return get_object_or_404(resolving.seen_by(user_of(request)), id=found_id)
 
 
 def _about(request: HttpRequest, found: Discrepancy) -> dict[str, Any]:
+    _sides([found])
     payment = Payment.objects.filter(id=found.reference).first()
     refund = Refund.objects.filter(id=found.reference).first()
     paid = refund.payment if refund else payment

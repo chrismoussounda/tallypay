@@ -1,41 +1,55 @@
-{% extends "site.html" %}{% load i18n %}
+{% extends "site.html" %}{% load i18n shown %}
 {% block title %}{% translate "Payments that add up" %}{% endblock %}
 {% block main %}
 {% for message in messages %}<p class="notice warn" role="alert">{{ message }}</p>{% endfor %}
 <div class="first">
 <section class="hero">
-  <h1>{% translate "Payments that add up, even when the provider fails" %}</h1>
-  <p>{% translate "TallyPay takes mobile-money payments for shops. When the provider goes silent, answers twice or takes the wrong amount, no franc is lost, duplicated or made up." %}</p>
+  <h1><span>{% translate "“I've paid.”" %}</span> <span>{% translate "“I haven't got it.”" %}</span></h1>
+  <p>{% translate "TallyPay keeps track of every mobile-money payment and checks it against the provider's statement, so you know where the money is." %}</p>
   <div class="actions">
-    <form method="post" action="{% url 'open-demo' %}">{% csrf_token %}<button name="who" value="owner">{% translate "Try it as a shop" %}</button></form>
-    <form method="post" action="{% url 'open-demo' %}">{% csrf_token %}<button class="second" name="who" value="proposer">{% translate "Try it as an operator" %}</button></form>
+    <form method="post" action="{% url 'open-demo' %}">{% csrf_token %}<button name="who" value="owner">{% translate "Run the shop" %}</button></form>
+    <form method="post" action="{% url 'open-demo' %}">{% csrf_token %}<button class="second" name="who" value="proposer">{% translate "Check the books" %}</button></form>
   </div>
-  <p class="dim">{% translate "No account needed. You get a shop of your own with sample payments, closed after 24 hours. All money is simulated." %}</p>
+  <p class="dim">{% translate "No account, no real money. Your shop is ready in seconds and closes after 24 hours." %}</p>
 </section>
-<section class="card">
-  <h2>{% translate "See it in two minutes" %}</h2>
-  <ol class="steps">
-    <li>{% translate "As a shop, create a payment. Choose what the provider does, for instance “Moves 500 francs too much”." %}</li>
-    <li>{% translate "Watch it settle, and the signed webhook reach the shop's test server. Switch that server off to see the retries." %}</li>
-    <li>{% translate "Become an operator, and compare the statement with the books: the 500 francs are found." %}</li>
-    <li>{% translate "Propose a solution, then become the other operator to approve it. The books still balance." %}</li>
-  </ol>
+<section class="sheet" aria-label="{% translate 'An example' %}">
+  <table class="ledger">
+    <thead><tr><th scope="col">{% translate "Order" %}</th><th scope="col" class="number">{% translate "Our books" %}</th><th scope="col" class="number">{% translate "Provider's statement" %}</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">CMD-1006<small>{% translate "Taken, but nobody said so" %}</small></th><td class="number dim">{% translate "Waiting" %}</td><td class="number">{{ 12000|francs }}</td></tr>
+      <tr><th scope="row">CMD-1008<small>{% translate "500 francs too much" %}</small></th><td class="number">{{ 20000|francs }}</td><td class="number red">{{ 20500|francs }}</td></tr>
+      <tr><th scope="row">CMD-1010<small>{% translate "Not in the statement" %}</small></th><td class="number">{{ 18500|francs }}</td><td class="number red">–</td></tr>
+    </tbody>
+  </table>
+  <p>{% translate "Three orders, and two versions of each. TallyPay puts them side by side." %}</p>
 </section>
 </div>
 <section>
-  <h2>{% translate "What goes wrong, and what happens here" %}</h2>
-  <ul class="facts">
-    <li class="card"><h3>{% translate "The answer never comes" %}</h3><p>{% translate "The next check is written down before the provider is asked. A crash cannot lose the payment." %}</p></li>
-    <li class="card"><h3>{% translate "The same request comes twice" %}</h3><p>{% translate "The shop's own key makes it one payment. The second request gets the first answer." %}</p></li>
-    <li class="card"><h3>{% translate "The wrong amount is taken" %}</h3><p>{% translate "The daily comparison with the provider finds it. One person proposes a solution, another approves it." %}</p></li>
-    <li class="card"><h3>{% translate "The shop's server is down" %}</h3><p>{% translate "Signed webhooks are tried again for about 31 hours, or 11 minutes in a demo. Then they can be sent again by hand." %}</p></li>
-    <li class="card"><h3>{% translate "The code has a bug" %}</h3><p>{% translate "Postgres itself refuses an entry that does not balance, and any change to the past." %}</p></li>
-    <li class="card"><h3>{% translate "Someone makes a mistake" %}</h3><p>{% translate "Nothing is edited. A mistake is undone by one exact opposite entry." %}</p></li>
-  </ul>
+  <h2>{% translate "Go on, break a payment" %}</h2>
+  <ol class="steps">
+    <li>{% translate "Create a payment and pick how the provider will mess it up. 500 francs too much is a good start." %}</li>
+    <li>{% translate "Switch off the shop's server. The webhook fails, waits and tries again. Switch it back on and it gets through." %}</li>
+    <li>{% translate "Change sides and compare with the statement. There are your 500 francs, in red." %}</li>
+    <li>{% translate "Say what to do with them. You can't approve your own idea, so become the second operator and do it." %}</li>
+  </ol>
 </section>
 <section>
-  <h2>{% translate "For developers" %}</h2>
-  <p>{% translate "Python, Django, Postgres and HTMX. The whole code is public." %}</p>
+  <h2>{% translate "What can go wrong" %}</h2>
+  <table class="failures">
+    <thead><tr><th scope="col">{% translate "The problem" %}</th><th scope="col">{% translate "What TallyPay does" %}</th></tr></thead>
+    <tbody>
+      <tr><td>{% translate "The provider goes quiet" %}</td><td>{% translate "Before calling, TallyPay had already noted when to ask again. Even a crash doesn't lose the payment." %}</td></tr>
+      <tr><td>{% translate "The same request arrives twice" %}</td><td>{% translate "Both carry the same key: one payment, and the same answer twice." %}</td></tr>
+      <tr><td>{% translate "The amount is wrong" %}</td><td>{% translate "Every day, the books are checked against the provider's statement. One person suggests a fix, and a second one has to agree." %}</td></tr>
+      <tr><td>{% translate "The shop's server is down" %}</td><td>{% translate "We keep knocking for about 31 hours, or 11 minutes in the demo. After that, one click sends it again." %}</td></tr>
+      <tr><td>{% translate "I wrote a bug" %}</td><td>{% translate "Postgres does the sum again. If an entry doesn't balance, it's out, and old entries can't be touched." %}</td></tr>
+      <tr><td>{% translate "Someone makes a mistake" %}</td><td>{% translate "Nothing gets erased. You write the opposite entry, as in a paper ledger." %}</td></tr>
+    </tbody>
+  </table>
+</section>
+<section>
+  <h2>{% translate "Under the hood" %}</h2>
+  <p>{% translate "Python, Django, Postgres, and HTMX for the pages. The code is open, and I wrote up my choices and what still falls short." %}</p>
   <div class="actions"><a class="button second" href="{% url 'about' %}">{% translate "How it was built" %}</a><a class="button second" href="/v1/docs">{% translate "API documentation" %}</a><a class="button second" href="https://github.com/chrismoussounda/tallypay">{% translate "Code on GitHub" %}</a></div>
 </section>
 {% endblock %}

@@ -2,41 +2,39 @@
 {% block title %}How it was built{% endblock %}
 {% block main %}
 <article class="write-up">
-<h1>How TallyPay was built</h1>
-<p>TallyPay is a payment ledger and webhook gateway, built as a portfolio project. The provider and all money are simulated.</p>
+<h1>How I built TallyPay</h1>
+<p>“I've paid.” “I haven't got it.” Both people can be telling the truth. Between the customer and the shop sits a mobile-money provider whose answer can get lost, come back three times or never come. It can even turn a payment down and take the money anyway.</p>
+<p>I wanted to see what it takes to keep honest books in the middle of that. TallyPay is my answer. It's a portfolio project, so the provider and the money are made up. I tried to make the trouble realistic.</p>
 
-<h2>The problem</h2>
-<p>A shop that takes mobile money depends on a provider it does not control. A request may be lost, or its answer. A callback may come three times, or never. The provider may decline a payment and take the money anyway. Each case can lose a franc, or count it twice.</p>
-
-<h2>The decisions</h2>
+<h2>What I chose</h2>
 <ul class="facts">
-<li class="card"><h3>Double entry, enforced by the database</h3><p>Every movement of money is an entry whose lines add up to zero. Postgres checks that when the entry is committed, and refuses any change or deletion afterwards. A bug in the application cannot get around this.</p></li>
-<li class="card"><h3>Write first, then ask</h3><p>The next look at a payment is saved before the provider is called. The provider is asked with the payment's own number, so asking again charges nothing more. If the application crashes between the two, the work is still there.</p></li>
-<li class="card"><h3>One request, one payment</h3><p>The idempotency key, the payment and the answer are committed together. Two identical requests at the same moment give one payment and the same answer.</p></li>
-<li class="card"><h3>The statement has the last word</h3><p>Once a day, the provider's statement is compared with the books. Money that nobody expected waits in an account of its own, so that the books always say what the provider holds. Two people resolve each difference: one proposes, the other approves.</p></li>
-<li class="card"><h3>Postgres keeps the work to do</h3><p>Tasks are rows, committed with whatever asks for them. QStash only wakes the application at the right time. A daily call finds whatever it missed.</p></li>
-<li class="card"><h3>Plain pages</h3><p>The dashboard is HTML from the server, with HTMX. Every form works without JavaScript, and only the site's own scripts may run.</p></li>
-<li class="card"><h3>A demo that deletes nothing</h3><p>Each visitor gets a new shop. After a day its users, keys and addresses are closed, but its entries stay: the demo must not be a way around books that cannot be changed. One demo takes about 33 KB, and limits keep the growth slow.</p></li>
+<li class="card"><h3>The database does the accounting</h3><p>Each movement of money is an entry whose lines add up to zero. Postgres checks the sum at the end, and after that nobody can change or delete the entry. I didn't want the books to depend on my code being right.</p></li>
+<li class="card"><h3>Note it down, then call</h3><p>TallyPay saves when it will ask again before it calls the provider. The payment's own number goes with the call, so asking twice never charges twice. If the app dies halfway, the work is still waiting.</p></li>
+<li class="card"><h3>One request, one payment</h3><p>The idempotency key, the payment and the answer are saved together. Send the same request twice at the same moment and you get one payment, and the same answer both times.</p></li>
+<li class="card"><h3>The statement settles it</h3><p>Once a day, the books are compared with the provider's statement. Money nobody expected goes into an account of its own until someone explains it. One person suggests what to do, and somebody else has to agree.</p></li>
+<li class="card"><h3>A queue made of rows</h3><p>Work to do sits in a Postgres table, saved with whatever asked for it. QStash only wakes the app at the right time. A daily call picks up what it missed.</p></li>
+<li class="card"><h3>Plain pages</h3><p>The server sends HTML, with a little HTMX. Every form works without JavaScript, and only the site's own scripts can run.</p></li>
+<li class="card"><h3>A demo that keeps everything</h3><p>Each visitor gets a new shop. A day later its users, keys and addresses are closed, but the entries stay, because deleting them would break the one rule I care about. A demo takes about 33 KB, and there are limits on how many open.</p></li>
 </ul>
 
 <div class="columns">
 <section class="card">
-<h2>How it was tested</h2>
+<h2>How I tested it</h2>
 <ul>
-<li>Automated tests on a real Postgres, some with many threads doing the same thing at once.</li>
-<li>Random mixes of failures, crashes and repeated calls, including runs of 60 days. Each payment must be charged once, and the books must match the statement in the end.</li>
-<li>The protections were broken on purpose, one by one, to see the tests fail.</li>
+<li>On a real Postgres, with many threads doing the same thing at once.</li>
+<li>With random failures, crashes and repeated calls, some over 60 days. In the end, every payment must have been charged once and the books must match the statement.</li>
+<li>By breaking the protections one by one, to check that a test fails each time.</li>
 </ul>
 </section>
 <section class="card">
-<h2>The limits</h2>
+<h2>What it can't do</h2>
 <ul>
-<li>The provider is simulated, inside the same application. A real one would need its own connection, and its own certification.</li>
-<li>Users are created by command: there is no invitation, password reset or second factor.</li>
+<li>The provider lives inside the same app. A real one would need its own connection and its own certification.</li>
+<li>Users are created with a command. No invitations, no password reset, no second factor.</li>
 <li>Idempotency keys never expire.</li>
-<li>Reconciliation reads the whole statement, which suits a demonstration and not a million payments.</li>
-<li>The sample payments of a demo have past dates, but the books date them from when the demo was opened.</li>
-<li>It runs on free plans: above their daily quota, webhooks and payments wait for the daily call.</li>
+<li>Reconciliation reads the whole statement. Fine for a demo, not for a million payments.</li>
+<li>A demo's sample payments have past dates, but the books date them from the day it was opened.</li>
+<li>It runs on free plans. Past their daily limit, webhooks and payments wait for the daily call.</li>
 </ul>
 </section>
 </div>

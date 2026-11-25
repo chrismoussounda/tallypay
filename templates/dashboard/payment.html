@@ -4,24 +4,22 @@
 <p><a href="{% url 'payments' %}">← {% translate "Payments" %}</a></p>
 {% partialdef live inline %}
 <div id="live"{% if polled %} hx-get="{{ request.path }}" hx-trigger="every 3s" hx-target="this" hx-swap="outerHTML"{% endif %}>
-<div class="heading"><div><h1>{{ payment.amount|francs }} {% include "dashboard/badge.html" with status=payment.status %}</h1><p class="dim break">{{ payment.reference }}</p></div>
+<div class="heading"><div><h1 class="amount">{{ payment.amount|francs }} {% include "dashboard/badge.html" with status=payment.status %}</h1><p class="dim break">{{ payment.reference }}</p></div>
 {% if left and user.can_refund %}<a class="button" href="{% url 'new-refund' payment.id %}" hx-get="{% url 'new-refund' payment.id %}" hx-target="#sheet-body" hx-swap="innerHTML">{% translate "Give a refund" %}</a>{% endif %}</div>
+{% if hidden_fault %}<p class="notice warn">{% translate "Something is off with this payment, and only the provider's statement shows it. To catch it, become operator 1 and compare." %}</p>{% endif %}
 <div class="columns">
 <section class="card">
-  <h2>{% translate "Details" %}</h2>
-  <dl>
-    {% if payment.status == "succeeded" %}<div><dt>{% translate "Fee" %}</dt><dd>{{ fee|francs }}</dd></div>
-    <div><dt>{% translate "Received, less the fee" %}</dt><dd>{{ net|francs }}</dd></div>
-    <div><dt>{% translate "Refunded" %}</dt><dd>{{ refunded|francs }}</dd></div>
-    <div><dt>{% translate "Left to refund" %}</dt><dd>{{ left|francs }}</dd></div>{% endif %}
-    <div><dt>{% translate "Created" %}</dt><dd>{{ payment.created_at|date:"j N Y, H:i:s" }}</dd></div>
-    <div><dt>{% translate "What the simulated provider does" %}</dt><dd>{{ payment.scenario|word }}</dd></div>
-    <div><dt>{% translate "Payment number" %}</dt><dd class="break">{{ payment.id }}</dd></div>
-  </dl>
+  <h2>{% translate "What happened" %}</h2>
+  <ol class="timeline">{% for step in timeline %}{% if step.delivery %}<li class="{{ step.delivery.status }}"><span>{% translate "Webhook" %} · <a href="{% url 'delivery' step.delivery.id %}">{{ step.delivery.event.type }}</a> · {{ step.delivery.status|word }}</span><span class="dim break">{{ step.delivery.endpoint.url }}</span>{% else %}<li class="{{ step.kind }}"><span>{% if step.refund %}{% translate "Refund" %} · {{ step.refund.amount|francs }} · {% else %}{% translate "Payment" %} · {% endif %}{{ step.kind|word }}</span>{% endif %}<time class="dim" datetime="{{ step.at|date:'c' }}">{{ step.at|date:"j N Y, H:i:s" }}</time></li>{% endfor %}</ol>
 </section>
 <section class="card">
-  <h2>{% translate "What happened" %}</h2>
-  <ol class="timeline">{% for step in timeline %}<li class="{{ step.kind }}"><span>{% if step.refund %}{% translate "Refund" %} · {{ step.refund.amount|francs }} · {% else %}{% translate "Payment" %} · {% endif %}{{ step.kind|word }}</span><time class="dim" datetime="{{ step.at|date:'c' }}">{{ step.at|date:"j N Y, H:i:s" }}</time></li>{% endfor %}</ol>
+  <h2>{% translate "In the books" %}</h2>
+  {% for entry in entries %}<table class="ledger">
+    <caption>{{ entry.what }}</caption>
+    <thead><tr><th scope="col">{% translate "Account" %}</th><th scope="col" class="number">{% translate "Debit" %}</th><th scope="col" class="number">{% translate "Credit" %}</th></tr></thead>
+    <tbody>{% for line in entry.lines %}<tr><td>{{ line.account }}</td><td class="number">{% if line.debit %}{{ line.debit|francs }}{% endif %}</td><td class="number">{% if line.credit %}{{ line.credit|francs }}{% endif %}</td></tr>{% endfor %}</tbody>
+    <tfoot><tr><th scope="row">{% translate "Total" %}</th><td class="number"><span>{{ entry.debit|francs }}</span></td><td class="number"><span>{{ entry.credit|francs }}</span></td></tr></tfoot>
+  </table>{% empty %}<p class="dim">{% if payment.status == "failed" %}{% translate "Nothing, as it failed." %}{% else %}{% translate "Nothing until the provider says it was paid." %}{% endif %}</p>{% endfor %}
 </section>
 </div>
 {% if refunds %}<section class="card">
@@ -31,10 +29,15 @@
   </tbody></table>
 </section>{% endif %}
 <section class="card">
-  <h2>{% translate "Webhooks" %}</h2>
-  {% if deliveries %}<table class="list"><thead><tr><th scope="col">{% translate "Event" %}</th><th scope="col">{% translate "Address" %}</th><th scope="col">{% translate "Status" %}</th></tr></thead><tbody>
-  {% for delivery in deliveries %}<tr><td class="lead"><a class="row" href="{% url 'delivery' delivery.id %}">{{ delivery.event.type }}</a></td><td class="dim break">{{ delivery.endpoint.url }}</td><td>{% include "dashboard/badge.html" with status=delivery.status %}</td></tr>{% endfor %}
-  </tbody></table>{% else %}<p class="dim">{% translate "No address was told of this payment." %}</p>{% endif %}
+  <h2>{% translate "Details" %}</h2>
+  <dl class="across">
+    {% if payment.status == "succeeded" %}<div><dt>{% translate "Fee" %}</dt><dd>{{ fee|francs }}</dd></div>
+    <div><dt>{% translate "Received, less the fee" %}</dt><dd>{{ net|francs }}</dd></div>
+    <div><dt>{% translate "Refunded" %}</dt><dd>{{ refunded|francs }}</dd></div>
+    <div><dt>{% translate "Left to refund" %}</dt><dd>{{ left|francs }}</dd></div>{% endif %}
+    <div><dt>{% translate "What the simulated provider does" %}</dt><dd>{{ payment.scenario|word }}</dd></div>
+    <div class="long"><dt>{% translate "Payment number" %}</dt><dd class="break">{{ payment.id }}</dd></div>
+  </dl>
 </section>
 </div>
 {% endpartialdef %}

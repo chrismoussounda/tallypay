@@ -19,11 +19,13 @@ from ledger.models import Entry, Line
 from merchants import demos
 from payments import processing, service
 from payments.models import Payment
+from provider.models import Scenario
 from refunds import processing as refund_processing
 from refunds import service as refunds
 from refunds.models import Refund
 from webhooks.models import Delivery
 
+from . import words
 from .core import (
     DEMO_USED_UP,
     developer_page,
@@ -135,7 +137,11 @@ def payment_list(request: HttpRequest) -> HttpResponse:
 @merchant_page
 def payment_detail(request: HttpRequest, payment_id: uuid.UUID) -> HttpResponse:
     payment = _find(request, payment_id)
-    made = list(payment.refunds.order_by("created_at", "id"))
+    made = list(
+        payment.refunds.select_related("hold", "settlement").order_by(
+            "created_at", "id"
+        )
+    )
     refunded = refunds.refunded(payment)
     waiting = [r.created_at for r in made if r.status == "pending"]
     if payment.status == "pending":
@@ -149,13 +155,10 @@ def payment_detail(request: HttpRequest, payment_id: uuid.UUID) -> HttpResponse:
         "fee": fee,
         "net": payment.amount - fee,
         "timeline": _timeline(payment, made),
-        "deliveries": Delivery.objects.filter(endpoint__merchant=payment.merchant)
-        .filter(
-            Q(event__data__id=str(payment.id))
-            | Q(event__data__payment_id=str(payment.id))
-        )
-        .select_related("event", "endpoint")
-        .order_by("created_at", "id"),
+        "entries": _entries(payment, made),
+        "hidden_fault": user_of(request).demo_id
+        and payment.status != "pending"
+        and payment.scenario not in Scenario.recoverable(),
         "polled": any(timezone.now() - since < POLLED for since in waiting),
     }
     # Asked for again by itself while something is waiting.
@@ -163,7 +166,43 @@ def payment_detail(request: HttpRequest, payment_id: uuid.UUID) -> HttpResponse:
     return render(request, f"dashboard/payment.html{part}", context)
 
 
+def _entries(payment: Payment, made: list[Refund]) -> list[dict[str, Any]]:
+    """What it wrote in the books, oldest first."""
+    written: list[tuple[Any, Entry | None]] = [(_("Payment"), payment.entry)]
+    for refund in made:
+        ended = _("Refund that failed, given back")
+        if refund.status == "succeeded":
+            ended = _("Refund paid out")
+        written.append((_("Refund, set aside"), refund.hold))
+        written.append((ended, refund.settlement))
+    return [
+        {"what": what, **_lines(entry, payment)}
+        for what, entry in written
+        if entry is not None
+    ]
+
+
+def _lines(entry: Entry, payment: Payment) -> dict[str, Any]:
+    lines = []
+    for line in entry.lines.select_related("account").order_by("-amount"):
+        own = line.account_id == payment.merchant.account_id
+        code = line.account.code
+        lines.append(
+            {
+                "account": payment.merchant.name if own else words.WORDS[code],
+                "debit": max(line.amount, 0),
+                "credit": max(-line.amount, 0),
+            }
+        )
+    return {
+        "lines": lines,
+        "debit": sum(line["debit"] for line in lines),
+        "credit": sum(line["credit"] for line in lines),
+    }
+
+
 def _timeline(payment: Payment, made: list[Refund]) -> list[dict[str, Any]]:
+    """Oldest first, as it is a story."""
     steps: list[dict[str, Any]] = [
         {"at": event.created_at, "kind": event.kind, "refund": None}
         for event in payment.events.order_by("id")
@@ -174,7 +213,17 @@ def _timeline(payment: Payment, made: list[Refund]) -> list[dict[str, Any]]:
             steps.append(
                 {"at": refund.settled_at, "kind": refund.status, "refund": refund}
             )
-    return sorted(steps, key=lambda step: step["at"], reverse=True)
+    deliveries = (
+        Delivery.objects.filter(endpoint__merchant=payment.merchant)
+        .filter(
+            Q(event__data__id=str(payment.id))
+            | Q(event__data__payment_id=str(payment.id))
+        )
+        .select_related("event", "endpoint")
+        .order_by("created_at", "id")
+    )
+    steps += [{"at": one.created_at, "delivery": one} for one in deliveries]
+    return sorted(steps, key=lambda step: step["at"])
 
 
 @require_http_methods(["GET", "POST"])
@@ -274,9 +323,15 @@ def balance(request: HttpRequest) -> HttpResponse:
             "entry_id", "amount"
         )
     )
+    moves = [_move(entry, -amounts[entry.id]) for entry in page]
+    ids = [move["payment"] for move in moves if move["payment"]]
+    names = dict(merchant.payments.filter(id__in=ids).values_list("id", "reference"))
+    for move in moves:
+        if move["payment"]:
+            move["reference"] = names.get(uuid.UUID(str(move["payment"])))
     context = {
         "balance": -books.balance(merchant.account),
-        "moves": [_move(entry, -amounts[entry.id]) for entry in page],
+        "moves": moves,
         "last": last,
     }
     return rows(request, "dashboard/balance.html", context)

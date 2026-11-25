@@ -2,41 +2,39 @@
 {% block title %}Comment il a été construit{% endblock %}
 {% block main %}
 <article class="write-up">
-<h1>Comment TallyPay a été construit</h1>
-<p>TallyPay tient les comptes de paiements et envoie des webhooks. C’est un projet de portfolio : le prestataire et tout l’argent sont simulés.</p>
+<h1>Comment j’ai construit TallyPay</h1>
+<p>« J’ai payé. » « Je n’ai rien reçu. » Les deux peuvent dire vrai. Entre le client et la boutique, il y a un prestataire de mobile money dont la réponse peut se perdre, arriver trois fois ou ne jamais venir. Il peut même refuser un paiement et prendre l’argent quand même.</p>
+<p>Je voulais voir ce qu’il faut pour tenir des comptes justes au milieu de tout ça. TallyPay est ma réponse. C’est un projet de portfolio : le prestataire et l’argent sont inventés, mais j’ai essayé de rendre les ennuis réalistes.</p>
 
-<h2>Le problème</h2>
-<p>Une boutique qui accepte le mobile money dépend d’un prestataire qu’elle ne maîtrise pas. Une demande peut se perdre, ou sa réponse. Une confirmation peut arriver trois fois, ou jamais. Le prestataire peut refuser un paiement et prendre l’argent quand même. Chaque cas peut perdre un franc, ou le compter deux fois.</p>
-
-<h2>Les choix</h2>
+<h2>Mes choix</h2>
 <ul class="facts">
-<li class="card"><h3>Une comptabilité en partie double, garantie par la base de données</h3><p>Chaque mouvement d’argent est une écriture dont les lignes s’annulent. Postgres le vérifie à l’enregistrement, puis refuse toute modification ou suppression. Une erreur de l’application ne peut pas contourner cette règle.</p></li>
-<li class="card"><h3>Noter d’abord, demander ensuite</h3><p>La prochaine vérification d’un paiement est enregistrée avant d’appeler le prestataire. Il reçoit le numéro du paiement : redemander ne prélève rien de plus. Si l’application tombe entre les deux, le travail reste à faire et sera fait.</p></li>
-<li class="card"><h3>Une demande, un paiement</h3><p>La clé d’idempotence, le paiement et la réponse sont enregistrés ensemble. Deux demandes identiques au même instant donnent un seul paiement et la même réponse.</p></li>
-<li class="card"><h3>Le relevé a le dernier mot</h3><p>Chaque jour, le relevé du prestataire est comparé aux comptes. L’argent inattendu attend dans un compte à part, pour que les comptes disent toujours ce que détient le prestataire. Deux personnes règlent chaque écart : l’une propose, l’autre approuve.</p></li>
-<li class="card"><h3>Postgres garde le travail à faire</h3><p>Les tâches sont des lignes, enregistrées avec ce qui les demande. QStash ne fait que réveiller l’application au bon moment. Un appel quotidien retrouve ce qui lui a échappé.</p></li>
-<li class="card"><h3>Des pages simples</h3><p>Le tableau de bord est du HTML produit par le serveur, avec HTMX. Chaque formulaire fonctionne sans JavaScript, et seuls les scripts du site peuvent s’exécuter.</p></li>
-<li class="card"><h3>Une démo qui n’efface rien</h3><p>Chaque visiteur reçoit une nouvelle boutique. Après un jour, ses utilisateurs, ses clés et ses adresses sont fermés, mais ses écritures restent : la démo ne doit pas servir à contourner des comptes que l’on ne peut pas modifier. Une démo occupe environ 33 Ko, et des limites ralentissent la croissance.</p></li>
+<li class="card"><h3>La base de données fait la comptabilité</h3><p>Chaque mouvement d’argent est une écriture dont les lignes s’annulent. Postgres vérifie l’addition à la fin, et ensuite plus personne ne peut modifier ni effacer l’écriture. Je ne voulais pas que les comptes dépendent de la justesse de mon code.</p></li>
+<li class="card"><h3>Noter, puis appeler</h3><p>Avant d’appeler le prestataire, TallyPay enregistre quand il redemandera. Le numéro du paiement part avec l’appel, donc demander deux fois ne prélève jamais deux fois. Si l’application s’arrête en route, le travail attend toujours.</p></li>
+<li class="card"><h3>Une demande, un paiement</h3><p>La clé d’idempotence, le paiement et la réponse sont enregistrés ensemble. Envoyez deux fois la même demande au même instant, vous aurez un seul paiement et deux fois la même réponse.</p></li>
+<li class="card"><h3>Le relevé tranche</h3><p>Une fois par jour, on compare les comptes au relevé du prestataire. L’argent que personne n’attendait va dans un compte à part, le temps qu’on l’explique. Une personne propose quoi faire, une autre doit être d’accord.</p></li>
+<li class="card"><h3>Une file d’attente faite de lignes</h3><p>Le travail à faire est dans une table Postgres, enregistré avec ce qui l’a demandé. QStash se contente de réveiller l’application à l’heure. Un appel quotidien rattrape ce qui lui a échappé.</p></li>
+<li class="card"><h3>Des pages simples</h3><p>Le serveur envoie du HTML, avec un peu de HTMX. Chaque formulaire marche sans JavaScript, et seuls les scripts du site peuvent tourner.</p></li>
+<li class="card"><h3>Une démo qui garde tout</h3><p>Chaque visiteur a une nouvelle boutique. Un jour plus tard, ses utilisateurs, ses clés et ses adresses sont fermés, mais les écritures restent : les effacer casserait la seule règle à laquelle je tiens. Une démo prend environ 33 Ko, et leur nombre est limité.</p></li>
 </ul>
 
 <div class="columns">
 <section class="card">
-<h2>Comment il a été testé</h2>
+<h2>Comment je l’ai testé</h2>
 <ul>
-<li>Des tests automatiques sur un vrai Postgres, certains avec plusieurs fils d’exécution qui font la même chose en même temps.</li>
-<li>Des mélanges au hasard de pannes, d’arrêts et d’appels répétés, dont des suites de 60 jours. Chaque paiement doit être prélevé une seule fois, et les comptes doivent correspondre au relevé à la fin.</li>
-<li>Les protections ont été cassées exprès, une par une, pour voir les tests échouer.</li>
+<li>Sur un vrai Postgres, avec beaucoup de fils d’exécution qui font la même chose en même temps.</li>
+<li>Avec des pannes, des arrêts et des appels répétés au hasard, parfois sur 60 jours. À la fin, chaque paiement doit avoir été prélevé une fois et les comptes doivent coller au relevé.</li>
+<li>En cassant les protections une par une, pour vérifier qu’un test échoue à chaque fois.</li>
 </ul>
 </section>
 <section class="card">
-<h2>Les limites</h2>
+<h2>Ce qu’il ne sait pas faire</h2>
 <ul>
-<li>Le prestataire est simulé, dans la même application. Un vrai demanderait sa propre connexion et sa propre certification.</li>
-<li>Les utilisateurs sont créés par commande : pas d’invitation, de mot de passe oublié ni de second facteur.</li>
+<li>Le prestataire vit dans la même application. Un vrai demanderait sa propre connexion et sa propre certification.</li>
+<li>Les utilisateurs sont créés par commande. Pas d’invitation, de mot de passe oublié ni de second facteur.</li>
 <li>Les clés d’idempotence n’expirent jamais.</li>
-<li>Le rapprochement lit tout le relevé, ce qui convient à une démonstration, pas à un million de paiements.</li>
-<li>Les paiements d’exemple d’une démo ont des dates passées, mais les comptes les datent de l’ouverture de la démo.</li>
-<li>Il utilise des offres gratuites : au-delà de leur quota quotidien, webhooks et paiements attendent l’appel quotidien.</li>
+<li>Le rapprochement lit tout le relevé. Ça va pour une démo, pas pour un million de paiements.</li>
+<li>Les paiements d’exemple d’une démo ont des dates passées, mais les comptes les datent du jour où on l’a ouverte.</li>
+<li>Il tourne sur des offres gratuites. Au-delà de leur limite du jour, webhooks et paiements attendent l’appel quotidien.</li>
 </ul>
 </section>
 </div>

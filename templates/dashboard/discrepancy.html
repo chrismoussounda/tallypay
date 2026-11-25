@@ -5,16 +5,20 @@
 <div class="heading"><div><h1>{{ found.kind|discrepancy }} {% include "dashboard/badge.html" with status=found.status %}</h1></div>
 <div class="actions">{% if found.status == "open" %}<a class="button" href="{% url 'propose' found.id %}" hx-get="{% url 'propose' found.id %}" hx-target="#sheet-body" hx-swap="innerHTML">{% translate "Propose a solution" %}</a>{% elif found.status == "proposed" %}<a class="button second" href="{% url 'reject' found.id %}" hx-get="{% url 'reject' found.id %}" hx-target="#sheet-body" hx-swap="innerHTML">{% translate "Reject" %}</a> {% if not mine %}<a class="button" href="{% url 'approve' found.id %}" hx-get="{% url 'approve' found.id %}" hx-target="#sheet-body" hx-swap="innerHTML">{% translate "Approve" %}</a>{% endif %}{% endif %}</div></div>
 {% if found.status == "proposed" and mine %}<p class="notice">{% translate "You proposed this, so someone else must approve it." %}</p>{% endif %}
+<dl class="sides">
+  <div><dt>{% translate "Our books" %}</dt><dd>{% if found.ours is not None %}{{ found.ours|francs }}{% endif %}</dd></div>
+  <div><dt>{% translate "Provider's statement" %}</dt><dd>{% if found.theirs is not None %}{{ found.theirs|francs }}{% endif %}</dd></div>
+  <div><dt>{% translate "Difference" %}</dt><dd class="red"><span>{{ found.amount|signed }}</span></dd></div>
+</dl>
 <div class="columns">
 <section class="card">
   <h2>{% translate "What was found" %}</h2>
   <dl>
-    <div><dt>{% translate "Difference" %}</dt><dd>{{ found.amount|signed }}</dd></div>
-    {% if original %}<div><dt>{% translate "We expected" %}</dt><dd>{{ original.amount|francs }} · {{ original.status|word }}</dd></div>
+    {% if found.paid %}<div><dt>{{ found.operation|word }}</dt><dd>{{ found.paid.reference }} · {{ original.amount|francs }} · {{ original.status|word }}</dd></div>
     <div><dt>{% translate "Merchant" %}</dt><dd>{{ merchant.name }}</dd></div>{% endif %}
     <div><dt>{% translate "Found" %}</dt><dd>{{ found.created_at|date:"j N Y, H:i" }}</dd></div>
     <div><dt>{% translate "Provider's number" %}</dt><dd class="break">{{ found.reference }}</dd></div>
-    {% if found.booking %}<div><dt>{% translate "For now" %}</dt><dd>{% translate "The difference waits in its own account, so that the books match the statement." %}</dd></div>{% endif %}
+    {% if found.booking and found.status != "resolved" %}<div><dt>{% translate "For now" %}</dt><dd>{% translate "The difference waits in its own account, so that the books match the statement." %}</dd></div>{% endif %}
   </dl>
 </section>
 {% if found.note or found.action %}<section class="card">

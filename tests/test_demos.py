@@ -17,7 +17,7 @@ from payments import service as payments
 from payments.models import Payment
 from provider.models import Charge
 from reconciliation import matching, resolving
-from reconciliation.models import Discrepancy
+from reconciliation.models import Discrepancy, StatementLine
 from refunds import service as refunds
 from tasks import queue
 from tasks.models import Task
@@ -326,7 +326,9 @@ def test_the_visitor_compares_only_their_own_money() -> None:
     absent = payments.create(merchant, 700, "x", "not_in_statement")
     payments.succeed(absent.id)
     assert client.post("/app/demo/reconcile").status_code == 302
-    found = resolving.seen_by(user_of(client)).exclude(reference__in=[])
+    theirs = shop.merchant.payments.values("id")
+    assert not StatementLine.objects.filter(reference__in=theirs).exists()
+    found = resolving.seen_by(user_of(client))
     assert found.count() == 4
     assert Discrepancy.objects.count() == 4
 

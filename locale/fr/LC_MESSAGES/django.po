@@ -166,9 +166,6 @@ msgstr "Vous avez proposé cette solution : quelqu’un d’autre doit l’appr
 msgid "What was found"
 msgstr "Ce qui a été trouvé"
 
-msgid "We expected"
-msgstr "Nous attendions"
-
 msgid "Provider's number"
 msgstr "Numéro du prestataire"
 
@@ -286,9 +283,6 @@ msgstr "Reste à rembourser"
 msgid "The money leaves your balance at once. The fee of the payment is not given back."
 msgstr "L’argent quitte votre solde aussitôt. Les frais du paiement ne sont pas rendus."
 
-msgid "owed to you"
-msgstr "qui vous est dû"
-
 msgid "Received in 30 days"
 msgstr "Reçu en 30 jours"
 
@@ -297,9 +291,6 @@ msgstr "Réussite sur 30 jours"
 
 msgid "Waiting"
 msgstr "En attente"
-
-msgid "for the provider's answer"
-msgstr "de la réponse du prestataire"
 
 msgid "Received each day"
 msgstr "Reçu chaque jour"
@@ -360,9 +351,6 @@ msgstr "Événement"
 
 msgid "Address"
 msgstr "Adresse"
-
-msgid "No address was told of this payment."
-msgstr "Aucune adresse n’a été prévenue de ce paiement."
 
 msgid "Reference or number"
 msgstr "Référence ou numéro"
@@ -956,3 +944,87 @@ msgstr "Opérateur 1"
 
 msgid "Operator 2"
 msgstr "Opérateur 2"
+
+#, python-format
+msgid "%(n)s payment waits for the provider."
+msgid_plural "%(n)s payments wait for the provider."
+msgstr[0] "%(n)s paiement attend le prestataire."
+msgstr[1] "%(n)s paiements attendent le prestataire."
+
+msgid "An example"
+msgstr "Un exemple"
+
+msgid "As the shop, create a payment where the provider moves 500 francs too much."
+msgstr "Comme boutique, créez un paiement où le prestataire prélève 500 francs de trop."
+
+msgid "Become operator 1, and compare the statement with the books."
+msgstr "Devenez opérateur 1, et comparez le relevé aux comptes."
+
+msgid "Credit"
+msgstr "Crédit"
+
+msgid "Debit"
+msgstr "Débit"
+
+msgid "Here the provider does wrong, and only its statement shows it. To find out, become operator 1 and compare."
+msgstr "Ici, le prestataire se trompe et seul son relevé le montre. Pour le découvrir, devenez opérateur 1 et comparez."
+
+msgid "In the books"
+msgstr "Dans les comptes"
+
+msgid "Nothing until the provider says it was paid."
+msgstr "Rien, tant que le prestataire n’a pas confirmé le paiement."
+
+msgid "Nothing, as it failed."
+msgstr "Rien, car il a échoué."
+
+msgid "Nothing. No payment waits, and no webhook failed."
+msgstr "Rien. Aucun paiement n’attend, aucun webhook n’a échoué."
+
+msgid "Order"
+msgstr "Commande"
+
+msgid "Our books"
+msgstr "Nos comptes"
+
+msgid "Owed to you, after fees and refunds"
+msgstr "Ce qui vous est dû, après frais et remboursements"
+
+msgid "Propose a solution, then become operator 2 to approve it."
+msgstr "Proposez une solution, puis devenez opérateur 2 pour l’approuver."
+
+msgid "Provider's statement"
+msgstr "Relevé du prestataire"
+
+msgid "Refund paid out"
+msgstr "Remboursement versé"
+
+msgid "Refund, set aside"
+msgstr "Remboursement, mis de côté"
+
+msgid "The provider took 500 francs too much. It said nothing, but its statement did."
+msgstr "Le prestataire a pris 500 francs de trop. Il n’a rien dit, mais son relevé, si."
+
+msgid "To look at"
+msgstr "À regarder"
+
+msgid "Total"
+msgstr "Total"
+
+msgid "Watch it settle, and the signed webhook be delivered."
+msgstr "Regardez-le aboutir, et le webhook signé être remis."
+
+msgid "Webhook"
+msgstr "Webhook"
+
+msgid "What TallyPay does"
+msgstr "Ce que fait TallyPay"
+
+msgid "What goes wrong"
+msgstr "Ce qui tourne mal"
+
+msgid "You have seen it all."
+msgstr "Vous avez tout vu."
+
+msgid "Dashboard"
+msgstr "Tableau"

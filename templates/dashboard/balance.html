@@ -2,11 +2,11 @@
 {% block title %}{% translate "Balance" %}{% endblock %}
 {% block main %}
 <div class="heading"><h1>{% translate "Balance" %}</h1></div>
-<p class="big">{{ balance|francs }}</p>
+<p class="amount">{{ balance|francs }}</p>
 <p class="dim">{% translate "What TallyPay owes you, after fees and refunds. It is the sum of every line below." %}</p>
 <section class="card">
   {% if moves %}<table class="list"><thead><tr><th scope="col">{% translate "Movement" %}</th><th scope="col" class="number">{% translate "Amount" %}</th><th scope="col">{% translate "When" %}</th></tr></thead><tbody>{% partialdef more inline %}
-  {% for move in moves %}<tr><td class="lead">{% if move.payment %}<a class="row" href="{% url 'payment' move.payment %}">{{ move.what }}</a>{% else %}{{ move.what }}{% endif %}</td><td class="number">{{ move.amount|signed }}</td><td class="dim">{{ move.at|date:"j N Y, H:i" }}</td></tr>{% endfor %}{% if last %}<tr class="next"><td colspan="3"><a class="button second" href="{% querystring after=last.id %}" hx-get="{{ request.path }}{% querystring after=last.id %}" hx-target="closest tr" hx-swap="outerHTML">{% translate "Show more" %}</a></td></tr>{% endif %}{% endpartialdef %}</tbody></table>
+  {% for move in moves %}<tr><td class="lead">{% if move.payment %}<a class="row" href="{% url 'payment' move.payment %}">{{ move.what }}</a>{% if move.reference %}<small>{{ move.reference }}</small>{% endif %}{% else %}{{ move.what }}{% endif %}</td><td class="number">{{ move.amount|signed }}</td><td class="dim">{{ move.at|date:"j N Y, H:i" }}</td></tr>{% endfor %}{% if last %}<tr class="next"><td colspan="3"><a class="button second" href="{% querystring after=last.id %}" hx-get="{{ request.path }}{% querystring after=last.id %}" hx-target="closest tr" hx-swap="outerHTML">{% translate "Show more" %}</a></td></tr>{% endif %}{% endpartialdef %}</tbody></table>
   {% else %}<p class="dim">{% translate "No movement yet." %}</p>{% endif %}
 </section>
 {% endblock %}

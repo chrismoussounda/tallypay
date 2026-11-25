@@ -1,7 +1,10 @@
+from typing import Any
+
 from django import template
 from django.utils.formats import number_format
 
-from dashboard import words
+from dashboard import guide, words
+from merchants.models import Demo
 
 register = template.Library()
 
@@ -27,3 +30,8 @@ def word(value: str) -> str:
 @register.filter
 def discrepancy(kind: str) -> str:
     return str(words.DISCREPANCIES.get(kind, kind))
+
+
+@register.simple_tag
+def guide_of(demo: Demo) -> dict[str, Any]:
+    return guide.steps(demo)

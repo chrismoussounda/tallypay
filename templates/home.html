@@ -1,4 +1,4 @@
-{% extends "site.html" %}{% load i18n %}
+{% extends "site.html" %}{% load i18n shown %}
 {% block title %}{% translate "Payments that add up" %}{% endblock %}
 {% block main %}
 {% for message in messages %}<p class="notice warn" role="alert">{{ message }}</p>{% endfor %}
@@ -12,7 +12,20 @@
   </div>
   <p class="dim">{% translate "No account needed. You get a shop of your own with sample payments, closed after 24 hours. All money is simulated." %}</p>
 </section>
-<section class="card">
+<section class="sheet" aria-label="{% translate 'An example' %}">
+  <table class="ledger">
+    <thead><tr><th scope="col">{% translate "Order" %}</th><th scope="col" class="number">{% translate "Our books" %}</th><th scope="col" class="number">{% translate "Provider's statement" %}</th></tr></thead>
+    <tbody>
+      <tr><td>CMD-1007</td><td class="number">{{ 35000|francs }}</td><td class="number">{{ 35000|francs }}</td></tr>
+      <tr class="off"><td>CMD-1008</td><td class="number">{{ 5000|francs }}</td><td class="number">{{ 5500|francs }}</td></tr>
+      <tr><td>CMD-1009</td><td class="number">{{ 54000|francs }}</td><td class="number">{{ 54000|francs }}</td></tr>
+    </tbody>
+    <tfoot><tr><th scope="row">{% translate "Difference" %}</th><td></td><td class="number red"><span>{{ 500|signed }}</span></td></tr></tfoot>
+  </table>
+  <p>{% translate "The provider took 500 francs too much. It said nothing, but its statement did." %}</p>
+</section>
+</div>
+<section>
   <h2>{% translate "See it in two minutes" %}</h2>
   <ol class="steps">
     <li>{% translate "As a shop, create a payment. Choose what the provider does, for instance “Moves 500 francs too much”." %}</li>
@@ -21,17 +34,19 @@
     <li>{% translate "Propose a solution, then become the other operator to approve it. The books still balance." %}</li>
   </ol>
 </section>
-</div>
 <section>
   <h2>{% translate "What goes wrong, and what happens here" %}</h2>
-  <ul class="facts">
-    <li class="card"><h3>{% translate "The answer never comes" %}</h3><p>{% translate "The next check is written down before the provider is asked. A crash cannot lose the payment." %}</p></li>
-    <li class="card"><h3>{% translate "The same request comes twice" %}</h3><p>{% translate "The shop's own key makes it one payment. The second request gets the first answer." %}</p></li>
-    <li class="card"><h3>{% translate "The wrong amount is taken" %}</h3><p>{% translate "The daily comparison with the provider finds it. One person proposes a solution, another approves it." %}</p></li>
-    <li class="card"><h3>{% translate "The shop's server is down" %}</h3><p>{% translate "Signed webhooks are tried again for about 31 hours, or 11 minutes in a demo. Then they can be sent again by hand." %}</p></li>
-    <li class="card"><h3>{% translate "The code has a bug" %}</h3><p>{% translate "Postgres itself refuses an entry that does not balance, and any change to the past." %}</p></li>
-    <li class="card"><h3>{% translate "Someone makes a mistake" %}</h3><p>{% translate "Nothing is edited. A mistake is undone by one exact opposite entry." %}</p></li>
-  </ul>
+  <table class="failures">
+    <thead><tr><th scope="col">{% translate "What goes wrong" %}</th><th scope="col">{% translate "What TallyPay does" %}</th></tr></thead>
+    <tbody>
+      <tr><td>{% translate "The answer never comes" %}</td><td>{% translate "The next check is written down before the provider is asked. A crash cannot lose the payment." %}</td></tr>
+      <tr><td>{% translate "The same request comes twice" %}</td><td>{% translate "The shop's own key makes it one payment. The second request gets the first answer." %}</td></tr>
+      <tr><td>{% translate "The wrong amount is taken" %}</td><td>{% translate "The daily comparison with the provider finds it. One person proposes a solution, another approves it." %}</td></tr>
+      <tr><td>{% translate "The shop's server is down" %}</td><td>{% translate "Signed webhooks are tried again for about 31 hours, or 11 minutes in a demo. Then they can be sent again by hand." %}</td></tr>
+      <tr><td>{% translate "The code has a bug" %}</td><td>{% translate "Postgres itself refuses an entry that does not balance, and any change to the past." %}</td></tr>
+      <tr><td>{% translate "Someone makes a mistake" %}</td><td>{% translate "Nothing is edited. A mistake is undone by one exact opposite entry." %}</td></tr>
+    </tbody>
+  </table>
 </section>
 <section>
   <h2>{% translate "For developers" %}</h2>

@@ -954,12 +954,6 @@ msgstr "Vous avez tout vu."
 msgid "Dashboard"
 msgstr "Tableau"
 
-msgid "The customer owed 5,000 francs. The provider took 5,500."
-msgstr "Le client devait 5 000 francs. Le prestataire en a pris 5 500."
-
-msgid "With mobile money, an answer can get lost, a payment can go through twice, an amount can be wrong. TallyPay keeps a shop's books and tracks down the francs that don't match."
-msgstr "Avec le mobile money, une réponse peut se perdre, un paiement passer deux fois, un montant être faux. TallyPay tient les comptes d’une boutique et retrouve les francs qui ne collent pas."
-
 msgid "Run the shop"
 msgstr "Tenir la boutique"
 
@@ -968,9 +962,6 @@ msgstr "Vérifier les comptes"
 
 msgid "No account, no real money. Your shop is ready in seconds and closes after 24 hours."
 msgstr "Pas de compte à créer, pas de vrai argent. Votre boutique est prête en quelques secondes et ferme au bout de 24 heures."
-
-msgid "500 francs too much, and not a word from the provider. Its statement gave it away."
-msgstr "500 francs de trop, et pas un mot du prestataire. C’est son relevé qui l’a trahi."
 
 msgid "Go on, break a payment"
 msgstr "Allez-y, faites dérailler un paiement"
@@ -1028,3 +1019,24 @@ msgstr "Sous le capot"
 
 msgid "Python, Django, Postgres, and HTMX for the pages. The code is open, and I wrote up my choices and what still falls short."
 msgstr "Python, Django, Postgres, et HTMX pour les pages. Le code est ouvert, et j’ai raconté mes choix et ce qui manque encore."
+
+msgid "“I've paid.”"
+msgstr "« J’ai payé. »"
+
+msgid "“I haven't got it.”"
+msgstr "« Je n’ai rien reçu. »"
+
+msgid "TallyPay keeps track of every mobile-money payment and checks it against the provider's statement, so you know where the money is."
+msgstr "TallyPay garde la trace de chaque paiement mobile money et la compare au relevé du prestataire. On sait enfin où est l’argent."
+
+msgid "Three orders, and two versions of each. TallyPay puts them side by side."
+msgstr "Trois commandes, et deux versions à chaque fois. TallyPay les met côte à côte."
+
+msgid "Taken, but nobody said so"
+msgstr "Pris, mais personne ne l’a dit"
+
+msgid "500 francs too much"
+msgstr "500 francs de trop"
+
+msgid "Not in the statement"
+msgstr "Absent du relevé"

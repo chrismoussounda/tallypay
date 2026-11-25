@@ -4,8 +4,8 @@
 {% for message in messages %}<p class="notice warn" role="alert">{{ message }}</p>{% endfor %}
 <div class="first">
 <section class="hero">
-  <h1>{% translate "The customer owed 5,000 francs. The provider took 5,500." %}</h1>
-  <p>{% translate "With mobile money, an answer can get lost, a payment can go through twice, an amount can be wrong. TallyPay keeps a shop's books and tracks down the francs that don't match." %}</p>
+  <h1><span>{% translate "“I've paid.”" %}</span> <span>{% translate "“I haven't got it.”" %}</span></h1>
+  <p>{% translate "TallyPay keeps track of every mobile-money payment and checks it against the provider's statement, so you know where the money is." %}</p>
   <div class="actions">
     <form method="post" action="{% url 'open-demo' %}">{% csrf_token %}<button name="who" value="owner">{% translate "Run the shop" %}</button></form>
     <form method="post" action="{% url 'open-demo' %}">{% csrf_token %}<button class="second" name="who" value="proposer">{% translate "Check the books" %}</button></form>
@@ -16,13 +16,12 @@
   <table class="ledger">
     <thead><tr><th scope="col">{% translate "Order" %}</th><th scope="col" class="number">{% translate "Our books" %}</th><th scope="col" class="number">{% translate "Provider's statement" %}</th></tr></thead>
     <tbody>
-      <tr><td>CMD-1007</td><td class="number">{{ 35000|francs }}</td><td class="number">{{ 35000|francs }}</td></tr>
-      <tr class="off"><td>CMD-1008</td><td class="number">{{ 5000|francs }}</td><td class="number">{{ 5500|francs }}</td></tr>
-      <tr><td>CMD-1009</td><td class="number">{{ 54000|francs }}</td><td class="number">{{ 54000|francs }}</td></tr>
+      <tr><th scope="row">CMD-1006<small>{% translate "Taken, but nobody said so" %}</small></th><td class="number dim">{% translate "Waiting" %}</td><td class="number">{{ 12000|francs }}</td></tr>
+      <tr><th scope="row">CMD-1008<small>{% translate "500 francs too much" %}</small></th><td class="number">{{ 20000|francs }}</td><td class="number red">{{ 20500|francs }}</td></tr>
+      <tr><th scope="row">CMD-1010<small>{% translate "Not in the statement" %}</small></th><td class="number">{{ 18500|francs }}</td><td class="number red">–</td></tr>
     </tbody>
-    <tfoot><tr><th scope="row">{% translate "Difference" %}</th><td></td><td class="number red"><span>{{ 500|signed }}</span></td></tr></tfoot>
   </table>
-  <p>{% translate "500 francs too much, and not a word from the provider. Its statement gave it away." %}</p>
+  <p>{% translate "Three orders, and two versions of each. TallyPay puts them side by side." %}</p>
 </section>
 </div>
 <section>

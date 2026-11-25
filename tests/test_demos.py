@@ -479,6 +479,12 @@ def test_the_guide_ticks_what_was_done() -> None:
     def did() -> list[bool]:
         return [step["did"] for step in guide.steps(demo)["steps"]]
 
+    other = opening.open_one("b").merchant
+    payments.succeed(payments.create(other, 1, "x").id)
+    Delivery.objects.update(status="delivered")
+    missing = resolving.seen_by(user_of(client)).get(kind="missing")
+    # As the rules do, without anyone.
+    resolving.close(missing, Discrepancy.Action.MATCHED)
     assert did() == [False] * 4
     payment = payments.create(demo.merchant, 5_000, "x", "wrong_amount")
     Charge.objects.create(
@@ -489,7 +495,8 @@ def test_the_guide_ticks_what_was_done() -> None:
     )
     payments.succeed(payment.id)
     assert did() == [True, False, False, False]
-    webhooks._record(Delivery.objects.get().id, 1, 204, "")
+    mine = Delivery.objects.get(endpoint__merchant=demo.merchant)
+    webhooks._record(mine.id, 1, 204, "")
     assert did() == [True, True, False, False]
     become(client, "proposer")
     client.post("/app/demo/reconcile")

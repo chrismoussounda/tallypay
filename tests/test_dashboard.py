@@ -654,8 +654,15 @@ def test_a_payment_shows_its_entries_which_balance(shop: Shop) -> None:
     assert [entry["debit"] for entry in entries] == [10_000, 1_000, 1_000]
     for entry in entries:
         assert entry["debit"] == entry["credit"]
-    accounts = [str(line["account"]) for line in entries[0]["lines"]]
-    assert accounts == ["Held by the provider", "Fees", shop.merchant.name]
+    shown = [
+        (str(line["account"]), line["debit"], line["credit"])
+        for line in entries[0]["lines"]
+    ]
+    assert shown == [
+        ("Held by the provider", 10_000, 0),
+        ("Fees", 0, 200),
+        (shop.merchant.name, 0, 9_800),
+    ]
 
 
 def test_a_refund_moved_wrongly_is_shown_as_money_out(shop: Shop) -> None:
@@ -677,6 +684,14 @@ def test_a_refund_moved_wrongly_is_shown_as_money_out(shop: Shop) -> None:
     )
     page = browser(operator("b")).get(f"/app/discrepancies/{unknown.id}")
     assert page.status_code == 200
+    failed = Discrepancy.objects.create(
+        kind="after_failure",
+        reference=shop.payment.id,
+        operation="charge",
+        amount=10_000,
+    )
+    page = browser(operator("c")).get(f"/app/discrepancies/{failed.id}")
+    assert page.context["found"].ours is None
 
 
 def test_the_balance_names_each_payment(shop: Shop) -> None:

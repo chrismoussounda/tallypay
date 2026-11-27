@@ -46,7 +46,13 @@ def test_becoming_someone_can_open_the_page_of_the_step() -> None:
 
 
 @pytest.mark.parametrize(
-    "going", ["https://elsewhere.example/app/", "//elsewhere.example/app/", "/admin/"]
+    "going",
+    [
+        "https://elsewhere.example/app/",
+        "//elsewhere.example/app/",
+        "/admin/",
+        "/app/../admin/",
+    ],
 )
 def test_becoming_someone_never_leaves_the_app(going: str) -> None:
     client = visit()

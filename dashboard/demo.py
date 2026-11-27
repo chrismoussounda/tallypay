@@ -1,5 +1,8 @@
 """What only the visitor of a demo can do."""
 
+import posixpath
+from urllib.parse import urlsplit
+
 from django.contrib import messages
 from django.contrib.auth import login
 from django.http import Http404, HttpRequest, HttpResponse
@@ -41,7 +44,10 @@ def become(request: HttpRequest) -> HttpResponse:
     enter(request, person)
     # The guide sends the visitor straight to the page of its step.
     going = request.POST.get("next", "")
-    if going.startswith("/app/") and url_has_allowed_host_and_scheme(
+    # Checked once the dots are resolved, as the browser will:
+    # /app/../admin/ is /admin/.
+    path = posixpath.normpath(urlsplit(going).path)
+    if path.startswith("/app/") and url_has_allowed_host_and_scheme(
         going, allowed_hosts={request.get_host()}, require_https=request.is_secure()
     ):
         return redirect(going)

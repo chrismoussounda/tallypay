@@ -86,3 +86,18 @@ def test_amounts_are_written_as_the_language_does() -> None:
         client.post("/i18n/setlang/", {"language": language, "next": "/"})
         text = client.get("/app/balance")
         assert shown in text.content.decode().replace("\u202f", "\u00a0")
+
+
+@pytest.mark.django_db
+def test_a_regional_english_cookie_is_english(settings: Any) -> None:
+    settings.LANGUAGE_CODE = "fr"
+    client = Client()
+    client.cookies[settings.LANGUAGE_COOKIE_NAME] = "en-us"
+    assert "Sign in" in client.get("/app/sign-in").content.decode()
+
+
+@pytest.mark.django_db
+def test_pages_do_not_vary_on_the_browsers_language() -> None:
+    answer = Client().get("/app/sign-in")
+    assert "Accept-Language" not in answer.headers.get("Vary", "")
+    assert answer.headers["Content-Language"]

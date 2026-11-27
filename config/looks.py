@@ -4,6 +4,7 @@ from typing import Any
 
 from django.conf import settings
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.http.response import HttpResponseBase
 from django.middleware.locale import LocaleMiddleware
 from django.utils import translation
 from django.utils.http import url_has_allowed_host_and_scheme
@@ -18,9 +19,21 @@ class FrenchUntilChosen(LocaleMiddleware):
 
     def process_request(self, request: HttpRequest) -> None:
         chosen = request.COOKIES.get(settings.LANGUAGE_COOKIE_NAME, "")
-        known = dict(settings.LANGUAGES)
-        translation.activate(chosen if chosen in known else settings.LANGUAGE_CODE)
+        try:
+            # "en-us" is English too, as Django's own switch may store it.
+            language = translation.get_supported_language_variant(chosen)
+        except LookupError:
+            language = settings.LANGUAGE_CODE
+        translation.activate(language)
         request.LANGUAGE_CODE = translation.get_language()
+
+    def process_response(
+        self, request: HttpRequest, response: HttpResponseBase
+    ) -> HttpResponseBase:
+        # Not LocaleMiddleware's: the browser's language no longer decides, so
+        # "Vary: Accept-Language" would only split caches into identical copies.
+        response.headers.setdefault("Content-Language", translation.get_language())
+        return response
 
 
 def theme(request: HttpRequest) -> dict[str, Any]:

@@ -227,6 +227,7 @@ figcaption { display: flex; justify-content: space-between; font-size: 14px; }
 .demo .roles { grid-column: 2; grid-row: 2 / span 2; flex-direction: column; align-items: flex-end; gap: 6px; }
 .roles .why { max-width: 330px; margin: 0; font-size: 14px; text-align: right; }
 .yours { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 3px; background: var(--accent); color: var(--on-accent); font-size: 12px; font-weight: 700; vertical-align: 1px; }
+.tab-group { flex: none; display: flex; align-items: center; margin-left: 12px; padding-left: 12px; border-left: 1px solid currentcolor; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; opacity: .6; }
 .link { padding: 0; min-height: auto; background: none; color: var(--accent); text-decoration: underline; text-underline-offset: 3px; font-weight: 500; }
 .quiet { margin-top: 4px; }
 .theme { display: inline; }
@@ -313,6 +314,7 @@ figcaption { display: flex; justify-content: space-between; font-size: 14px; }
   .demo:has(.stepper) { grid-template-columns: minmax(0, 1fr); }
   .demo .roles { grid-column: 1; grid-row: auto; align-items: stretch; }
   .roles .why { max-width: none; text-align: left; }
+  .tab-group { margin-left: 4px; padding-left: 8px; }
   .demo .segments button { flex: 1; padding: 6px; white-space: nowrap; }
   .list thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
   .list, .list tbody { display: block; }

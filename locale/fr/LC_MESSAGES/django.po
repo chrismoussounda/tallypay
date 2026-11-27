@@ -1103,3 +1103,9 @@ msgstr "Ou aller directement du côté des opérateurs"
 msgid "Yours"
 msgstr "La vôtre"
 
+msgid "For developers"
+msgstr "Pour les développeurs"
+
+msgid "Every payment is split in two columns that must match: what the provider holds on one side, the fee and what the shop is owed on the other."
+msgstr "Chaque paiement est réparti en deux colonnes qui doivent être égales : d’un côté ce que détient le prestataire, de l’autre les frais et ce qui est dû à la boutique."
+

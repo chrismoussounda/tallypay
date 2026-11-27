@@ -22,6 +22,7 @@
   {% include "dashboard/tab.html" with name="overview" starts="/app/overview" text=_("Overview") %}
   {% include "dashboard/tab.html" with name="payments" starts="/app/payments" text=_("Payments") %}
   {% include "dashboard/tab.html" with name="balance" starts="/app/balance" text=_("Balance") %}
+  <span class="tab-group" aria-hidden="true">{% translate "For developers" %}</span>
   {% include "dashboard/tab.html" with name="webhooks" starts="/app/webhooks" text=_("Webhooks") %}
   {% include "dashboard/tab.html" with name="keys" starts="/app/keys" text=_("API keys") %}
   {% if user.role == "owner" %}{% include "dashboard/tab.html" with name="activity" starts="/app/activity" text=_("Activity") %}{% endif %}

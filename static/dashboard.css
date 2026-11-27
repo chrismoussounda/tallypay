@@ -1,8 +1,9 @@
 @font-face { font-family: Besley; src: url("fonts/besley-latin.woff2") format("woff2"); font-weight: 400 900; font-display: swap; }
 @font-face { font-family: "Public Sans"; src: url("fonts/public-sans-latin.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
 *, ::before, ::after { box-sizing: border-box; }
+/* Light unless the visitor picks dark (a cookie, read by the server). */
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
   --page: light-dark(#f7faf6, #0e1512);
   --card: light-dark(#fff, #151e1a);
   --band: light-dark(#eaf3ea, #14201b);
@@ -214,6 +215,8 @@ figcaption { display: flex; justify-content: space-between; font-size: 14px; }
 .demo form { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .segments button { min-height: 44px; padding: 6px 16px; border: 0; border-radius: 0; background: none; color: var(--ink); font-weight: 500; }
 .segments button[aria-current] { background: var(--accent); color: var(--on-accent); }
+:root[data-theme="dark"] { color-scheme: dark; }
+.theme { display: inline; }
 .guide { flex: 1 1 420px; min-width: 0; }
 .guide summary { display: flex; align-items: center; gap: 12px; min-height: 44px; cursor: pointer; font-weight: 600; list-style: none; }
 .guide summary::-webkit-details-marker { display: none; }

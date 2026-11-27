@@ -1,8 +1,18 @@
+
 msgid ""
 msgstr ""
-"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-11-27 21:54+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
 
 msgid "Books"
 msgstr "Comptes"
@@ -1040,3 +1050,10 @@ msgstr "500 francs de trop"
 
 msgid "Not in the statement"
 msgstr "Absent du relevé"
+
+msgid "Light"
+msgstr "Clair"
+
+msgid "Dark"
+msgstr "Sombre"
+

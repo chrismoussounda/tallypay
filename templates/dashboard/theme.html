@@ -1,0 +1,5 @@
+{% load i18n %}<form class="theme" method="post" action="{% url 'set-theme' %}">
+  {% csrf_token %}
+  <input type="hidden" name="next" value="{{ request.get_full_path }}">
+  {% if theme == "dark" %}<button class="plain" name="theme" value="light">{% translate "Light" %}</button>{% else %}<button class="plain" name="theme" value="dark">{% translate "Dark" %}</button>{% endif %}
+</form>

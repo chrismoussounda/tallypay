@@ -35,3 +35,9 @@ def discrepancy(kind: str) -> str:
 @register.simple_tag
 def guide_of(demo: Demo) -> dict[str, Any]:
     return guide.steps(demo)
+
+
+@register.simple_tag
+def role_of(user: Any) -> str:
+    """owner, proposer or approver: who a demo user plays, from its address."""
+    return str(getattr(user, "email", "")).split("-", 1)[0]

@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth import login
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
@@ -38,6 +39,12 @@ def become(request: HttpRequest) -> HttpResponse:
         email__startswith=f"{who}-",
     )
     enter(request, person)
+    # The guide sends the visitor straight to the page of its step.
+    going = request.POST.get("next", "")
+    if going.startswith("/app/") and url_has_allowed_host_and_scheme(
+        going, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
+        return redirect(going)
     return redirect("start")
 
 

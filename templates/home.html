@@ -7,10 +7,10 @@
   <h1><span>{% translate "“I've paid.”" %}</span> <span>{% translate "“I haven't got it.”" %}</span></h1>
   <p>{% translate "TallyPay keeps track of every mobile-money payment and checks it against the provider's statement, so you know where the money is." %}</p>
   <div class="actions">
-    <form method="post" action="{% url 'open-demo' %}">{% csrf_token %}<button name="who" value="owner">{% translate "Run the shop" %}</button></form>
-    <form method="post" action="{% url 'open-demo' %}">{% csrf_token %}<button class="second" name="who" value="proposer">{% translate "Check the books" %}</button></form>
+    <form method="post" action="{% url 'open-demo' %}">{% csrf_token %}<button name="who" value="owner">{% translate "Start the 2-minute tour" %}</button></form>
   </div>
   <p class="dim">{% translate "No account, no real money. Your shop is ready in seconds and closes after 24 hours." %}</p>
+  <form class="quiet" method="post" action="{% url 'open-demo' %}">{% csrf_token %}<button class="link" name="who" value="proposer">{% translate "Or go straight to the operators' side" %}</button></form>
 </section>
 <section class="sheet" aria-label="{% translate 'An example' %}">
   <table class="ledger">

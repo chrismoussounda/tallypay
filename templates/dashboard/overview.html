@@ -23,7 +23,7 @@
 <section class="card">
   <div class="heading"><h2>{% translate "Latest payments" %}</h2><a href="{% url 'payments' %}">{% translate "See all" %}</a></div>
   {% if payments %}<table class="list"><thead><tr><th scope="col">{% translate "Reference" %}</th><th scope="col" class="number">{% translate "Amount" %}</th><th scope="col">{% translate "Status" %}</th><th scope="col">{% translate "Created" %}</th></tr></thead><tbody>{% for payment in payments %}<tr>
-  <td class="lead"><a class="row" href="{% url 'payment' payment.id %}">{{ payment.reference }}</a></td>
+  <td class="lead"><a class="row" href="{% url 'payment' payment.id %}">{{ payment.reference }}</a>{% if user.demo and payment.created_at > user.demo.created_at %} <span class="yours">{% translate "Yours" %}</span>{% endif %}</td>
   <td class="number">{{ payment.amount|francs }}</td>
   <td>{% include "dashboard/badge.html" with status=payment.status %}</td>
   <td class="dim"><time datetime="{{ payment.created_at|date:'c' }}">{{ payment.created_at|date:"j N Y, H:i" }}</time></td>

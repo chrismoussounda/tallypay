@@ -1,5 +1,6 @@
 import threading
 from collections.abc import Callable, Iterator
+from typing import Any
 
 import pytest
 from django.db import connection
@@ -77,3 +78,9 @@ def together(committed: None) -> Together:
         return outcomes
 
     return run
+
+
+@pytest.fixture(autouse=True)
+def english(settings: Any) -> None:
+    """The suite reads the English words; test_french checks that French comes first."""
+    settings.LANGUAGE_CODE = "en"

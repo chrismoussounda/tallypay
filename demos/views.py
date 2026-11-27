@@ -51,7 +51,9 @@ def open_demo(request: HttpRequest) -> HttpResponse:
         messages.error(request, _("You opened several demos. Try again in an hour."))
         return redirect("home")
     except opening.Full:
-        messages.error(request, _("All of today's demos are open. Try tomorrow."))
+        messages.error(
+            request, _("All of today's demos are taken. Try again tomorrow.")
+        )
         return redirect("home")
     enter(request, demo.people.get(email__startswith=f"{who}-"))
     return redirect("start")

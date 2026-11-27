@@ -244,7 +244,7 @@ msgstr "Sans nom"
 msgid "New webhook address"
 msgstr "Nouvelle adresse de webhook"
 
-msgid "It is told of every payment and refund from now on."
+msgid "From now on, it is notified of every payment and refund."
 msgstr "Elle sera prévenue de chaque paiement et remboursement à partir de maintenant."
 
 msgid "Add the address"
@@ -280,13 +280,13 @@ msgstr "Paiement"
 msgid "Left to refund"
 msgstr "Reste à rembourser"
 
-msgid "The money leaves your balance at once. The fee of the payment is not given back."
+msgid "The money leaves your balance at once. The payment's fee is not refunded."
 msgstr "L’argent quitte votre solde aussitôt. Les frais du paiement ne sont pas rendus."
 
-msgid "Received in 30 days"
+msgid "Received over 30 days"
 msgstr "Reçu en 30 jours"
 
-msgid "Success in 30 days"
+msgid "Success rate over 30 days"
 msgstr "Réussite sur 30 jours"
 
 msgid "Waiting"
@@ -361,7 +361,7 @@ msgstr "Rechercher"
 msgid "Period"
 msgstr "Période"
 
-msgid "Always"
+msgid "All time"
 msgstr "Toujours"
 
 msgid "30 days"
@@ -388,7 +388,7 @@ msgstr "Rejeter cette solution ?"
 msgid "Remove this address?"
 msgstr "Retirer cette adresse ?"
 
-msgid "It is no longer told of anything. What was being sent to it stops."
+msgid "It is no longer notified of anything, and messages on their way to it stop."
 msgstr "Elle ne sera plus prévenue de rien. Les envois en cours s’arrêtent."
 
 msgid "Remove the address"
@@ -430,7 +430,7 @@ msgstr "Secret"
 msgid "Remove"
 msgstr "Retirer"
 
-msgid "Add an address to be told when a payment or a refund changes."
+msgid "Add an address to be notified when a payment or a refund changes."
 msgstr "Ajoutez une adresse pour être prévenu quand un paiement ou un remboursement change."
 
 msgid "Messages"
@@ -454,7 +454,7 @@ msgstr "Cette adresse a été retirée."
 msgid "Sent again."
 msgstr "Renvoyé."
 
-msgid "There are as many addresses as allowed."
+msgid "You have reached the address limit."
 msgstr "Le nombre maximal d’adresses est atteint."
 
 msgid "Your password"
@@ -502,7 +502,7 @@ msgstr "Paiement créé."
 msgid "Refund started."
 msgstr "Remboursement lancé."
 
-msgid "Refund that failed, given back"
+msgid "Failed refund, credited back"
 msgstr "Remboursement échoué, rendu"
 
 msgid "This form was already sent. Open it again."
@@ -796,7 +796,7 @@ msgstr "Quitter pour de bon"
 msgid "All demos"
 msgstr "Toutes les démos"
 
-msgid "The demo is used up for today."
+msgid "The demo has reached its limit for today."
 msgstr "La démo est épuisée pour aujourd’hui."
 
 msgid "The statement was compared with the books."
@@ -805,7 +805,7 @@ msgstr "Le relevé a été comparé aux comptes."
 msgid "You opened several demos. Try again in an hour."
 msgstr "Vous avez ouvert plusieurs démos. Réessayez dans une heure."
 
-msgid "All of today's demos are open. Try tomorrow."
+msgid "All of today's demos are taken. Try again tomorrow."
 msgstr "Toutes les démos du jour sont ouvertes. Réessayez demain."
 
 msgid "A demo has an address of its own, and no other."
@@ -840,7 +840,7 @@ msgstr "Elle ferme le %(until)s."
 msgid "%(left)s more payments, refunds or resends."
 msgstr "Encore %(left)s paiements, remboursements ou renvois."
 
-msgid "Seen as"
+msgid "Viewing as"
 msgstr "Vu comme"
 
 msgid "Shop"

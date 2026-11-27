@@ -171,7 +171,7 @@ def _entries(payment: Payment, made: list[Refund]) -> list[dict[str, Any]]:
     """What it wrote in the books, oldest first."""
     written: list[tuple[Any, Entry | None]] = [(_("Payment"), payment.entry)]
     for refund in made:
-        ended = _("Refund that failed, given back")
+        ended = _("Failed refund, credited back")
         if refund.status == "succeeded":
             ended = _("Refund paid out")
         written.append((_("Refund, set aside"), refund.hold))
@@ -350,7 +350,7 @@ def _move(entry: Entry, amount: int) -> dict[str, Any]:
     if found and found[1] == "Payment":
         what, payment = _("Payment, less its fee"), found[2]
     elif found:
-        what = _("Refund that failed, given back") if found[3] else _("Refund")
+        what = _("Failed refund, credited back") if found[3] else _("Refund")
         payment = (
             Refund.objects.filter(id=found[2])
             .values_list("payment_id", flat=True)

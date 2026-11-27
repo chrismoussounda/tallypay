@@ -13,7 +13,7 @@
     {% for s in statuses %}<a href="{% querystring status=s after=None %}"{% if s == status %} aria-current="true"{% endif %}>{{ s|word }}</a>{% endfor %}
   </div>
   <div class="segments" role="group" aria-label="{% translate 'Period' %}">
-    <a href="{% querystring period=None after=None %}"{% if not period %} aria-current="true"{% endif %}>{% translate "Always" %}</a>
+    <a href="{% querystring period=None after=None %}"{% if not period %} aria-current="true"{% endif %}>{% translate "All time" %}</a>
     <a href="{% querystring period='30' after=None %}"{% if period == "30" %} aria-current="true"{% endif %}>{% translate "30 days" %}</a>
     <a href="{% querystring period='7' after=None %}"{% if period == "7" %} aria-current="true"{% endif %}>{% translate "7 days" %}</a>
   </div>

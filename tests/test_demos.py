@@ -137,7 +137,7 @@ def test_a_refusal_is_said_on_the_home_page(monkeypatch: pytest.MonkeyPatch) -> 
     monkeypatch.setattr(opening, "PER_DAY", 0)
     monkeypatch.setattr(opening, "PER_ADDRESS", 1)
     page = Client().post("/demo/open", {"who": "owner"}, follow=True)
-    assert "Try tomorrow." in page.content.decode()
+    assert "Try again tomorrow." in page.content.decode()
 
 
 def test_the_address_is_kept_only_hashed_and_while_open() -> None:
@@ -168,7 +168,7 @@ def test_payments_refunds_and_replays_are_counted(
     monkeypatch.setattr(Demo, "MOST", 3)
     page = new_payment(client)
     assert page.status_code == 422
-    assert "used up" in page.content.decode()
+    assert "reached its limit" in page.content.decode()
     page = client.post(
         f"/app/payments/{payment.id}/refund",
         {
@@ -178,9 +178,9 @@ def test_payments_refunds_and_replays_are_counted(
             "scenario": "normal",
         },
     )
-    assert "used up" in page.content.decode()
+    assert "reached its limit" in page.content.decode()
     page = client.post(f"/app/deliveries/{delivery.id}")
-    assert "used up" in page.content.decode()
+    assert "reached its limit" in page.content.decode()
     key = keys.issue(demo.merchant)
     answer = Client().post(
         "/v1/payments",

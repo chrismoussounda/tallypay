@@ -8,6 +8,7 @@ from django.utils.functional import Promise
 from django.utils.translation import gettext_lazy as _
 
 from merchants.models import Demo
+from provider.models import Scenario
 from reconciliation import resolving
 from reconciliation.models import Discrepancy, StatementLine
 from webhooks.models import Delivery
@@ -65,7 +66,11 @@ ROLES = _(
 
 
 def steps(demo: Demo) -> dict[str, Any]:
-    made = demo.merchant.payments.filter(created_at__gt=demo.created_at)
+    # Only the payment of step 1 leads to a discrepancy; any other one would leave
+    # step 4 with nothing to propose.
+    made = demo.merchant.payments.filter(
+        created_at__gt=demo.created_at, scenario=Scenario.WRONG_AMOUNT
+    )
     found = Discrepancy.objects.filter(
         reference__in=resolving.references_of(demo.merchant)
     )

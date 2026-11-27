@@ -123,3 +123,13 @@ def test_the_home_page_has_one_way_in() -> None:
     page = Client().get("/").content.decode()
     assert "Start the 2-minute tour" in page
     assert "Run the shop" not in page
+
+
+def test_a_payment_that_cannot_go_wrong_does_not_count_for_step_one() -> None:
+    client = visit()
+    client.post(
+        "/app/payments/new",
+        {"once": uuid.uuid4(), "amount": 100, "reference": "x", "scenario": "normal"},
+    )
+    current: Any = guide.steps(Demo.objects.get())["current"]
+    assert current["number"] == 1

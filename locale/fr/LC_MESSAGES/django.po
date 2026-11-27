@@ -1057,3 +1057,9 @@ msgstr "Clair"
 msgid "Dark"
 msgstr "Sombre"
 
+msgid "How it works"
+msgstr "Comment ça marche"
+
+msgid "For developers:"
+msgstr "Pour les développeurs :"
+

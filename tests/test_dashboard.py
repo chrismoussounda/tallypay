@@ -140,10 +140,12 @@ DEVELOPERS = {
 REFUNDERS = {"new-refund"}
 OWNERS = {"activity"}
 DEMOS = {"become", "reconcile", "switch-inbox"}
+# Read by anyone signed in, shop or operator.
+EVERYONE = {"docs"}
 
 
 def allowed(role: str, name: str) -> bool:
-    if name == "start":
+    if name == "start" or name in EVERYONE:
         return True
     if name in DEMOS:
         return False

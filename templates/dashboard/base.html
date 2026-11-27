@@ -26,6 +26,7 @@
   {% include "dashboard/tab.html" with name="keys" starts="/app/keys" text=_("API keys") %}
   {% if user.role == "owner" %}{% include "dashboard/tab.html" with name="activity" starts="/app/activity" text=_("Activity") %}{% endif %}
   {% endif %}
+  {% include "dashboard/tab.html" with name="docs" starts="/app/docs" text=_("How it works") %}
 </nav>
 {% if user.demo %}{% include "dashboard/demo.html" %}{% else %}<p class="simulated">{% translate "All money here is simulated." %}</p>{% endif %}
 <main id="main">

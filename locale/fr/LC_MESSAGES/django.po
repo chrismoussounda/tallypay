@@ -41,7 +41,7 @@ msgid "What"
 msgstr "Quoi"
 
 msgid "On"
-msgstr "Sur"
+msgstr "Objet"
 
 msgid "Who"
 msgstr "Qui"
@@ -68,7 +68,7 @@ msgid "Why"
 msgstr "Pourquoi"
 
 msgid "This cannot be undone."
-msgstr "Ceci ne peut pas être annulé."
+msgstr "Cette action est irréversible."
 
 msgid "Approve"
 msgstr "Approuver"
@@ -83,13 +83,13 @@ msgid "Amount"
 msgstr "Montant"
 
 msgid "Show more"
-msgstr "Afficher plus"
+msgstr "Voir plus"
 
 msgid "No movement yet."
 msgstr "Aucun mouvement pour l’instant."
 
 msgid "Skip to the page"
-msgstr "Aller à la page"
+msgstr "Aller au contenu"
 
 msgid "Operations"
 msgstr "Opérations"
@@ -104,7 +104,7 @@ msgid "Pages"
 msgstr "Pages"
 
 msgid "All money here is simulated."
-msgstr "Tout l’argent est ici simulé."
+msgstr "Ici, tout l’argent est fictif."
 
 msgid "Close"
 msgstr "Fermer"
@@ -128,13 +128,13 @@ msgid "Send again"
 msgstr "Renvoyer"
 
 msgid "Tries"
-msgstr "Essais"
+msgstr "Tentatives"
 
 msgid "Answered"
 msgstr "Réponse"
 
 msgid "Not tried yet."
-msgstr "Pas encore essayé."
+msgstr "Aucune tentative pour l’instant."
 
 msgid "Message"
 msgstr "Message"
@@ -149,7 +149,7 @@ msgid "All"
 msgstr "Tous"
 
 msgid "Found"
-msgstr "Trouvé"
+msgstr "Détecté le"
 
 msgid "No discrepancy."
 msgstr "Aucun écart."
@@ -167,13 +167,13 @@ msgid "What was found"
 msgstr "Ce qui a été trouvé"
 
 msgid "Provider's number"
-msgstr "Numéro du prestataire"
+msgstr "Numéro chez le prestataire"
 
 msgid "For now"
 msgstr "Pour l’instant"
 
 msgid "The difference waits in its own account, so that the books match the statement."
-msgstr "L’écart attend dans un compte à part, pour que les comptes correspondent au relevé."
+msgstr "L’écart attend dans un compte d’attente, pour que les comptes correspondent au relevé."
 
 msgid "Solution"
 msgstr "Solution"
@@ -212,10 +212,10 @@ msgid "New key"
 msgstr "Nouvelle clé"
 
 msgid "Your own systems create payments with a key."
-msgstr "Vos propres systèmes créent des paiements avec une clé."
+msgstr "Vos systèmes créent des paiements à l’aide d’une clé."
 
 msgid "How the API works"
-msgstr "Comment marche l’API"
+msgstr "Comment fonctionne l’API"
 
 msgid "Name"
 msgstr "Nom"
@@ -245,7 +245,7 @@ msgid "New webhook address"
 msgstr "Nouvelle adresse de webhook"
 
 msgid "From now on, it is notified of every payment and refund."
-msgstr "Elle sera prévenue de chaque paiement et remboursement à partir de maintenant."
+msgstr "Elle sera désormais avertie de chaque paiement et remboursement."
 
 msgid "Add the address"
 msgstr "Ajouter l’adresse"
@@ -254,7 +254,7 @@ msgid "New API key"
 msgstr "Nouvelle clé API"
 
 msgid "The key is shown once, then kept only in a form nobody can read."
-msgstr "La clé est affichée une fois, puis conservée sous une forme que personne ne peut lire."
+msgstr "La clé n’est affichée qu’une fois, puis conservée sous une forme que personne ne peut lire."
 
 msgid "Create the key"
 msgstr "Créer la clé"
@@ -281,19 +281,19 @@ msgid "Left to refund"
 msgstr "Reste à rembourser"
 
 msgid "The money leaves your balance at once. The payment's fee is not refunded."
-msgstr "L’argent quitte votre solde aussitôt. Les frais du paiement ne sont pas rendus."
+msgstr "Le montant est aussitôt retiré de votre solde. Les frais du paiement ne sont pas remboursés."
 
 msgid "Received over 30 days"
-msgstr "Reçu en 30 jours"
+msgstr "Reçu sur 30 jours"
 
 msgid "Success rate over 30 days"
-msgstr "Réussite sur 30 jours"
+msgstr "Taux de réussite sur 30 jours"
 
 msgid "Waiting"
 msgstr "En attente"
 
 msgid "Received each day"
-msgstr "Reçu chaque jour"
+msgstr "Reçu par jour"
 
 msgid "As a table"
 msgstr "En tableau"
@@ -305,7 +305,7 @@ msgid "Received"
 msgstr "Reçu"
 
 msgid "Nothing received in the last 30 days."
-msgstr "Rien reçu ces 30 derniers jours."
+msgstr "Rien n’a été reçu ces 30 derniers jours."
 
 msgid "Latest payments"
 msgstr "Derniers paiements"
@@ -362,7 +362,7 @@ msgid "Period"
 msgstr "Période"
 
 msgid "All time"
-msgstr "Toujours"
+msgstr "Depuis le début"
 
 msgid "30 days"
 msgstr "30 jours"
@@ -374,10 +374,10 @@ msgid "No payment matches."
 msgstr "Aucun paiement ne correspond."
 
 msgid "Remove the filters"
-msgstr "Retirer les filtres"
+msgstr "Effacer les filtres"
 
 msgid "Nothing happens until someone else approves it."
-msgstr "Rien ne se passe tant que quelqu’un d’autre ne l’a pas approuvé."
+msgstr "Rien ne se passe sans l’accord d’une autre personne."
 
 msgid "Propose"
 msgstr "Proposer"
@@ -386,25 +386,25 @@ msgid "Reject this solution?"
 msgstr "Rejeter cette solution ?"
 
 msgid "Remove this address?"
-msgstr "Retirer cette adresse ?"
+msgstr "Supprimer cette adresse ?"
 
 msgid "It is no longer notified of anything, and messages on their way to it stop."
-msgstr "Elle ne sera plus prévenue de rien. Les envois en cours s’arrêtent."
+msgstr "Elle ne sera plus avertie de rien, et les envois en cours s’arrêtent."
 
 msgid "Remove the address"
-msgstr "Retirer l’adresse"
+msgstr "Supprimer l’adresse"
 
 msgid "Revoke this key?"
 msgstr "Révoquer cette clé ?"
 
 msgid "Whatever uses it stops working at once. This cannot be undone."
-msgstr "Ce qui l’utilise cesse aussitôt de fonctionner. Ceci ne peut pas être annulé."
+msgstr "Tout ce qui l’utilise cesse aussitôt de fonctionner. Cette action est irréversible."
 
 msgid "Revoke the key"
 msgstr "Révoquer la clé"
 
 msgid "Check the signature of every message with it."
-msgstr "Vérifiez avec lui la signature de chaque message."
+msgstr "Servez-vous-en pour vérifier la signature de chaque message."
 
 msgid "That did not work. Try again."
 msgstr "Cela n’a pas marché. Réessayez."
@@ -413,7 +413,7 @@ msgid "Sign in"
 msgstr "Se connecter"
 
 msgid "A demonstration. All money here is simulated."
-msgstr "Une démonstration. Tout l’argent est ici simulé."
+msgstr "Une démonstration. Ici, tout l’argent est fictif."
 
 msgid "New address"
 msgstr "Nouvelle adresse"
@@ -428,10 +428,10 @@ msgid "Secret"
 msgstr "Secret"
 
 msgid "Remove"
-msgstr "Retirer"
+msgstr "Supprimer"
 
 msgid "Add an address to be notified when a payment or a refund changes."
-msgstr "Ajoutez une adresse pour être prévenu quand un paiement ou un remboursement change."
+msgstr "Ajoutez une adresse pour être averti dès qu’un paiement ou un remboursement change."
 
 msgid "Messages"
 msgstr "Messages"
@@ -443,13 +443,13 @@ msgid "Key revoked."
 msgstr "Clé révoquée."
 
 msgid "Address removed."
-msgstr "Adresse retirée."
+msgstr "Adresse supprimée."
 
 msgid "It is still being sent."
 msgstr "L’envoi est encore en cours."
 
 msgid "This address was removed."
-msgstr "Cette adresse a été retirée."
+msgstr "Cette adresse a été supprimée."
 
 msgid "Sent again."
 msgstr "Renvoyé."
@@ -479,7 +479,7 @@ msgid "What you found"
 msgstr "Ce que vous avez trouvé"
 
 msgid "TallyPay, by rule"
-msgstr "TallyPay, par règle"
+msgstr "TallyPay (règle automatique)"
 
 msgid "Rejected."
 msgstr "Rejeté."
@@ -503,19 +503,19 @@ msgid "Refund started."
 msgstr "Remboursement lancé."
 
 msgid "Failed refund, credited back"
-msgstr "Remboursement échoué, rendu"
+msgstr "Remboursement échoué, recrédité"
 
 msgid "This form was already sent. Open it again."
-msgstr "Ce formulaire a déjà été envoyé. Ouvrez-le de nouveau."
+msgstr "Ce formulaire a déjà été envoyé. Rouvrez-le."
 
 msgid "The password is not right."
-msgstr "Le mot de passe n’est pas le bon."
+msgstr "Le mot de passe est incorrect."
 
 msgid "Too many tries. Try again in 15 minutes."
 msgstr "Trop d’essais. Réessayez dans 15 minutes."
 
 msgid "The email or the password is not right."
-msgstr "L’adresse ou le mot de passe n’est pas le bon."
+msgstr "L’adresse e-mail ou le mot de passe est incorrect."
 
 msgid "Succeeded"
 msgstr "Réussi"
@@ -533,7 +533,7 @@ msgid "To approve"
 msgstr "À approuver"
 
 msgid "Being returned"
-msgstr "En cours de retour"
+msgstr "Retour en cours"
 
 msgid "The customer asked"
 msgstr "À la demande du client"
@@ -545,13 +545,13 @@ msgid "Fraud"
 msgstr "Fraude"
 
 msgid "Accepts, then calls back"
-msgstr "Accepte, puis rappelle"
+msgstr "Accepte, puis prévient"
 
 msgid "Declines, then calls back"
-msgstr "Refuse, puis rappelle"
+msgstr "Refuse, puis prévient"
 
 msgid "Takes a minute to decide"
-msgstr "Met une minute à décider"
+msgstr "Met une minute à se décider"
 
 msgid "Never gets the first request"
 msgstr "Ne reçoit jamais la première demande"
@@ -560,25 +560,25 @@ msgid "Gets the request, but its answer is lost"
 msgstr "Reçoit la demande, mais sa réponse se perd"
 
 msgid "Calls back three times"
-msgstr "Rappelle trois fois"
+msgstr "Prévient trois fois"
 
 msgid "Never calls back"
-msgstr "Ne rappelle jamais"
+msgstr "Ne prévient jamais"
 
 msgid "Moves the money, but never says so"
-msgstr "Déplace l’argent sans jamais le dire"
+msgstr "Transfère l’argent sans jamais prévenir"
 
 msgid "Declines, but moves the money anyway"
-msgstr "Refuse, mais déplace quand même l’argent"
+msgstr "Refuse, mais transfère quand même l’argent"
 
 msgid "Moves 500 francs too much"
-msgstr "Déplace 500 francs de trop"
+msgstr "Transfère 500 francs de trop"
 
 msgid "Moves the money twice"
-msgstr "Déplace l’argent deux fois"
+msgstr "Transfère l’argent deux fois"
 
 msgid "Leaves it out of its statement"
-msgstr "L’oublie dans son relevé"
+msgstr "Ne le met pas dans son relevé"
 
 msgid "What we hold"
 msgstr "Ce que nous détenons"
@@ -602,22 +602,22 @@ msgid "Refunds on their way"
 msgstr "Remboursements en cours"
 
 msgid "Money not explained yet"
-msgstr "Argent pas encore expliqué"
+msgstr "Argent à justifier"
 
 msgid "Differences taken on"
-msgstr "Écarts pris en charge"
+msgstr "Écarts à notre charge"
 
 msgid "Give the money back to the customer"
 msgstr "Rendre l’argent au client"
 
 msgid "Give the money to the merchant"
-msgstr "Donner l’argent au marchand"
+msgstr "Verser l’argent au marchand"
 
 msgid "Take the difference on ourselves"
 msgstr "Prendre l’écart à notre charge"
 
 msgid "Call it failed"
-msgstr "Le déclarer échoué"
+msgstr "Le déclarer en échec"
 
 msgid "Settled by itself"
 msgstr "Réglé tout seul"
@@ -656,7 +656,7 @@ msgid "Added a webhook address"
 msgstr "Adresse de webhook ajoutée"
 
 msgid "Removed a webhook address"
-msgstr "Adresse de webhook retirée"
+msgstr "Adresse de webhook supprimée"
 
 msgid "Looked at a webhook secret"
 msgstr "Secret de webhook consulté"
@@ -674,19 +674,19 @@ msgid "Rejected a solution"
 msgstr "Solution rejetée"
 
 msgid "Money moved that nobody asked for"
-msgstr "De l’argent a bougé sans demande"
+msgstr "Argent transféré sans que personne l’ait demandé"
 
 msgid "Money moved after it was said to have failed"
-msgstr "De l’argent a bougé après un échec annoncé"
+msgstr "Argent transféré après un échec annoncé"
 
 msgid "Another amount moved"
-msgstr "Un autre montant a bougé"
+msgstr "Un autre montant a été transféré"
 
 msgid "In our books, not in the statement"
 msgstr "Dans nos comptes, pas dans le relevé"
 
 msgid "In the statement, after it was written off"
-msgstr "Dans le relevé, après l’avoir passé en perte"
+msgstr "Dans le relevé, après passage en perte"
 
 msgid "Still waiting, and not in the statement"
 msgstr "Toujours en attente, et pas dans le relevé"
@@ -695,7 +695,7 @@ msgid "Only a payment that succeeded can be refunded."
 msgstr "Seul un paiement réussi peut être remboursé."
 
 msgid "That is more than is left of the payment."
-msgstr "C’est plus que ce qui reste du paiement."
+msgstr "C’est plus que ce qu’il reste à rembourser."
 
 msgid "That is more than your balance."
 msgstr "C’est plus que votre solde."
@@ -713,7 +713,7 @@ msgid "It is proposed."
 msgstr "Il attend une approbation."
 
 msgid "It is returning."
-msgstr "L’argent est en cours de retour."
+msgstr "L’argent est en train d’être rendu."
 
 msgid "It is resolved."
 msgstr "Il est résolu."
@@ -782,7 +782,7 @@ msgid "All other merchants"
 msgstr "Tous les autres marchands"
 
 msgid "Too fast"
-msgstr "Trop vite"
+msgstr "Trop de demandes"
 
 msgid "Wait a few minutes, then try again."
 msgstr "Attendez quelques minutes, puis réessayez."
@@ -797,7 +797,7 @@ msgid "All demos"
 msgstr "Toutes les démos"
 
 msgid "The demo has reached its limit for today."
-msgstr "La démo est épuisée pour aujourd’hui."
+msgstr "La démo a atteint sa limite pour aujourd’hui."
 
 msgid "The statement was compared with the books."
 msgstr "Le relevé a été comparé aux comptes."
@@ -806,10 +806,10 @@ msgid "You opened several demos. Try again in an hour."
 msgstr "Vous avez ouvert plusieurs démos. Réessayez dans une heure."
 
 msgid "All of today's demos are taken. Try again tomorrow."
-msgstr "Toutes les démos du jour sont ouvertes. Réessayez demain."
+msgstr "Toutes les démos du jour sont déjà prises. Réessayez demain."
 
 msgid "A demo has an address of its own, and no other."
-msgstr "Une démo a sa propre adresse, et aucune autre."
+msgstr "Une démo n’a que sa propre adresse."
 
 msgid "Payments that add up"
 msgstr "Des paiements qui tombent juste"
@@ -821,7 +821,7 @@ msgid "Someone makes a mistake"
 msgstr "Quelqu’un se trompe"
 
 msgid "How it was built"
-msgstr "Comment il a été construit"
+msgstr "Comment TallyPay a été construit"
 
 msgid "API documentation"
 msgstr "Documentation de l’API"
@@ -830,18 +830,18 @@ msgid "Code on GitHub"
 msgstr "Code sur GitHub"
 
 msgid "A demo: all money is simulated."
-msgstr "Une démo : tout l’argent est simulé."
+msgstr "Une démo : tout l’argent est fictif."
 
 #, python-format
 msgid "It closes on %(until)s."
-msgstr "Elle ferme le %(until)s."
+msgstr "Elle fermera le %(until)s."
 
 #, python-format
 msgid "%(left)s more payments, refunds or resends."
-msgstr "Encore %(left)s paiements, remboursements ou renvois."
+msgstr "Il vous reste %(left)s paiements, remboursements ou renvois."
 
 msgid "Viewing as"
-msgstr "Vu comme"
+msgstr "Vous êtes"
 
 msgid "Shop"
 msgstr "Boutique"
@@ -850,10 +850,10 @@ msgid "Compare now"
 msgstr "Comparer maintenant"
 
 msgid "This is done every day. In a demo, also when you ask."
-msgstr "Cela se fait chaque jour. Dans une démo, aussi à votre demande."
+msgstr "Cela se fait chaque jour, et dans une démo, aussi quand vous le demandez."
 
 msgid "A demo has one address, a test server that checks each signature. It cannot have others, so that nobody makes it call strangers."
-msgstr "Une démo a une seule adresse : un serveur de test qui vérifie chaque signature. Elle ne peut pas en avoir d’autres, pour que personne ne lui fasse appeler des inconnus."
+msgstr "Une démo a une seule adresse : un serveur de test qui vérifie chaque signature. Elle ne peut pas en avoir d’autres, pour qu’on ne puisse pas lui faire appeler n’importe qui."
 
 msgid "The test server works."
 msgstr "Le serveur de test fonctionne."
@@ -862,7 +862,7 @@ msgid "Switch it off"
 msgstr "L’éteindre"
 
 msgid "The test server is off: webhooks fail, then are tried again."
-msgstr "Le serveur de test est éteint : les webhooks échouent, puis sont réessayés."
+msgstr "Le serveur de test est éteint : les webhooks échouent, puis sont renvoyés."
 
 msgid "Switch it on"
 msgstr "L’allumer"
@@ -886,10 +886,10 @@ msgid "An example"
 msgstr "Un exemple"
 
 msgid "As the shop, create a payment where the provider moves 500 francs too much."
-msgstr "Comme boutique, créez un paiement où le prestataire prélève 500 francs de trop."
+msgstr "Côté boutique, créez un paiement où le prestataire prélève 500 francs de trop."
 
 msgid "Become operator 1, and compare the statement with the books."
-msgstr "Devenez opérateur 1, et comparez le relevé aux comptes."
+msgstr "Devenez l’opérateur 1 et comparez le relevé aux comptes."
 
 msgid "Credit"
 msgstr "Crédit"
@@ -898,7 +898,7 @@ msgid "Debit"
 msgstr "Débit"
 
 msgid "Something is off with this payment, and only the provider's statement shows it. To catch it, become operator 1 and compare."
-msgstr "Quelque chose cloche dans ce paiement, et seul le relevé du prestataire le montre. Pour le trouver, devenez opérateur 1 et comparez."
+msgstr "Quelque chose cloche dans ce paiement, et seul le relevé du prestataire le montre. Pour le repérer, devenez l’opérateur 1 et comparez."
 
 msgid "In the books"
 msgstr "Dans les comptes"
@@ -922,7 +922,7 @@ msgid "Owed to you, after fees and refunds"
 msgstr "Ce qui vous est dû, après frais et remboursements"
 
 msgid "Propose a solution, then become operator 2 to approve it."
-msgstr "Proposez une solution, puis devenez opérateur 2 pour l’approuver."
+msgstr "Proposez une solution, puis devenez l’opérateur 2 pour l’approuver."
 
 msgid "Provider's statement"
 msgstr "Relevé du prestataire"
@@ -931,16 +931,16 @@ msgid "Refund paid out"
 msgstr "Remboursement versé"
 
 msgid "Refund, set aside"
-msgstr "Remboursement, mis de côté"
+msgstr "Remboursement mis de côté"
 
 msgid "To look at"
-msgstr "À regarder"
+msgstr "À vérifier"
 
 msgid "Total"
 msgstr "Total"
 
 msgid "Watch it settle, and the signed webhook be delivered."
-msgstr "Regardez-le aboutir, et le webhook signé être remis."
+msgstr "Regardez le paiement aboutir et le webhook signé arriver."
 
 msgid "Webhook"
 msgstr "Webhook"
@@ -952,7 +952,7 @@ msgid "You have seen it all."
 msgstr "Vous avez tout vu."
 
 msgid "Dashboard"
-msgstr "Tableau"
+msgstr "Tableau de bord"
 
 msgid "Run the shop"
 msgstr "Tenir la boutique"
@@ -961,22 +961,22 @@ msgid "Check the books"
 msgstr "Vérifier les comptes"
 
 msgid "No account, no real money. Your shop is ready in seconds and closes after 24 hours."
-msgstr "Pas de compte à créer, pas de vrai argent. Votre boutique est prête en quelques secondes et ferme au bout de 24 heures."
+msgstr "Aucun compte à créer, et l’argent est fictif. Votre boutique est prête en quelques secondes et se ferme au bout de 24 heures."
 
 msgid "Go on, break a payment"
 msgstr "Allez-y, faites dérailler un paiement"
 
 msgid "Create a payment and pick how the provider will mess it up. 500 francs too much is a good start."
-msgstr "Créez un paiement et choisissez la bêtise du prestataire. 500 francs de trop, c’est un bon début."
+msgstr "Créez un paiement et choisissez l’erreur que va commettre le prestataire. 500 francs de trop, c’est un bon début."
 
 msgid "Switch off the shop's server. The webhook fails, waits and tries again. Switch it back on and it gets through."
 msgstr "Coupez le serveur de la boutique. Le webhook échoue, patiente, recommence. Rallumez-le et il finit par passer."
 
 msgid "Change sides and compare with the statement. There are your 500 francs, in red."
-msgstr "Changez de camp et comparez avec le relevé. Vos 500 francs sont là, en rouge."
+msgstr "Passez de l’autre côté et comparez avec le relevé. Vos 500 francs sont là, en rouge."
 
 msgid "Say what to do with them. You can't approve your own idea, so become the second operator and do it."
-msgstr "Dites quoi en faire. Impossible de valider sa propre idée : devenez le deuxième opérateur, et validez."
+msgstr "Dites quoi en faire. Vous ne pouvez pas approuver votre propre proposition : devenez le deuxième opérateur pour le faire."
 
 msgid "What can go wrong"
 msgstr "Ce qui peut mal tourner"
@@ -1003,22 +1003,22 @@ msgid "Every day, the books are checked against the provider's statement. One pe
 msgstr "Chaque jour, on compare les comptes au relevé. Une personne propose une solution, une autre doit être d’accord."
 
 msgid "We keep knocking for about 31 hours, or 11 minutes in the demo. After that, one click sends it again."
-msgstr "On réessaie pendant environ 31 heures, ou 11 minutes dans la démo. Après, un clic suffit pour renvoyer."
+msgstr "On réessaie pendant environ 31 heures, ou 11 minutes dans la démo. Ensuite, un clic suffit pour le renvoyer."
 
 msgid "I wrote a bug"
-msgstr "J’ai laissé un bug"
+msgstr "J’ai laissé passer un bug"
 
 msgid "Postgres does the sum again. If an entry doesn't balance, it's out, and old entries can't be touched."
-msgstr "Postgres refait l’addition. Si une écriture ne tombe pas juste, elle est refusée, et on ne touche plus aux anciennes."
+msgstr "Postgres refait l’addition. Si une écriture ne tombe pas juste, elle est refusée, et personne ne peut toucher aux anciennes."
 
 msgid "Nothing gets erased. You write the opposite entry, as in a paper ledger."
-msgstr "On n’efface rien. On passe l’écriture inverse, comme dans un registre en papier."
+msgstr "On n’efface rien. On passe l’écriture inverse, comme dans un registre papier."
 
 msgid "Under the hood"
 msgstr "Sous le capot"
 
 msgid "Python, Django, Postgres, and HTMX for the pages. The code is open, and I wrote up my choices and what still falls short."
-msgstr "Python, Django, Postgres, et HTMX pour les pages. Le code est ouvert, et j’ai raconté mes choix et ce qui manque encore."
+msgstr "Python, Django et Postgres, avec HTMX pour les pages. Le code est public, et j’ai expliqué mes choix et ce qui manque encore."
 
 msgid "“I've paid.”"
 msgstr "« J’ai payé. »"
@@ -1027,13 +1027,13 @@ msgid "“I haven't got it.”"
 msgstr "« Je n’ai rien reçu. »"
 
 msgid "TallyPay keeps track of every mobile-money payment and checks it against the provider's statement, so you know where the money is."
-msgstr "TallyPay garde la trace de chaque paiement mobile money et la compare au relevé du prestataire. On sait enfin où est l’argent."
+msgstr "TallyPay suit chaque paiement mobile money et le compare au relevé du prestataire. Vous savez ainsi où est l’argent."
 
 msgid "Three orders, and two versions of each. TallyPay puts them side by side."
-msgstr "Trois commandes, et deux versions à chaque fois. TallyPay les met côte à côte."
+msgstr "Trois commandes, deux versions pour chacune. TallyPay les met côte à côte."
 
 msgid "Taken, but nobody said so"
-msgstr "Pris, mais personne ne l’a dit"
+msgstr "Prélevé sans que personne ne prévienne"
 
 msgid "500 francs too much"
 msgstr "500 francs de trop"
@@ -1057,7 +1057,7 @@ msgid "Watch the signed webhook reach the shop. Switch its server off to see Tal
 msgstr "Regardez le webhook signé arriver à la boutique. Éteignez son serveur pour voir TallyPay réessayer."
 
 msgid "Create it"
-msgstr "La créer"
+msgstr "Créer le paiement"
 
 msgid "Open the webhooks"
 msgstr "Ouvrir les webhooks"
@@ -1072,30 +1072,30 @@ msgid "Approve as operator 2"
 msgstr "Approuver en tant qu’opérateur 2"
 
 msgid "Operator 1 proposes a fix and operator 2 approves it: nobody can move money alone."
-msgstr "L’opérateur 1 propose une correction et l’opérateur 2 l’approuve : personne ne peut déplacer l’argent seul."
+msgstr "L’opérateur 1 propose une solution, l’opérateur 2 l’approuve : personne ne peut déplacer de l’argent seul."
 
 #, python-format
 msgid "Step %(n)s of %(total)s"
 msgstr "Étape %(n)s sur %(total)s"
 
 msgid "Look around, or read how it works."
-msgstr "Faites le tour, ou lisez comment ça marche."
+msgstr "Explorez à votre guise, ou lisez comment ça marche."
 
 msgid "All the steps"
 msgstr "Toutes les étapes"
 
 msgid "Start the 2-minute tour"
-msgstr "Faire le tour en 2 minutes"
+msgstr "Faire la visite guidée (2 minutes)"
 
 msgid "Or go straight to the operators' side"
 msgstr "Ou aller directement du côté des opérateurs"
 
 msgid "Yours"
-msgstr "La vôtre"
+msgstr "À vous"
 
 msgid "For developers"
 msgstr "Pour les développeurs"
 
 msgid "Every payment is split in two columns that must match: what the provider holds on one side, the fee and what the shop is owed on the other."
-msgstr "Chaque paiement est réparti en deux colonnes qui doivent être égales : d’un côté ce que détient le prestataire, de l’autre les frais et ce qui est dû à la boutique."
+msgstr "Chaque paiement est réparti en deux colonnes qui doivent s’équilibrer : d’un côté ce que détient le prestataire, de l’autre les frais et ce qui est dû à la boutique."
 

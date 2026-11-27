@@ -4,6 +4,7 @@ from django.contrib.auth import login, logout
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.utils.http import url_has_allowed_host_and_scheme
+from django.utils.translation import get_language
 from django.utils.translation import gettext as _
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST, require_safe
@@ -79,3 +80,15 @@ def confirmed(request: HttpRequest, form: Password) -> bool:
         form.add_error("password", _("The password is not right."))
         return False
     return True
+
+
+@require_safe
+@any_page
+def docs(request: HttpRequest) -> HttpResponse:
+    """The write-up, inside the app, so nobody has to leave it to understand it."""
+    language = "fr" if get_language() == "fr" else "en"
+    return render(
+        request,
+        "dashboard/docs.html",
+        {"write_up": f"write_up_{language}.html", "in_app": True},
+    )

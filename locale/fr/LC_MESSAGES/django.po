@@ -1040,3 +1040,62 @@ msgstr "500 francs de trop"
 
 msgid "Not in the statement"
 msgstr "Absent du relevé"
+
+msgid "Light"
+msgstr "Clair"
+
+msgid "Dark"
+msgstr "Sombre"
+
+msgid "How it works"
+msgstr "Comment ça marche"
+
+msgid "For developers:"
+msgstr "Pour les développeurs :"
+
+msgid "Watch the signed webhook reach the shop. Switch its server off to see TallyPay try again."
+msgstr "Regardez le webhook signé arriver à la boutique. Éteignez son serveur pour voir TallyPay réessayer."
+
+msgid "Create it"
+msgstr "La créer"
+
+msgid "Open the webhooks"
+msgstr "Ouvrir les webhooks"
+
+msgid "Compare as operator 1"
+msgstr "Comparer en tant qu’opérateur 1"
+
+msgid "Propose as operator 1"
+msgstr "Proposer en tant qu’opérateur 1"
+
+msgid "Approve as operator 2"
+msgstr "Approuver en tant qu’opérateur 2"
+
+msgid "Operator 1 proposes a fix and operator 2 approves it: nobody can move money alone."
+msgstr "L’opérateur 1 propose une correction et l’opérateur 2 l’approuve : personne ne peut déplacer l’argent seul."
+
+#, python-format
+msgid "Step %(n)s of %(total)s"
+msgstr "Étape %(n)s sur %(total)s"
+
+msgid "Look around, or read how it works."
+msgstr "Faites le tour, ou lisez comment ça marche."
+
+msgid "All the steps"
+msgstr "Toutes les étapes"
+
+msgid "Start the 2-minute tour"
+msgstr "Faire le tour en 2 minutes"
+
+msgid "Or go straight to the operators' side"
+msgstr "Ou aller directement du côté des opérateurs"
+
+msgid "Yours"
+msgstr "La vôtre"
+
+msgid "For developers"
+msgstr "Pour les développeurs"
+
+msgid "Every payment is split in two columns that must match: what the provider holds on one side, the fee and what the shop is owed on the other."
+msgstr "Chaque paiement est réparti en deux colonnes qui doivent être égales : d’un côté ce que détient le prestataire, de l’autre les frais et ce qui est dû à la boutique."
+

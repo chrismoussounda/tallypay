@@ -14,6 +14,7 @@
 </section>
 <section class="card">
   <h2>{% translate "In the books" %}</h2>
+  <p class="dim">{% translate "Every payment is split in two columns that must match: what the provider holds on one side, the fee and what the shop is owed on the other." %}</p>
   {% for entry in entries %}<table class="ledger">
     <caption>{{ entry.what }}</caption>
     <thead><tr><th scope="col">{% translate "Account" %}</th><th scope="col" class="number">{% translate "Debit" %}</th><th scope="col" class="number">{% translate "Credit" %}</th></tr></thead>

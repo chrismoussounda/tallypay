@@ -4,6 +4,7 @@ import uuid
 from datetime import date, timedelta
 from typing import Any
 
+from django import forms
 from django.db.models import Count, Q, Sum
 from django.db.models.functions import TruncDate
 from django.http import HttpRequest, HttpResponse
@@ -232,6 +233,11 @@ def new_payment(request: HttpRequest) -> HttpResponse:
     merchant = merchant_of(request)
     form = NewPayment(request.POST or None, initial={"once": uuid.uuid4()})
     form.for_user(user_of(request))
+    # The demo's guide links here with the scenario of its first step.
+    asked_for = request.GET.get("scenario", "")
+    scenario = form.fields["scenario"]
+    if isinstance(scenario, forms.ChoiceField) and scenario.valid_value(asked_for):
+        form.initial["scenario"] = asked_for
     if request.method == "POST" and form.is_valid():
         asked = form.cleaned_data
 

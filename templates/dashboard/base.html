@@ -5,6 +5,7 @@
   <a class="brand" href="{% if user.demo %}{% url 'home' %}{% else %}{% url 'start' %}{% endif %}"><img src="{% static 'logo.svg' %}" alt="" width="32" height="32">TallyPay</a>
   <span class="who">{% if user.merchant %}{{ user.merchant.name }}{% else %}{% translate "Operations" %}{% endif %}</span>
   {% include "dashboard/language.html" %}
+  {% include "dashboard/theme.html" %}
   <details class="menu">
     <summary><span class="initial" aria-hidden="true">{{ user.name|first }}</span><span class="wide">{{ user.name }}</span><span class="narrow">{% translate "My account" %}</span></summary>
     <div class="card">
@@ -21,10 +22,12 @@
   {% include "dashboard/tab.html" with name="overview" starts="/app/overview" text=_("Overview") %}
   {% include "dashboard/tab.html" with name="payments" starts="/app/payments" text=_("Payments") %}
   {% include "dashboard/tab.html" with name="balance" starts="/app/balance" text=_("Balance") %}
+  <span class="tab-group" aria-hidden="true">{% translate "For developers" %}</span>
   {% include "dashboard/tab.html" with name="webhooks" starts="/app/webhooks" text=_("Webhooks") %}
   {% include "dashboard/tab.html" with name="keys" starts="/app/keys" text=_("API keys") %}
   {% if user.role == "owner" %}{% include "dashboard/tab.html" with name="activity" starts="/app/activity" text=_("Activity") %}{% endif %}
   {% endif %}
+  {% include "dashboard/tab.html" with name="docs" starts="/app/docs" text=_("How it works") %}
 </nav>
 {% if user.demo %}{% include "dashboard/demo.html" %}{% else %}<p class="simulated">{% translate "All money here is simulated." %}</p>{% endif %}
 <main id="main">

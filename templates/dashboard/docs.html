@@ -1,0 +1,8 @@
+{% extends "dashboard/base.html" %}{% load i18n %}
+{% block title %}{% translate "How it works" %}{% endblock %}
+{% block main %}
+<div class="in-app-docs">
+{% include write_up %}
+<p class="dim">{% translate "For developers:" %} <a href="/v1/docs">{% translate "API documentation" %}</a></p>
+</div>
+{% endblock %}

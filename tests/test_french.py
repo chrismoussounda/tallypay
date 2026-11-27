@@ -3,6 +3,7 @@ import gettext
 import io
 import re
 from pathlib import Path
+from typing import Any
 
 import pytest
 from babel.messages.mofile import write_mo
@@ -62,9 +63,17 @@ def test_every_word_is_in_french_and_compiled() -> None:
         assert stored.gettext(message) == fresh.gettext(message)
 
 
+def test_the_site_speaks_french_first() -> None:
+    from config import settings as written
+
+    assert written.LANGUAGE_CODE == "fr"
+
+
 @pytest.mark.django_db
-def test_the_language_is_the_browsers_until_chosen() -> None:
-    client = Client(headers={"Accept-Language": "fr-CG,fr;q=0.9"})
+def test_the_language_is_french_until_chosen(settings: Any) -> None:
+    settings.LANGUAGE_CODE = "fr"
+    # Whatever the browser asks.
+    client = Client(headers={"Accept-Language": "en-US,en;q=0.9"})
     assert "Se connecter" in client.get("/app/sign-in").content.decode()
     client.post("/i18n/setlang/", {"language": "en", "next": "/app/sign-in"})
     assert "Sign in" in client.get("/app/sign-in").content.decode()
@@ -74,5 +83,21 @@ def test_the_language_is_the_browsers_until_chosen() -> None:
 def test_amounts_are_written_as_the_language_does() -> None:
     client = browser(Shop().user("viewer"))
     for language, shown in (("fr", "8\u00a0800\u00a0XAF"), ("en", "8,800\u00a0XAF")):
-        text = client.get("/app/balance", headers={"Accept-Language": language})
+        client.post("/i18n/setlang/", {"language": language, "next": "/"})
+        text = client.get("/app/balance")
         assert shown in text.content.decode().replace("\u202f", "\u00a0")
+
+
+@pytest.mark.django_db
+def test_a_regional_english_cookie_is_english(settings: Any) -> None:
+    settings.LANGUAGE_CODE = "fr"
+    client = Client()
+    client.cookies[settings.LANGUAGE_COOKIE_NAME] = "en-us"
+    assert "Sign in" in client.get("/app/sign-in").content.decode()
+
+
+@pytest.mark.django_db
+def test_pages_do_not_vary_on_the_browsers_language() -> None:
+    answer = Client().get("/app/sign-in")
+    assert "Accept-Language" not in answer.headers.get("Vary", "")
+    assert answer.headers["Content-Language"]

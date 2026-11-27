@@ -1,16 +1,36 @@
 {% load i18n shown %}<div class="simulated demo">
-  {% guide_of user.demo as guide %}<p class="always">{% translate "A demo: all money is simulated." %}</p>
+  {% guide_of user.demo as guide %}{% role_of user as me %}
+  <p class="always">{% translate "A demo: all money is simulated." %}</p>
+  <section class="stepper" aria-labelledby="step-now">
+    <span class="tally{% if guide.all %} all{% endif %}" aria-hidden="true">{% for step in guide.steps %}<i{% if step.did %} class="did"{% endif %}></i>{% endfor %}</span>
+    {% if guide.current %}
+    <p id="step-now"><strong>{% blocktranslate with n=guide.current.number total=guide.count %}Step {{ n }} of {{ total }}{% endblocktranslate %}</strong> · {{ guide.current.text }}</p>
+    {% if guide.current.who == me %}
+    <a class="button small" href="{{ guide.current.url }}">{{ guide.current.button }}</a>
+    {% else %}
+    <form method="post" action="{% url 'become' %}">{% csrf_token %}
+      <input type="hidden" name="who" value="{{ guide.current.who }}">
+      <input type="hidden" name="next" value="{{ guide.current.url }}">
+      <button class="small">{{ guide.current.button }}</button>
+    </form>
+    {% endif %}
+    {% else %}
+    <p id="step-now"><strong>{% translate "You have seen it all." %}</strong> {% translate "Look around, or read how it works." %}</p>
+    <a class="button small second" href="{% url 'docs' %}">{% translate "How it works" %}</a>
+    {% endif %}
+  </section>
   <details class="guide">
-    <summary><span class="tally{% if guide.all %} all{% endif %}" aria-hidden="true">{% for step in guide.steps %}<i{% if step.did %} class="did"{% endif %}></i>{% endfor %}</span><span>{% if guide.next %}{{ guide.next }}{% else %}{% translate "You have seen it all." %}{% endif %}</span></summary>
+    <summary>{% translate "All the steps" %}</summary>
     <ol>{% for step in guide.steps %}<li{% if step.did %} class="did"{% endif %}><span>{{ step.text }}{% if step.did %}<span class="hidden"> {% translate "Done" %}</span>{% endif %}</span></li>{% endfor %}</ol>
     <p>{% blocktranslate with until=user.demo.closes_at|date:"j N, H:i" %}It closes on {{ until }}.{% endblocktranslate %} {% blocktranslate with left=user.demo.left %}{{ left }} more payments, refunds or resends.{% endblocktranslate %}</p>
   </details>
-  <form method="post" action="{% url 'become' %}">{% csrf_token %}
+  <form class="roles" method="post" action="{% url 'become' %}">{% csrf_token %}
     <span id="seen-as">{% translate "Seen as" %}</span>
     <div class="segments" role="group" aria-labelledby="seen-as">
-      <button name="who" value="owner"{% if user.merchant %} aria-current="true"{% endif %}>{% translate "Shop" %}</button>
-      <button name="who" value="proposer"{% if user.name == "Prisca" %} aria-current="true"{% endif %}>{% translate "Operator 1" %}</button>
-      <button name="who" value="approver"{% if user.name == "Divin" %} aria-current="true"{% endif %}>{% translate "Operator 2" %}</button>
+      <button name="who" value="owner"{% if me == "owner" %} aria-current="true"{% endif %}>{% translate "Shop" %}</button>
+      <button name="who" value="proposer"{% if me == "proposer" %} aria-current="true"{% endif %}>{% translate "Operator 1" %}</button>
+      <button name="who" value="approver"{% if me == "approver" %} aria-current="true"{% endif %}>{% translate "Operator 2" %}</button>
     </div>
+    <p class="why">{{ guide.roles }}</p>
   </form>
 </div>

@@ -6,6 +6,7 @@ urlpatterns = [
     path("", sessions.start, name="start"),
     path("sign-in", sessions.sign_in, name="sign-in"),
     path("sign-out", sessions.sign_out, name="sign-out"),
+    path("docs", sessions.docs, name="docs"),
     path("demo/become", demo.become, name="become"),
     path("demo/reconcile", demo.reconcile, name="reconcile"),
     path("demo/inbox", demo.switch_inbox, name="switch-inbox"),

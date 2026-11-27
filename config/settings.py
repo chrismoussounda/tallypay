@@ -48,7 +48,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.middleware.csp.ContentSecurityPolicyMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.locale.LocaleMiddleware",
+    "config.looks.FrenchUntilChosen",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -69,6 +69,7 @@ TEMPLATES = [
                 "django.template.context_processors.i18n",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "config.looks.theme",
             ]
         },
     }
@@ -84,7 +85,7 @@ TIME_ZONE = "Africa/Brazzaville"
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https") if ON_VERCEL else None
 CSRF_COOKIE_SECURE = ON_VERCEL
 
-LANGUAGE_CODE = "en"
+LANGUAGE_CODE = "fr"
 LANGUAGES = [("en", "English"), ("fr", "Français")]
 LOCALE_PATHS = [BASE_DIR / "locale"]
 

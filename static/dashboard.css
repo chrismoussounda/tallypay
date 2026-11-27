@@ -249,10 +249,10 @@ figcaption { display: flex; justify-content: space-between; font-size: 14px; }
 .tally.all::after { content: ""; position: absolute; inset: 9px -2px auto; height: 3px; background: currentcolor; rotate: -24deg; }
 
 /* The public pages read like a page, not a dashboard: one centred column. */
-.site { gap: 56px; max-width: 1408px; margin-inline: auto; width: 100%; }
+/* Same frame as the author's portfolio: 1440px at most, margins growing to 56px. */
+.site { gap: 56px; max-width: 1440px; margin-inline: auto; width: 100%; padding-inline: clamp(1rem, 4vw, 3.5rem); }
 /* Their header lines up with that column. */
-/* --side is main's side padding: 16px, then 32px on wide screens. */
-.top:has(~ main.site) { padding-inline: calc(max(0px, (100% - 1408px) / 2) + var(--side, 16px)); }
+.top:has(~ main.site) { padding-inline: calc(max(0px, (100% - 1440px) / 2) + clamp(1rem, 4vw, 3.5rem)); }
 .site section { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); }
 .site section > * { margin: 0; }
 .site .sheet { gap: 0; }
@@ -292,7 +292,6 @@ figcaption { display: flex; justify-content: space-between; font-size: 14px; }
 
 @media (min-width: 768px) {
   main { padding: 32px 32px 72px; }
-  :root { --side: 32px; }
   .top { padding: 12px 32px; }
   .tabs { padding: 0 20px; }
   .simulated { padding: 8px 32px; }

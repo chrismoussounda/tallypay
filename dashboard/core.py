@@ -21,7 +21,7 @@ View = Callable[..., HttpResponse]
 PAGE = 20
 # So that a demo cannot fill the database.
 DEMO_LIMIT = Limit(per_second=1 / 120, burst=100)
-DEMO_USED_UP = _("The demo is used up for today.")
+DEMO_USED_UP = _("The demo has reached its limit for today.")
 
 
 def is_htmx(request: HttpRequest) -> bool:

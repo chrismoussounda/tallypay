@@ -101,7 +101,7 @@ def new_endpoint(request: HttpRequest) -> HttpResponse:
         except sender.Refused as refused:
             form.add_error("url", _(str(refused)))
         except service.TooMany:
-            form.add_error(None, _("There are as many addresses as allowed."))
+            form.add_error(None, _("You have reached the address limit."))
         else:
             context = {"value": signing.secret_of(endpoint.id), "back": "webhooks"}
             return sheet(request, "dashboard/secret_shown.html", context)

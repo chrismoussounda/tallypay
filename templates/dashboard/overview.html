@@ -7,8 +7,8 @@
   <p class="dim">{% translate "Owed to you, after fees and refunds" %}</p>
   <p class="amount"><a class="row" href="{% url 'balance' %}">{{ balance|francs }}</a></p>
   <dl class="across">
-    <div><dt>{% translate "Received in 30 days" %}</dt><dd>{{ volume|francs }} · {% blocktranslate count n=succeeded %}{{ n }} payment{% plural %}{{ n }} payments{% endblocktranslate %}</dd></div>
-    <div><dt>{% translate "Success in 30 days" %}</dt><dd>{% if rate is None %}–{% else %}{{ rate }}%{% endif %} · {% blocktranslate count n=settled %}of {{ n }} decided{% plural %}of {{ n }} decided{% endblocktranslate %}</dd></div>
+    <div><dt>{% translate "Received over 30 days" %}</dt><dd>{{ volume|francs }} · {% blocktranslate count n=succeeded %}{{ n }} payment{% plural %}{{ n }} payments{% endblocktranslate %}</dd></div>
+    <div><dt>{% translate "Success rate over 30 days" %}</dt><dd>{% if rate is None %}–{% else %}{{ rate }}%{% endif %} · {% blocktranslate count n=settled %}of {{ n }} decided{% plural %}of {{ n }} decided{% endblocktranslate %}</dd></div>
   </dl>
 </section>
 <section class="card">

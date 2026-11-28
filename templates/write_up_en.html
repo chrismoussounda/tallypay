@@ -6,12 +6,12 @@
 <h2>What I chose</h2>
 <ul class="facts">
 <li class="card"><h3>The database does the accounting</h3><p>Each movement of money is an entry whose lines add up to zero. Postgres checks the sum at the end, and after that nobody can change or delete the entry. I didn't want the books to depend on my code being right.</p></li>
-<li class="card"><h3>Note it down, then call</h3><p>TallyPay saves when it will ask again before it calls the provider. The payment's own number goes with the call, so asking twice never charges twice. If the app dies halfway, the work is still waiting.</p></li>
+<li class="card"><h3>Note it down, then call</h3><p>Before it calls the provider, TallyPay saves when it will ask again. The payment's own number goes with the call, so asking twice never charges twice. If the app dies halfway, the work is still waiting.</p></li>
 <li class="card"><h3>One request, one payment</h3><p>The idempotency key, the payment and the answer are saved together. Send the same request twice at the same moment and you get one payment, and the same answer both times.</p></li>
 <li class="card"><h3>The statement settles it</h3><p>Once a day, the books are compared with the provider's statement. Money nobody expected goes into an account of its own until someone explains it. One person suggests what to do, and somebody else has to agree.</p></li>
 <li class="card"><h3>A queue made of rows</h3><p>Work to do sits in a Postgres table, saved with whatever asked for it. QStash only wakes the app at the right time. A daily call picks up what it missed.</p></li>
 <li class="card"><h3>Plain pages</h3><p>The server sends HTML, with a little HTMX. Every form works without JavaScript, and only the site's own scripts can run.</p></li>
-<li class="card"><h3>A demo that keeps everything</h3><p>Each visitor gets a new shop. A day later its users, keys and addresses are closed, but the entries stay, because deleting them would break the one rule I care about. A demo takes about 33 KB, and there are limits on how many open.</p></li>
+<li class="card"><h3>A demo that keeps everything</h3><p>Each visitor gets a new shop. A day later its users, keys and addresses are closed, but the entries stay, because deleting them would break the one rule I care about. A demo takes about 33 KB, and only so many can be open at once.</p></li>
 </ul>
 
 <div class="columns">

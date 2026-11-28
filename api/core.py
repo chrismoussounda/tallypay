@@ -83,7 +83,9 @@ def _too_many(request: HttpRequest, exc: TooMany) -> HttpResponse:
 
 @api.exception_handler(demos.UsedUp)
 def _used_up(request: HttpRequest, exc: Any) -> HttpResponse:
-    return error(request, 403, "demo_used_up", "The demo is used up for today.")
+    return error(
+        request, 403, "demo_used_up", "The demo has reached its limit for today."
+    )
 
 
 @api.exception_handler(demos.NotInDemo)

@@ -2,7 +2,7 @@
 {% block body %}
 <a class="skip" href="#main">{% translate "Skip to the page" %}</a>
 <header class="top">
-  <a class="brand" href="{% url 'home' %}"><img src="{% static 'logo.svg' %}" alt="" width="32" height="32">TallyPay</a>
+  <a class="brand" href="{% url 'home' %}" aria-label="TallyPay"><img src="{% static 'logo.svg' %}" alt="" width="32" height="32"><span class="name">TallyPay</span></a>
   <span class="who"></span>
   {% include "dashboard/language.html" %}
   {% include "dashboard/theme.html" %}

@@ -230,7 +230,7 @@ figcaption { display: flex; justify-content: space-between; font-size: 14px; }
 .tab-group { flex: none; display: flex; align-items: center; margin-left: 12px; padding-left: 12px; border-left: 1px solid currentcolor; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; opacity: .6; }
 .link { padding: 0; min-height: auto; background: none; color: var(--accent); text-decoration: underline; text-underline-offset: 3px; font-weight: 500; }
 .quiet { margin-top: 4px; justify-self: start; }
-.quiet .link { width: auto !important; text-align: left; }
+.quiet .link { width: auto !important; text-align: left; white-space: normal; }
 .theme { display: inline; }
 .in-app-docs .write-up { max-width: 860px; }
 .guide { flex: 1 1 420px; min-width: 0; }
@@ -315,6 +315,8 @@ figcaption { display: flex; justify-content: space-between; font-size: 14px; }
 @media (max-width: 767px) {
   .wide { display: none; }
   .short { display: inline; }
+  .top { gap: 8px; }
+  .top > .button { padding-inline: 10px; }
   .segments, .demo > form, .hero form, .hero .actions button, .site .actions .button, .guide { width: 100%; }
   .demo:has(.stepper) { grid-template-columns: minmax(0, 1fr); }
   .demo .roles { grid-column: 1; grid-row: auto; align-items: stretch; }
@@ -341,5 +343,9 @@ figcaption { display: flex; justify-content: space-between; font-size: 14px; }
   dialog { inset: auto 0 0; width: 100%; height: auto; max-height: 92dvh; border-radius: 12px 12px 0 0; padding: 20px 16px; }
   dialog[open] { animation-name: from-below; }
   dialog form > button, .sign-in form > button { width: 100%; }
+}
+/* The smallest phones keep only the logo, so the header fits. */
+@media (max-width: 399px) {
+  .top .brand .name { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }

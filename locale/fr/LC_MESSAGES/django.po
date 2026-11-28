@@ -566,16 +566,16 @@ msgid "Never calls back"
 msgstr "Ne prévient jamais"
 
 msgid "Moves the money, but never says so"
-msgstr "Prélève l’argent sans jamais prévenir"
+msgstr "Transfère l’argent sans jamais prévenir"
 
 msgid "Declines, but moves the money anyway"
-msgstr "Refuse, mais prélève quand même l’argent"
+msgstr "Refuse, mais transfère quand même l’argent"
 
 msgid "Moves 500 francs too much"
-msgstr "Prélève 500 francs de trop"
+msgstr "Transfère 500 francs de trop"
 
 msgid "Moves the money twice"
-msgstr "Prélève l’argent deux fois"
+msgstr "Transfère l’argent deux fois"
 
 msgid "Leaves it out of its statement"
 msgstr "Ne le met pas dans son relevé"
@@ -674,13 +674,13 @@ msgid "Rejected a solution"
 msgstr "Solution rejetée"
 
 msgid "Money moved that nobody asked for"
-msgstr "Argent prélevé sans que personne l’ait demandé"
+msgstr "Argent transféré sans que personne l’ait demandé"
 
 msgid "Money moved after it was said to have failed"
-msgstr "Argent prélevé après un échec annoncé"
+msgstr "Argent transféré après un échec annoncé"
 
 msgid "Another amount moved"
-msgstr "Un autre montant a été prélevé"
+msgstr "Un autre montant a été transféré"
 
 msgid "In our books, not in the statement"
 msgstr "Dans nos comptes, pas dans le relevé"
